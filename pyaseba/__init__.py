@@ -7,9 +7,9 @@ from .pyaseba import Description, Event, Network
 
 
 @contextlib.contextmanager
-def open(target: str,
-         wait_ms: int = 1000,
-         max_retries: int = 3) -> Iterator[Network]:
+def connect(target: str,
+            wait_ms: int = 1000,
+            max_retries: int = 3) -> Iterator[Network]:
     network = Network()
     try:
         network.connect(target, wait_ms=wait_ms, max_retries=max_retries)
@@ -19,9 +19,9 @@ def open(target: str,
 
 
 @contextlib.asynccontextmanager
-async def open_async(target: str,
-                     wait_ms: int = 1000,
-                     max_retries: int = 3) -> AsyncIterator[NetworkAsync]:
+async def connect_async(target: str,
+                        wait_ms: int = 1000,
+                        max_retries: int = 3) -> AsyncIterator[NetworkAsync]:
     network = NetworkAsync()
     try:
         await network.connect(target)
