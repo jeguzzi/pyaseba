@@ -112,9 +112,10 @@ void DashelHub::connectionCreated(Dashel::Stream *stream) {
   nm->connectionCreated(stream);
 }
 
-void DashelHub::run_and_ping() {
-  while (step(1000)) {
+void DashelHub::ping() {
+  while (!stop_ping_thread) {
     nm->pingNetwork();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 }
 
