@@ -266,7 +266,6 @@ struct PyNodesManager : public Aseba::NodesManager {
   }
 
   void close() {
-    hub.stop();
     if (stream) {
       hub.closeStream(stream);
     }
