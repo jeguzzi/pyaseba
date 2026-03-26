@@ -1,0 +1,16 @@
+[build-system]
+requires = ["scikit-build-core>=0.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pyaseba"
+version = "0.0.0"
+dependencies = [
+]
+ 
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.define = {}
+install.components = ["pyaseba"]
+wheel.exclude = ["__pycache__"]
+build.targets = ["pyaseba"]
