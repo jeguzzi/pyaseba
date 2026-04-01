@@ -1,5 +1,5 @@
 pybind11_add_module(_client_impl python.cpp)
-target_link_libraries(_client_impl PRIVATE asebacommon asebacompiler
+target_link_libraries(_client_impl PRIVATE dashel asebacommon asebacompiler
                                       asebadashelplugins)
 target_include_directories(_client_impl PRIVATE ${aseba_SOURCE_DIR}
                                            ${dashel_SOURCE_DIR})
