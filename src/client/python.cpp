@@ -99,7 +99,7 @@ void DashelHub::incomingData(Dashel::Stream *stream) {
     return;
   }
   if (message) {
-    nm->processMessage(message);
+    nm->received_msg(message);
     delete message;
   }
 }
@@ -112,14 +112,7 @@ void DashelHub::connectionCreated(Dashel::Stream *stream) {
   nm->connectionCreated(stream);
 }
 
-void DashelHub::ping() {
-  while (!stop_ping_thread) {
-    nm->pingNetwork();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  }
-}
-
-PYBIND11_MODULE(pyaseba, m) {
+PYBIND11_MODULE(_client_impl, m) {
 
   py::classh<Event>(m, "Event", R"doc(
 )doc")
@@ -132,15 +125,17 @@ PYBIND11_MODULE(pyaseba, m) {
                py::str(py::cast(e.data)) + py::str(")");
       });
 
-  py::classh<PyNodesManager>(m, "Network", R"doc(
+  py::classh<PyNodesManager>(m, "Client", R"doc(
 )doc")
       .def(py::init<>())
+      .def("clear_incoming_messages", &PyNodesManager::clear_in_msgs)
       .def_property("nodes", &PyNodesManager::get_nodes, nullptr)
       .def_property("_nodes", &PyNodesManager::get_nodes_, nullptr)
       .def("connect", &PyNodesManager::connect_and_start, py::arg("target"),
            py::arg("wait_ms") = 1000, py::arg("max_retries") = 3)
       .def_property("is_connected", &PyNodesManager::is_connected, nullptr)
-      .def_readonly("is_running", &PyNodesManager::running)
+      .def_property("is_running",
+                    [](const PyNodesManager &m) { return !m.stopped; }, nullptr)
       .def("_connect", &PyNodesManager::connect, py::arg("target"))
       .def("_close", &PyNodesManager::close)
       .def("_start", &PyNodesManager::start)
@@ -177,6 +172,9 @@ PYBIND11_MODULE(pyaseba, m) {
            py::return_value_policy::copy)
       .def("get_variable", &PyNodesManager::get_variable, py::arg("node"),
            py::arg("name"), py::arg("wait_ms"), py::arg("callback") = nullptr)
+      .def("_get_variables", &PyNodesManager::get_variable_at_index,
+           py::arg("node"), py::arg("index"), py::arg("length"),
+           py::arg("wait_ms"), py::arg("callback") = nullptr)
       .def("set_variable", &PyNodesManager::set_variable, py::arg("node"),
            py::arg("name"), py::arg("value"))
       .def("set_variables", &PyNodesManager::set_variable_at_index,
@@ -191,6 +189,10 @@ PYBIND11_MODULE(pyaseba, m) {
            &PyNodesManager::add_disconnection_callback, py::arg("callback"))
       .def("get_user_events", &PyNodesManager::getEvents, py::arg("node"))
       .def("get_variables", &PyNodesManager::getVariables, py::arg("node"))
+      .def("get_all_variables", &PyNodesManager::get_variables, py::arg("node"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
+      .def("get_variables_size", &PyNodesManager::get_variables_size,
+           py::arg("node"))
       .def("load_script", &PyNodesManager::load_script, py::arg("node"),
            py::arg("script"),
            py::arg("events") = std::vector<Aseba::NamedValue>{},
@@ -206,13 +208,13 @@ PYBIND11_MODULE(pyaseba, m) {
       .def_readonly("functions", &Aseba::TargetDescription::nativeFunctions)
       .def("__repr__",
            [](const Aseba::TargetDescription &d) {
-             return py::str("Description(name=") + py::cast(d.name) +
-                    py::str(", protocol_version='") +
+             return py::str("Description(name='") + py::cast(d.name) +
+                    py::str("', protocol_version=") +
                     py::str(py::cast(d.protocolVersion)) +
-                    py::str(", variables='") +
+                    py::str(", variables=") +
                     py::str(py::cast(d.namedVariables)) +
-                    py::str(", events='") + py::str(py::cast(d.localEvents)) +
-                    py::str("', functions=") +
+                    py::str(", events=") + py::str(py::cast(d.localEvents)) +
+                    py::str(", functions=") +
                     py::str(py::cast(d.nativeFunctions)) + py::str(")");
            })
       .def_property(

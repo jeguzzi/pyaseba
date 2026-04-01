@@ -12,35 +12,38 @@ struct PyNodesManager;
 
 struct DashelHub : public Dashel::Hub {
   std::unique_ptr<std::thread> thread;
-  std::unique_ptr<std::thread> ping_thread;
-  std::atomic_bool stop_ping_thread;
   PyNodesManager *nm;
-  DashelHub(PyNodesManager *manager) : Dashel::Hub(), thread(), ping_thread(), stop_ping_thread(false), nm(manager) {
+  explicit DashelHub(PyNodesManager *manager)
+      : Dashel::Hub(), thread(nullptr), nm(manager) {
     Dashel::initPlugins();
   }
   void sendMessage(const Aseba::Message *message,
                    Dashel::Stream *sourceStream = nullptr) {
+    bool need_lock =
+        (!thread || std::this_thread::get_id() != thread->get_id());
+
+    if (need_lock) {
+      lock();
+    }
     for (auto stream : dataStreams) {
       message->serialize(stream);
       stream->flush();
     }
+    if (need_lock) {
+      unlock();
+    }
   }
-
-  void ping();
 
   void start() {
     thread = std::make_unique<std::thread>(&Dashel::Hub::run, this);
-    ping_thread = std::make_unique<std::thread>(&DashelHub::ping, this);
   }
 
   void stop() {
     Dashel::Hub::stop();
-    thread->join();
-    stop_ping_thread = true;
-    ping_thread->join();
-    stop_ping_thread = false;
+    if (thread) {
+      thread->join();
+    }
     thread = nullptr;
-    ping_thread = nullptr;
   }
 
   void connectionCreated(Dashel::Stream *stream) override;

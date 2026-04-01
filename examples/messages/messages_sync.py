@@ -1,15 +1,15 @@
 import argparse
 
-from pyaseba import Network
+from pyaseba import Client
 
 
 def main(target: str) -> None:
-    network = Network()
-    if network.connect(target, max_retries=10):
+    client = Client()
+    if client.connect(target, max_retries=10):
         for _ in range(10):
-            msg = network.get_message()
+            msg = client.get_message()
             print(f"Got message {msg}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

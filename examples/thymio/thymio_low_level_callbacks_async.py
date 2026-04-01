@@ -1,11 +1,11 @@
 import asyncio
 import argparse
-from pyaseba import connect_async, Event
+from pyaseba.client import connect_async, Event
 
 
 async def main(target: str) -> None:
-    async with connect_async(target) as network:
-        node = await network.wait_node_connection()
+    async with connect_async(target) as client:
+        node = await client.wait_node_connection()
         if node:
             loop = asyncio.get_running_loop()
             done = loop.create_future()
@@ -13,10 +13,10 @@ async def main(target: str) -> None:
 onevent prox
 emit proxh prox.horizontal
 """
-            network.load_script(node=node,
+            client.load_script(node=node,
                                 script=script,
                                 events=[("proxh", 7)])
-            desc = network.get_description(node)
+            desc = client.get_description(node)
             assert(desc is not None)
             index, _ = desc._variables_map['motor.left.target']
 
@@ -26,12 +26,12 @@ emit proxh prox.horizontal
                         if not done.done():
                             loop.call_soon_threadsafe(done.set_result, True)
 
-            network.add_event_callback(cb)
-            network.run(node=node)
-            network.set_variables(node, index, [100, 100])
-            network.set_variable(node, "leds.top", [0, 32, 0])
+            client.add_event_callback(cb)
+            client.run(node=node)
+            client.set_variables(node, index, [100, 100])
+            client.set_variable(node, "leds.top", [0, 32, 0])
             await done
-            network.reset(node=node)
+            client.reset(node=node)
             await asyncio.sleep(0.2)
     await asyncio.sleep(0.2)
 

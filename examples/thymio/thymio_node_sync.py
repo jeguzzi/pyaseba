@@ -3,8 +3,8 @@ import time
 import typing
 from collections.abc import Callable
 
-from pyaseba.node import Node
-from pyaseba.thymio import Thymio
+from pyaseba.client.node import Node
+from pyaseba.client.thymio import Thymio
 
 done = False
 

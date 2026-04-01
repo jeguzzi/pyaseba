@@ -13,4 +13,4 @@ minimum-version = "build-system.requires"
 cmake.define = {}
 install.components = ["pyaseba"]
 wheel.exclude = ["__pycache__"]
-build.targets = ["pyaseba"]
+build.targets = ["_client_impl", "_server_impl"]

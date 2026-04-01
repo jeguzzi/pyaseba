@@ -1,16 +1,16 @@
 import argparse
 
-from pyaseba import Network
+from pyaseba import Client
 
 
 def main(target: str) -> None:
-    network = Network()
-    if network.connect(target, max_retries=10):
+    client = Client()
+    if client.connect(target, max_retries=10):
         print(f'Connected {target}')
-        node = network.wait_node_connection(wait_ms=1000)
+        node = client.wait_node_connection(wait_ms=1000)
         print(f'Connected node {node}')
-        network.wait_disconnection(wait_ms=1000)
-        network.close()
+        client.wait_disconnection(wait_ms=1000)
+        client.close()
     else:
         print(f"Could not connect to {target}")
 

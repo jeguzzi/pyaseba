@@ -1,22 +1,22 @@
 import argparse
 
-from pyaseba import Network
+from pyaseba import Client
 
 
 def main(target: str) -> None:
-    network = Network()
-    if network.connect(target, max_retries=10):
-        node = network.wait_node_connection(wait_ms=5000)
+    client = Client()
+    if client.connect(target, max_retries=10):
+        node = client.wait_node_connection(wait_ms=5000)
         if node is not None:
-            description = network.get_description(node)
+            description = client.get_description(node)
             if description:
                 name, size = description.variables[0]
-                value = network.get_variable(node, name, wait_ms=1000)
+                value = client.get_variable(node, name, wait_ms=1000)
                 print(f"Variable {name} = {value}")
-                network.set_variable(node, name, [1] * size)
-                value = network.get_variable(node, name, wait_ms=1000)
+                client.set_variable(node, name, [1] * size)
+                value = client.get_variable(node, name, wait_ms=1000)
                 print(f"Variable {name} = {value}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

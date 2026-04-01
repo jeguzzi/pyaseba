@@ -1,16 +1,16 @@
 import argparse
 import asyncio
 
-from pyaseba import NetworkAsync
+from pyaseba import ClientAsync
 
 
 async def main(target: str) -> None:
-    network = NetworkAsync()
-    if await network.connect(target, max_retries=10):
+    client = ClientAsync()
+    if await client.connect(target, max_retries=10):
         for _ in range(10):
-            msg = await network.get_message()
+            msg = await client.get_message()
             print(f"Got message {msg}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

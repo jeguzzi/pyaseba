@@ -1,7 +1,8 @@
 import argparse
 import time
 
-from pyaseba import Network, Message
+from pyaseba import Client
+from pyaseba.client import Message
 
 
 def cb(msg: Message) -> None:
@@ -9,11 +10,11 @@ def cb(msg: Message) -> None:
 
 
 def main(target: str) -> None:
-    network = Network()
-    network.add_message_callback(cb)
-    if network.connect(target, max_retries=10):
+    client = Client()
+    client.add_message_callback(cb)
+    if client.connect(target, max_retries=10):
         time.sleep(2)
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

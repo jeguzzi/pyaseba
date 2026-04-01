@@ -1,10 +1,11 @@
 import asyncio
-
-from .pyaseba import Event, Network
-from .pyaseba.msgs import Message
 from collections.abc import Callable
-from typing import Protocol, SupportsInt, SupportsIndex
 from functools import partial
+from typing import Protocol, SupportsIndex, SupportsInt
+
+from ._client_impl import Client, Event
+from .msgs import Message
+
 
 class WaitCallable[R](Protocol):
 
@@ -24,7 +25,7 @@ async def call_async[R](f: WaitCallable[R]) -> R:
     return await future
 
 
-class NetworkAsync(Network):
+class ClientAsync(Client):
 
     async def get_message(self, #type: ignore[override]
                           node: SupportsInt | SupportsIndex = -1,
@@ -38,6 +39,10 @@ class NetworkAsync(Network):
     async def get_variable(self, #type: ignore[override]
                            node: SupportsInt | SupportsIndex, name: str) -> list[int]:
         return await call_async(partial(super().get_variable, node=node, name=name))
+
+    async def get_all_variables(self, #type: ignore[override]
+                           node: SupportsInt | SupportsIndex) -> dict[str, int]:
+        return await call_async(partial(super().get_all_variables, node=node))
 
     async def wait_node_connection(self, #type: ignore[override]
                                    node: SupportsInt | SupportsIndex = -1) -> int:

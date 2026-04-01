@@ -3,8 +3,8 @@ import asyncio
 import typing
 from collections.abc import Callable
 
-from pyaseba.node_async import NodeAsync
-from pyaseba.thymio import ThymioAsync as Thymio
+from pyaseba.client.node_async import NodeAsync
+from pyaseba.client.thymio import ThymioAsync as Thymio
 from typing import Awaitable
 
 
@@ -47,7 +47,7 @@ def switch() -> Callable[[NodeAsync], Awaitable[None]]:
 
 
 async def main(target: str) -> None:
-    node = Thymio()
+    node: NodeAsync = Thymio()
     done: asyncio.Future[None] = asyncio.Future()
     node.set_callback("prox", control(done))
     node.set_callback("button.forward", switch())

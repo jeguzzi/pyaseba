@@ -2,7 +2,7 @@ import argparse
 import time
 from functools import partial
 
-from pyaseba import Network
+from pyaseba import Client
 
 
 def cb(node_id: int, title: str = "") -> None:
@@ -10,13 +10,13 @@ def cb(node_id: int, title: str = "") -> None:
 
 
 def main(target: str) -> None:
-    network = Network()
-    if network.connect(target, max_retries=10):
+    client = Client()
+    if client.connect(target, max_retries=10):
         print(f'Connected {target}')
-        network.add_connection_callback(partial(cb, title="Connected"))
-        network.add_disconnection_callback(partial(cb, title="Disconnected"))
+        client.add_connection_callback(partial(cb, title="Connected"))
+        client.add_disconnection_callback(partial(cb, title="Disconnected"))
         time.sleep(1)
-        network.close()
+        client.close()
     else:
         print(f"Could not connect to {target}")
 

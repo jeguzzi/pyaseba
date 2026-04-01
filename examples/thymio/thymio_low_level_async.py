@@ -1,23 +1,23 @@
 import asyncio
 import argparse
-from pyaseba import connect_async
+from pyaseba.client import connect_async
 
 
 async def main(target: str) -> None:
-    async with connect_async(target) as network:
-        node = await network.wait_node_connection()
+    async with connect_async(target) as client:
+        node = await client.wait_node_connection()
         if node:
-            desc = network.get_description(node)
+            desc = client.get_description(node)
             assert(desc is not None)
             index, _ = desc._variables_map['motor.left.target']
-            network.set_variables(node, index, [100, 100])
-            network.set_variable(node, "leds.top", [0, 32, 0])
+            client.set_variables(node, index, [100, 100])
+            client.set_variable(node, "leds.top", [0, 32, 0])
             while True:
-                data = await network.get_variable(node, "prox.horizontal")
+                data = await client.get_variable(node, "prox.horizontal")
                 if data[2] > 2000:
                     break
                 await asyncio.sleep(0.1)
-            network.reset(node=node)
+            client.reset(node=node)
             await asyncio.sleep(0.2)
     await asyncio.sleep(0.2)
 

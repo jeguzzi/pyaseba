@@ -31,40 +31,13 @@ if(NOT pybind11_FOUND)
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
     GIT_TAG v3.0.1
     GIT_SHALLOW TRUE
-    OVERRIDE_FIND_PACKAGE)
+    OVERRIDE_FIND_PACKAGE
+    EXCLUDE_FROM_ALL)
   set(PYBIND11_INSTALL ON)
   set(INCLUDE_PYBIND11 true)
   FetchContent_MakeAvailable(pybind11)
   find_package(pybind11 REQUIRED)
 endif()
 
-pybind11_add_module(pyaseba src/main.cpp)
-target_link_libraries(pyaseba PRIVATE asebacommon asebacompiler
-                                      asebadashelplugins)
-target_include_directories(pyaseba PRIVATE ${aseba_SOURCE_DIR}
-                                           ${dashel_SOURCE_DIR})
-target_compile_definitions(pyaseba PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES=1)
-
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported OUTPUT error)
-if(ipo_supported)
-  set_property(TARGET pyaseba PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(DISABLE_WARNINGS "-w")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(DISABLE_WARNINGS "-Wno-everything")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set(DISABLE_WARNINGS "/w")
-endif()
-
-target_compile_options(dashel PRIVATE ${DISABLE_WARNINGS})
-target_compile_options(asebacommon PRIVATE ${DISABLE_WARNINGS})
-target_compile_options(asebacompiler PRIVATE ${DISABLE_WARNINGS})
-target_compile_options(asebadashelplugins PRIVATE ${DISABLE_WARNINGS})
-
-install(
-  TARGETS pyaseba
-  DESTINATION pyaseba
-  COMPONENT pyaseba)
+add_subdirectory(src/client)
+add_subdirectory(src/server)

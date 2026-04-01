@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from pyaseba import NetworkAsync
+from pyaseba import ClientAsync
 
 script = """
 onevent send
@@ -10,17 +10,17 @@ emit echo event.args[0:2]
 
 
 async def main(target: str) -> None:
-    network = NetworkAsync()
-    if await network.connect(target, max_retries=10):
-        node = await network.wait_node_connection()
-        network.load_script(node=node,
+    client = ClientAsync()
+    if await client.connect(target, max_retries=10):
+        node = await client.wait_node_connection()
+        client.load_script(node=node,
                             script=script,
                             events=[("send", 3), ("echo", 3)])
-        network.run(node=node)
-        network.emit_event(node, "send", [3, 2, 1])
-        e = await network.get_event(node, "echo")
+        client.run(node=node)
+        client.emit_event(node, "send", [3, 2, 1])
+        e = await client.get_event(node, "echo")
         print(f"Got {e}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

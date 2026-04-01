@@ -1,18 +1,18 @@
 import argparse
 import asyncio
 
-from pyaseba import NetworkAsync
+from pyaseba import ClientAsync
 
 
 async def main(target: str) -> None:
-    network = NetworkAsync()
-    if await network.connect(target, max_retries=10):
+    client = ClientAsync()
+    if await client.connect(target, max_retries=10):
         print(f'Connected {target}')
-        node = await network.wait_node_connection()
+        node = await client.wait_node_connection()
         print(f'Connected node {node}')
-        task = asyncio.Task(network.wait_disconnection())
+        task = asyncio.Task(client.wait_disconnection())
         await asyncio.wait([task], timeout=5)
-        network.close()
+        client.close()
     else:
         print(f"Could not connect to {target}")
 

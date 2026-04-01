@@ -1,11 +1,11 @@
 import time
 import argparse
-from pyaseba import connect, Event
+from pyaseba.client import connect, Event
 
 
 def main(target: str) -> None:
-    with connect(target) as network:
-        node = network.wait_node_connection(wait_ms=5000)
+    with connect(target) as client:
+        node = client.wait_node_connection(wait_ms=5000)
         if node:
             print(f'node {node}')
             done = False
@@ -13,10 +13,10 @@ def main(target: str) -> None:
 onevent prox
 emit proxh prox.horizontal
 """
-            network.load_script(node=node,
+            client.load_script(node=node,
                                 script=script,
                                 events=[("proxh", 7)])
-            desc = network.get_description(node)
+            desc = client.get_description(node)
             assert(desc is not None)
             index, _ = desc._variables_map['motor.left.target']
 
@@ -26,13 +26,13 @@ emit proxh prox.horizontal
                     if event.data[2] > 2000:
                         done = True
 
-            network.add_event_callback(cb)
-            network.run(node=node)
-            network.set_variables(node, index, [100, 100])
-            network.set_variable(node, "leds.top", [0, 32, 0])
+            client.add_event_callback(cb)
+            client.run(node=node)
+            client.set_variables(node, index, [100, 100])
+            client.set_variable(node, "leds.top", [0, 32, 0])
             while not done:
                 time.sleep(0.1)
-            network.reset(node=node)
+            client.reset(node=node)
             time.sleep(0.2)
         else:
             print('no node')

@@ -1,23 +1,23 @@
 import argparse
 import asyncio
 
-from pyaseba import NetworkAsync
+from pyaseba import ClientAsync
 
 
 async def main(target: str) -> None:
-    network = NetworkAsync()
-    if await network.connect(target, max_retries=10):
-        node = await network.wait_node_connection()
+    client = ClientAsync()
+    if await client.connect(target, max_retries=10):
+        node = await client.wait_node_connection()
         if node is not None:
-            description = network.get_description(node)
+            description = client.get_description(node)
             if description:
                 name, size = description.variables[0]
-                value = await network.get_variable(node, name)
+                value = await client.get_variable(node, name)
                 print(f"Variable {name} = {value}")
-                network.set_variable(node, name, [1] * size)
-                value = await network.get_variable(node, name)
+                client.set_variable(node, name, [1] * size)
+                value = await client.get_variable(node, name)
                 print(f"Variable {name} = {value}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

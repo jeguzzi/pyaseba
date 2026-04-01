@@ -1,16 +1,16 @@
 import argparse
 
-from pyaseba import Network
+from pyaseba import Client
 
 
 def main(target: str) -> None:
-    network = Network()
-    if network.connect(target, max_retries=10):
-        node = network.wait_node_connection(wait_ms=1000)
+    client = Client()
+    if client.connect(target, max_retries=10):
+        node = client.wait_node_connection(wait_ms=1000)
         if node is not None:
-            description = network.get_description(node)
+            description = client.get_description(node)
             print(f"Node {node}: {description}")
-        network.close()
+        client.close()
 
 
 if __name__ == '__main__':

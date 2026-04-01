@@ -3,7 +3,7 @@ import time
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
 
-def discover(timeout=1, min_number=1) -> set[str]:
+def discover(timeout: float = 1, min_number: int = 1) -> set[str]:
     targets: set[str] = set()
     with Zeroconf() as zeroconf:
         listener = ThymioListener(targets)
