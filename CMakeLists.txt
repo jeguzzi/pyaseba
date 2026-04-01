@@ -6,7 +6,19 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.15)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+if(WIN32)
+  add_compile_definitions(NOMINMAX _ALLOW_KEYWORD_MACROS)
+  add_definitions(-DDISABLE_WEAK_CALLBACKS)
+else()
+  add_compile_options(-fPIC)
+endif()
+
+if(NOT DEFINED aseba_patched)
+  set(patchCommand PATCH_COMMAND git apply "${CMAKE_CURRENT_LIST_DIR}/aseba_patch.diff")
+endif()
+
 if(NOT aseba_FOUND)
+  set(aseba_patched ON CACHE BOOL "" FORCE)
   include(FetchContent)
   FetchContent_Declare(
     aseba
@@ -14,10 +26,8 @@ if(NOT aseba_FOUND)
     GIT_REPOSITORY https://github.com/aseba-community/aseba.git
     GIT_TAG master
     GIT_SHALLOW TRUE
-    PATCH_COMMAND
-      truncate -s0 CMakeModules/enki.cmake && truncate -s0 CMakeModules/deployqt.cmake && sed -i -e
-      "s/ASEBA_PROTOCOL_VERSION 5/ASEBA_PROTOCOL_VERSION 9/"
-      aseba/common/consts.h OVERRIDE_FIND_PACKAGE)
+    ${patchCommand}
+    OVERRIDE_FIND_PACKAGE)
   FetchContent_MakeAvailable(aseba)
 endif()
 

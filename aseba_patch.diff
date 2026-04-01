@@ -1,0 +1,54 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d1d4272..2cff159 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,8 +19,8 @@ include(CMakeModules/cpp_features.cmake)
+ include(CMakeModules/workarounds.cmake)
+ include(CMakeModules/aseba_conf.cmake)
+ include(CMakeModules/dashel.cmake)
+-include(CMakeModules/enki.cmake)
+-include(CMakeModules/deployqt.cmake)
++# include(CMakeModules/enki.cmake)
++# include(CMakeModules/deployqt.cmake)
+ include(CMakeModules/codesign.cmake)
+ 
+ add_subdirectory(third_party/catch2)
+diff --git a/aseba/CMakeLists.txt b/aseba/CMakeLists.txt
+index a7f0388..0c13f35 100644
+--- a/aseba/CMakeLists.txt
++++ b/aseba/CMakeLists.txt
+@@ -7,6 +7,6 @@ add_subdirectory(vm)
+ add_subdirectory(compiler)
+ 
+ # User programs
+-add_subdirectory(clients)
+-add_subdirectory(switches)
+-add_subdirectory(targets)
++# add_subdirectory(clients)
++# add_subdirectory(switches)
++# add_subdirectory(targets)
+diff --git a/aseba/common/consts.h b/aseba/common/consts.h
+index e29a702..73d40e1 100644
+--- a/aseba/common/consts.h
++++ b/aseba/common/consts.h
+@@ -31,7 +31,7 @@ extern const char*  ASEBA_VERSION;
+ extern const char*  ASEBA_REVISION;
+ 
+ /*! version of aseba protocol, including bytecodes types and constants */
+-#define ASEBA_PROTOCOL_VERSION 5
++#define ASEBA_PROTOCOL_VERSION 9
+ 
+ /*! minimal accepted protocol version in targets */
+ #define ASEBA_MIN_TARGET_PROTOCOL_VERSION 4
+diff --git a/aseba/common/msg/TargetDescription.h b/aseba/common/msg/TargetDescription.h
+index 8f4d89c..078637a 100644
+--- a/aseba/common/msg/TargetDescription.h
++++ b/aseba/common/msg/TargetDescription.h
+@@ -20,6 +20,7 @@
+ #ifndef ASEBA_TARGET_DESCRIPTION
+ #define ASEBA_TARGET_DESCRIPTION
+ 
++#include <cstdint>
+ #include <map>
+ #include <string>
+ #include <vector>
