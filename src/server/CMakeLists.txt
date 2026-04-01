@@ -1,4 +1,4 @@
-pybind11_add_module(_server_impl python.cpp client.cpp)
+pybind11_add_module(_server_impl python.cpp network.cpp)
 target_link_libraries(_server_impl PRIVATE dashel
   asebacommon
   asebavmbuffer

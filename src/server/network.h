@@ -83,7 +83,7 @@ public:
                listenStream->getTargetParameter("port").c_str());
   }
 
-  ~Client() {
+  ~Network() {
     // for (auto kv : nodes) {
     //   delete kv.second;
     // }

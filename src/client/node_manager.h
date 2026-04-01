@@ -355,7 +355,7 @@ struct PyNodesManager : public Aseba::NodesManager {
 
   void run_ping(unsigned interval_ms) {
     while (!stopped) {
-      pingClient();
+      pingNetwork();
       std::this_thread::sleep_for(std::chrono::milliseconds(interval_ms));
     }
   }

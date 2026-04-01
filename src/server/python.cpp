@@ -1,4 +1,4 @@
-#include "client.h"
+#include "network.h"
 #include "node.h"
 #include <algorithm>
 #include <pybind11/pybind11.h>
