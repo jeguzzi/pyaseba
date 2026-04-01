@@ -19,7 +19,7 @@ jobs:
           python -m build -w
       - name: install wheel
         run: |
-          wheels=( src/enki/dist/*.whl )
+          wheels=( src/pyaseba/dist/*.whl )
           pip install ${wheels[0]}[all]
       - name: test import
         run: |
