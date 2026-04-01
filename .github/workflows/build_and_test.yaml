@@ -26,4 +26,4 @@ jobs:
           python -c "import pyaseba"
       - name: test ping pong
         run: |
-          python src/examples/client_and_server/ping_pong_async.py
+          python src/pyaseba/examples/client_and_server/ping_pong_async.py
