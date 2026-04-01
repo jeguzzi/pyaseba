@@ -1,0 +1,29 @@
+name: Build and test
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src/pyaseba
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: install deps
+        run: pip install build
+      - name: build wheel
+        run: |
+          cd src/pyaseba
+          python -m build -w
+      - name: install wheel
+        run: |
+          wheels=( src/enki/dist/*.whl )
+          pip install ${wheels[0]}[all]
+      - name: test import
+        run: |
+          python -c "import pyaseba"
+      - name: test ping pong
+        run: |
+          python src/examples/client_and_server/ping_pong_async.py
