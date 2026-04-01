@@ -15,7 +15,7 @@ if(NOT aseba_FOUND)
     GIT_TAG master
     GIT_SHALLOW TRUE
     PATCH_COMMAND
-      truncate -s0 CMakeModules/enki.cmake && sed -i '' -e
+      truncate -s0 CMakeModules/enki.cmake && sed -i -e
       "s/ASEBA_PROTOCOL_VERSION 5/ASEBA_PROTOCOL_VERSION 9/"
       aseba/common/consts.h OVERRIDE_FIND_PACKAGE)
   FetchContent_MakeAvailable(aseba)
