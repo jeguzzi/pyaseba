@@ -14,7 +14,7 @@ struct DashelHub : public Dashel::Hub {
   std::unique_ptr<std::thread> thread;
   PyNodesManager *nm;
   explicit DashelHub(PyNodesManager *manager)
-      : Dashel::Hub(), thread(nullptr), nm(manager) {
+      : Dashel::Hub(true), thread(nullptr), nm(manager) {
     Dashel::initPlugins();
   }
   void sendMessage(const Aseba::Message *message,

@@ -134,8 +134,9 @@ PYBIND11_MODULE(_client_impl, m) {
       .def("connect", &PyNodesManager::connect_and_start, py::arg("target"),
            py::arg("wait_ms") = 1000, py::arg("max_retries") = 3)
       .def_property("is_connected", &PyNodesManager::is_connected, nullptr)
-      .def_property("is_running",
-                    [](const PyNodesManager &m) { return !m.stopped; }, nullptr)
+      .def_property(
+          "is_running", [](const PyNodesManager &m) { return !m.stopped; },
+          nullptr)
       .def("_connect", &PyNodesManager::connect, py::arg("target"))
       .def("_close", &PyNodesManager::close)
       .def("_start", &PyNodesManager::start)
@@ -212,9 +213,8 @@ PYBIND11_MODULE(_client_impl, m) {
                     py::str("', protocol_version=") +
                     py::str(py::cast(d.protocolVersion)) +
                     py::str(", variables=") +
-                    py::str(py::cast(d.namedVariables)) +
-                    py::str(", events=") + py::str(py::cast(d.localEvents)) +
-                    py::str(", functions=") +
+                    py::str(py::cast(d.namedVariables)) + py::str(", events=") +
+                    py::str(py::cast(d.localEvents)) + py::str(", functions=") +
                     py::str(py::cast(d.nativeFunctions)) + py::str(")");
            })
       .def_property(

@@ -71,7 +71,7 @@ public:
 #endif
   // all streams that must be disconnected at next step
   explicit Network(const int port = ASEBA_DEFAULT_PORT, int timeout = 0)
-      : timeout(timeout), port(port), stream(NULL) //, next_id(0)
+      : Dashel::Hub(true), timeout(timeout), port(port), stream(NULL) //, next_id(0)
 #ifdef ZEROCONF
         ,
         zeroconf(*this)
