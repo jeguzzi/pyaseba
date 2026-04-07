@@ -5,7 +5,7 @@ from pyaseba import Client
 from pyaseba.client import Message
 
 
-def cb(msg: Message) -> None:
+def cb(msg: Message, target: int) -> None:
     print(f"Received {msg}")
 
 
@@ -13,7 +13,7 @@ def main(target: str) -> None:
     client = Client()
     client.add_message_callback(cb)
     if client.connect(target, max_retries=10):
-        time.sleep(2)
+        time.sleep(5)
         client.close()
 
 

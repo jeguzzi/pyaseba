@@ -11,6 +11,7 @@ async def main(target: str) -> None:
         if node is not None:
             description = client.get_description(node)
             print(f"Node {node}: {description}")
+            print(f"Varible map: {description._variables_map}")
         client.close()
 
 

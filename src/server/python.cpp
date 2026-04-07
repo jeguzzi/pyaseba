@@ -6,7 +6,6 @@
 
 namespace py = pybind11;
 
-// using FunctionArgSpec = std::tuple<int, std::string>;
 using FunctionArgSpec = std::tuple<int16_t, std::string>;
 using FunctionSpec = std::tuple<std::string, std::vector<FunctionArgSpec>>;
 
@@ -18,7 +17,7 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
     init_variables();
     init_events();
     init_functions();
-    // py::print(py::cast(description.get_target_description()));
+    PYBIND11_OVERRIDE(void, Node, init);
   }
 
   void init_events() {
@@ -47,10 +46,8 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
       const auto p = py::cast(this);
       const auto n = py::cast(name);
       if (py::hasattr(p, n)) {
-        py::print("A", py::cast(args));
         const auto &fun = py::cast(this).attr(n);
         const auto inputs = py::len(signature(fun).attr("parameters"));
-        // py::print("add_function", name, args, inputs);
         add_function(name, "", args, inputs);
       }
     }
@@ -61,11 +58,11 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
       return;
     const auto &[name, args, inputs] = functions[id];
     const auto &fun = py::cast(this).attr(py::cast(name));
-    std::vector<std::vector<int16_t>> arg_values(args.size());
+    // std::vector<std::vector<int16_t>> arg_values(args.size());
     std::stack<uint16_t> addresses;
     size_t i = 0;
     py::tuple pyargs(inputs);
-    for (auto &size : args) {
+    for (const auto &size : args) {
       const uint16_t address = static_cast<uint16_t>(AsebaNativePopArg(vm));
       addresses.push(address);
       if (i < inputs) {
@@ -74,9 +71,7 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
       }
       i++;
     }
-    // py::print("Will call ", fun, "with args", pyargs);
     const auto r = fun(*pyargs);
-    // py::print("Got", r);
     std::vector<std::vector<int16_t>> rs;
     if (r.is_none()) {
 
@@ -112,8 +107,11 @@ PYBIND11_MODULE(_server_impl, m) {
 
   py::classh<Network>(m, "Server", R"doc(
 )doc")
-      .def(py::init<int, int>(), py::arg("port") = ASEBA_DEFAULT_PORT,
+      .def(py::init<const std::string &, int, int>(),
+           py::arg("address") = "0.0.0.0", py::arg("port") = ASEBA_DEFAULT_PORT,
            py::arg("timeout") = 0)
+      .def_property("port", &Network::get_port, nullptr)
+      .def_property("address", &Network::get_address, nullptr)
       .def("spin", &Network::spin, py::arg("time_step"))
       .def("add_node", &Network::add_node, py::arg("node"));
 

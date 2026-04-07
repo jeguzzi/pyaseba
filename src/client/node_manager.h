@@ -64,17 +64,159 @@ struct Event {
 
 using EventCallback = std::function<void(const std::shared_ptr<Event> &)>;
 
-template <typename T> struct AWaited {
-  using Callback = std::function<void(const T &)>;
-
-  Callback cb;
-  std::unique_ptr<std::promise<T>> value;
-  AWaited(bool awaited, const Callback &cb = nullptr) : cb(cb), value(nullptr) {
-
-    if (awaited) {
-      value = std::make_unique<std::promise<T>>();
+template <bool P, typename T> struct AWaitedCallback {
+  using type = typename std::conditional<P, std::function<void(T, bool)>,
+                                         std::function<void(T)>>::type;
+  static void apply(const type &cb, const T &arg, bool complete) {
+    if constexpr (P) {
+      cb(arg, complete);
+    } else {
+      cb(arg);
     }
   }
+};
+
+template <bool P, typename... T> struct AWaitedCallback<P, std::tuple<T...>> {
+  using type = typename std::conditional<P, std::function<void(T..., bool)>,
+                                         std::function<void(T...)>>::type;
+  static void apply(const type &cb, const std::tuple<T...> &arg,
+                    bool complete) {
+    if constexpr (P) {
+      std::apply(cb, std::tuple_cat(arg, std::tuple<bool>{complete}));
+    } else {
+      std::apply(cb, arg);
+    }
+  }
+};
+
+template <typename C, bool P, typename V, typename... T> struct AWaited {
+  using Value = V;
+  using Promise = std::promise<Value>;
+  using TValue = Value;
+  using AC = AWaitedCallback<P, V>;
+  using Callback = typename AC::type;
+
+  Callback cb;
+  std::unique_ptr<Promise> value;
+  bool complete;
+  explicit AWaited(bool awaited, const Callback &cb = nullptr)
+      : cb(cb), value(nullptr), complete(false) {
+    if (awaited) {
+      value = std::make_unique<Promise>();
+    }
+  }
+
+  void update(T... args) {
+    complete = static_cast<C *>(this)->is_complete(args...);
+    Value v;
+    if (complete || P) {
+      v = static_cast<C *>(this)->get(args...);
+    }
+    if (complete && value) {
+      value->set_value(v);
+    }
+    if (cb) {
+      py::gil_scoped_acquire acquire;
+      AC::apply(cb, v, complete);
+    }
+  }
+
+  static void check(T... args, std::vector<C> &queue) {
+    for (auto &awaited : queue) {
+      awaited.update(args...);
+    }
+    queue.erase(std::remove_if(queue.begin(), queue.end(),
+                               [](const auto &a) { return a.complete; }),
+                queue.end());
+  }
+};
+
+struct AWaitedNode : AWaited<AWaitedNode, false, uint16_t, uint16_t> {
+  int target;
+  using A = AWaited<AWaitedNode, false, uint16_t, uint16_t>;
+  using A::Callback;
+  using A::Value;
+
+  explicit AWaitedNode(int node, bool awaited, const Callback &cb = nullptr)
+      : A(awaited, cb), target(node) {}
+
+  bool is_complete(uint16_t node) { return (target < 0 || node == target); }
+
+  Value get(uint16_t node) { return node; }
+};
+
+struct AWaitedTarget
+    : AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>, unsigned,
+              std::string> {
+  int target;
+  using A = AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>,
+                    unsigned, std::string>;
+  using A::Callback;
+  using A::Value;
+
+  AWaitedTarget(int index, bool awaited, const Callback &cb = nullptr)
+      : A(awaited, cb), target(index) {}
+
+  bool is_complete(unsigned index, const std::string &name) {
+    return (target < 0 || target == index);
+  }
+
+  Value get(unsigned index, const std::string &name) { return {index, name}; }
+};
+
+using QueuedMessage = std::tuple<std::shared_ptr<Aseba::Message>, unsigned>;
+
+struct AWaitedMessage
+    : AWaited<AWaitedMessage, false,
+              std::tuple<std::shared_ptr<Aseba::Message>, unsigned>,
+              const std::shared_ptr<Aseba::Message> &, unsigned> {
+  using A = AWaited<AWaitedMessage, false,
+                    std::tuple<std::shared_ptr<Aseba::Message>, unsigned>,
+                    const std::shared_ptr<Aseba::Message> &, unsigned>;
+  using A::Callback;
+  using A::Value;
+
+  int target_source;
+  int target_type;
+
+  AWaitedMessage(int source, int type, bool awaited,
+                 const Callback &cb = nullptr)
+      : A(awaited, cb), target_source(source), target_type(type) {}
+
+  bool is_complete(const std::shared_ptr<Aseba::Message> &msg,
+                   unsigned target_index) {
+    return (target_source < 0 || target_source == msg->source) &&
+           (target_type < 0 || target_type == msg->type);
+  }
+
+  Value get(const std::shared_ptr<Aseba::Message> &msg, unsigned target_index) {
+    return {msg, target_index};
+  }
+};
+
+struct AWaitedNodes
+    : AWaited<AWaitedNodes, true, std::set<unsigned>, unsigned> {
+
+  using A = AWaited<AWaitedNodes, true, std::set<unsigned>, unsigned>;
+  using A::Callback;
+  using A::Value;
+
+  std::set<unsigned> nodes;
+  std::set<unsigned> candidates;
+  int number;
+
+  AWaitedNodes(std::set<unsigned> nodes, const std::set<unsigned> &candidates,
+               int number, bool awaited, const Callback &cb = nullptr)
+      : A(awaited, cb), nodes(nodes), candidates(candidates), number(number) {}
+
+  bool is_complete(unsigned n) {
+    if (candidates.size() && !candidates.count(n))
+      return false;
+    nodes.insert(n);
+    return (number >= 0 && nodes.size() >= number);
+  }
+
+  Value get(unsigned n) { return {nodes}; }
 };
 
 inline unsigned compute_variables_size(const Aseba::VariablesMap &m) {
@@ -86,38 +228,39 @@ inline unsigned compute_variables_size(const Aseba::VariablesMap &m) {
   return c;
 }
 
-using AWaitedDisconnection = AWaited<bool>;
-using AWaitedNode = AWaited<uint16_t>;
-using AWaitedMessage = AWaited<std::shared_ptr<Aseba::Message>>;
-
 using VariablesMap = std::map<std::wstring, Aseba::VariablesDataVector>;
 
-struct AWaitedVariables : public AWaited<VariablesMap> {
+struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
+                                         const Aseba::Variables *> {
 
-  using AWaited<VariablesMap>::Callback;
+  using A =
+      AWaited<AWaitedVariables, false, VariablesMap, const Aseba::Variables *>;
+  using A::Callback;
+  using A::Value;
 
+  Aseba::VariablesMap d;
   std::vector<bool> rs;
   Aseba::VariablesDataVector vs;
-  Aseba::VariablesMap d;
-  bool complete;
+  int target_node;
 
-  AWaitedVariables(bool awaited, const Aseba::VariablesMap &d,
+  AWaitedVariables(int node, const Aseba::VariablesMap &d, bool awaited,
                    const Callback &cb = nullptr)
-      : AWaited<VariablesMap>(awaited, cb), d(d),
-        rs(compute_variables_size(d), false), vs(d.size()), complete(false) {}
+      : A(awaited, cb), d(d), rs(compute_variables_size(d), false),
+        vs(d.size()), target_node(node) {}
 
-  void update(unsigned start, const Aseba::VariablesDataVector &values) {
-    const auto begin = values.begin();
+  bool is_complete(const Aseba::Variables *msg) {
+    if (target_node >= 0 && target_node != msg->source)
+      return false;
+    const auto start = msg->start;
+    const auto &values = msg->variables;
     std::copy(values.begin(), values.end(), vs.begin() + start);
     for (size_t i = start; i < start + values.size(); i++) {
       rs[i] = true;
     }
-    if (std::find(rs.begin(), rs.end(), false) == rs.end()) {
-      complete = true;
-    }
+    return (std::find(rs.begin(), rs.end(), false) == rs.end());
   }
 
-  VariablesMap get() const {
+  Value get(const Aseba::Variables *msg) {
     VariablesMap m;
     for (const auto &[k, v] : d) {
       const auto [index, size] = v;
@@ -129,71 +272,76 @@ struct AWaitedVariables : public AWaited<VariablesMap> {
 };
 
 struct PyNodesManager : public Aseba::NodesManager {
+
   using VariablesCallback =
       std::function<void(const Aseba::VariablesDataVector &)>;
-  // using VariablesMapCallback = std::function<void(const VariablesMap &)>;
   using MessageCallback =
-      std::function<void(const std::shared_ptr<Aseba::Message> &)>;
+      std::function<void(const std::shared_ptr<Aseba::Message> &, unsigned)>;
   using NodeCallback = std::function<void(unsigned)>;
+  using TargetCallback = std::function<void(unsigned, const std::string &)>;
   using MessageVector = std::vector<std::unique_ptr<Aseba::Message>>;
-  using AWaitedMessageKey = std::tuple<int, int>;
   using WriteLock = std::unique_lock<std::shared_mutex>;
   using ReadLock = std::shared_lock<std::shared_mutex>;
   DashelHub hub;
-  Dashel::Stream *stream;
   std::unique_ptr<std::thread> ping_thread;
   std::atomic_bool stopped;
-  std::queue<std::shared_ptr<Aseba::Message>> in_msgs;
-  std::unique_ptr<std::thread> process_msgs_thread;
+  std::queue<QueuedMessage> in_msgs;
   std::mutex in_msgs_mutex;
   std::condition_variable in_msgs_cv;
+  std::unique_ptr<std::thread> process_msgs_thread;
   std::shared_mutex nodes_mutex;
   std::map<unsigned, Aseba::VariablesMap> variable_maps;
   std::map<unsigned, unsigned> variable_size_map;
   EventMaps event_maps;
   std::vector<MessageCallback> message_callbacks;
-  std::vector<NodeCallback> connection_callbacks;
-  std::vector<NodeCallback> disconnection_callbacks;
-  std::vector<AWaitedDisconnection> awaited_disconnections;
+  std::vector<TargetCallback> target_connection_callbacks;
+  std::vector<TargetCallback> target_disconnection_callbacks;
+  std::vector<NodeCallback> node_connection_callbacks;
+  std::vector<NodeCallback> node_disconnection_callbacks;
+  std::vector<AWaitedTarget> awaited_target_connections;
+  std::vector<AWaitedTarget> awaited_target_disconnections;
+  std::vector<AWaitedNodes> scans;
+  std::vector<AWaitedNodes> awaited_nodes;
+  std::vector<AWaitedNode> awaited_node_disconnections;
+  std::vector<AWaitedMessage> awaited_messages;
+  std::vector<AWaitedVariables> awaited_variables;
+  bool query;
 
-  std::map<int, std::vector<AWaitedNode>> awaited_node_connections;
-  std::map<int, std::vector<AWaitedNode>> awaited_node_disconnections;
-  std::map<AWaitedMessageKey, std::vector<AWaitedMessage>> awaited_messages;
-  std::map<int, std::vector<AWaitedVariables>> awaited_variables;
-
-  PyNodesManager()
-      : hub(this), stream(nullptr), ping_thread(nullptr), stopped(true),
-        in_msgs(), in_msgs_mutex(), in_msgs_cv(), process_msgs_thread(),
-        nodes_mutex(), variable_maps(), message_callbacks(),
-        connection_callbacks(), disconnection_callbacks(),
-        awaited_disconnections(), awaited_node_connections(),
-        awaited_node_disconnections(), awaited_messages(), awaited_variables() {
-  }
+  PyNodesManager(int port = -1, bool query = false)
+      : hub(this, port), ping_thread(nullptr), stopped(true), in_msgs(),
+        in_msgs_mutex(), in_msgs_cv(), process_msgs_thread(), nodes_mutex(),
+        variable_maps(), message_callbacks(), target_connection_callbacks(),
+        target_disconnection_callbacks(), node_connection_callbacks(),
+        node_disconnection_callbacks(), awaited_target_connections(),
+        awaited_target_disconnections(), scans(), awaited_nodes(),
+        awaited_node_disconnections(), awaited_messages(), awaited_variables(),
+        query(query) {}
 
   void run_process_msgs() {
     while (!stopped) {
       std::shared_ptr<Aseba::Message> msg;
+      unsigned target_index;
       {
         std::unique_lock<std::mutex> lck(in_msgs_mutex);
         in_msgs_cv.wait(lck, []() { return true; });
         // in_msgs_cv.wait(lck, [this]() { return !in_msgs.empty(); });
         if (!in_msgs.empty()) {
-          msg = in_msgs.front();
+          std::tie(msg, target_index) = in_msgs.front();
           in_msgs.pop();
         }
       }
       if (msg) {
-        process_message(msg);
+        process_message(msg, target_index);
       }
     }
   }
 
-  void received_msg(const Aseba::Message *msg) {
+  void received_msg(const Aseba::Message *msg, unsigned target_index) {
     std::shared_ptr<Aseba::Message> smsg;
     smsg.reset(std::move(msg->clone()));
     {
       std::unique_lock<std::mutex> lck(in_msgs_mutex);
-      in_msgs.push(smsg);
+      in_msgs.push({smsg, target_index});
       in_msgs_cv.notify_all();
     }
   }
@@ -212,17 +360,28 @@ struct PyNodesManager : public Aseba::NodesManager {
     return ns;
   }
 
-  void connectionClosed(const Dashel::Stream *) {
-    WriteLock rlock;
-    for (auto &[k, v] : nodes) {
-      v.connected = false;
-      nodeDisconnected(k);
+  void connectionClosed(unsigned index, const std::string &name) {
+    for (const auto &cb : target_disconnection_callbacks) {
+      py::gil_scoped_acquire acquire;
+      cb(index, name);
     }
-    nodes.clear();
-    stream = nullptr;
+    AWaitedTarget::check(index, name, awaited_target_disconnections);
+    // TODO: Should only remove nodes associated to that stream.
+    // WriteLock rlock;
+    // for (auto &[k, v] : nodes) {
+    //   v.connected = false;
+    //   nodeDisconnected(k);
+    // }
+    // nodes.clear();
   }
 
-  void connectionCreated(const Dashel::Stream *) {}
+  void connectionCreated(unsigned index, const std::string &name) {
+    for (const auto &cb : target_connection_callbacks) {
+      py::gil_scoped_acquire acquire;
+      cb(index, name);
+    }
+    AWaitedTarget::check(index, name, awaited_target_connections);
+  }
 
   std::map<unsigned, Aseba::TargetDescription> get_nodes_() const {
     ReadLock lock;
@@ -237,12 +396,31 @@ struct PyNodesManager : public Aseba::NodesManager {
     message_callbacks.push_back(cb);
   }
 
-  void add_connection_callback(const NodeCallback &cb) {
-    connection_callbacks.push_back(cb);
+  void remove_message_callback(int index) {
+    if (index < 0) {
+      index = std::max(0, static_cast<int>(message_callbacks.size()) + index);
+    }
+    if (index < message_callbacks.size()) {
+      message_callbacks.erase(std::begin(message_callbacks) + index);
+    }
   }
 
-  void add_disconnection_callback(const NodeCallback &cb) {
-    disconnection_callbacks.push_back(cb);
+  void clear_message_callbacks() { message_callbacks.clear(); }
+
+  void add_node_connection_callback(const NodeCallback &cb) {
+    node_connection_callbacks.push_back(cb);
+  }
+
+  void add_node_disconnection_callback(const NodeCallback &cb) {
+    node_disconnection_callbacks.push_back(cb);
+  }
+
+  void add_target_connection_callback(const TargetCallback &cb) {
+    target_connection_callbacks.push_back(cb);
+  }
+
+  void add_target_disconnection_callback(const TargetCallback &cb) {
+    target_disconnection_callbacks.push_back(cb);
   }
 
   std::shared_ptr<Event>
@@ -252,85 +430,49 @@ struct PyNodesManager : public Aseba::NodesManager {
 
   void add_event_callback(const EventCallback &cb) {
     if (cb) {
-      MessageCallback mcb = [cb,
-                             this](const std::shared_ptr<Aseba::Message> &msg) {
-        auto e = make_event_from_msg(msg);
-        if (e) {
-          cb(e);
-        }
-      };
+      MessageCallback mcb =
+          [cb, this](const std::shared_ptr<Aseba::Message> &msg, unsigned) {
+            auto e = make_event_from_msg(msg);
+            if (e) {
+              cb(e);
+            }
+          };
       message_callbacks.push_back(mcb);
     }
   }
 
-  void process_message(const std::shared_ptr<Aseba::Message> &msg) {
+  void process_message(const std::shared_ptr<Aseba::Message> &msg,
+                       unsigned target_index) {
     {
       WriteLock lock;
+      std::optional<uint16_t> msg_type = std::nullopt;
+      if (msg->type == ASEBA_MESSAGE_NODE_PRESENT && !query &&
+          nodes.count(msg->source) == 0) {
+        // HACK to skip sending a GetNodeDescription.
+        msg_type = msg->type;
+        msg->type = 0;
+      }
       Aseba::NodesManager::processMessage(msg.get());
+      if (msg_type) {
+        msg->type = *msg_type;
+      }
     }
     for (const auto &cb : message_callbacks) {
-      // std::cout << "processMessage: acquire GIL\n";
       py::gil_scoped_acquire acquire;
-      cb(msg);
-      // std::cout << "processMessage: acquired GIL\n";
+      cb(msg, target_index);
     }
-    // if (const auto e_msg = dynamic_cast<const Aseba::UserMessage *>(msg)) {
-    //   for (const auto &cb : event_callbacks) {
-    //     py::gil_scoped_acquire acquire;
-    //     cb(e_msg->source, e_msg->type, e_msg->data);
-    //   }
-    // }
-    check_awaited_messages(msg->source, msg->type, msg);
-    check_awaited_messages(-1, msg->type, msg);
-    check_awaited_messages(msg->source, -1, msg);
-    check_awaited_messages(-1, -1, msg);
-
+    AWaitedMessage::check(msg, target_index, awaited_messages);
+    if (const auto v_msg =
+            dynamic_cast<const Aseba::NodePresent *>(msg.get())) {
+      AWaitedNodes::check(v_msg->source, scans);
+    }
     if (const auto v_msg = dynamic_cast<const Aseba::Variables *>(msg.get())) {
-      check_awaited_variables(v_msg);
-    }
-  }
-
-  void check_awaited_variables(const Aseba::Variables *msg) {
-    if (awaited_variables.count(msg->source)) {
-      auto &vs = awaited_variables.at(msg->source);
-      for (auto &av : vs) {
-        av.update(msg->start, msg->variables);
-        if (av.complete) {
-          auto m = av.get();
-          if (av.cb) {
-            py::gil_scoped_acquire acquire;
-            av.cb(m);
-          }
-          if (av.value) {
-            av.value->set_value(m);
-          }
-        }
-      }
-      vs.erase(std::remove_if(vs.begin(), vs.end(),
-                              [](const auto &o) { return o.complete; }),
-               vs.end());
-    }
-  }
-
-  void check_awaited_messages(int source, int type,
-                              const std::shared_ptr<Aseba::Message> &msg) {
-    const std::tuple<int, int> key = std::make_tuple(source, type);
-    if (awaited_messages.count(key)) {
-      for (auto &wm : awaited_messages.at(key)) {
-        if (wm.cb) {
-          py::gil_scoped_acquire acquire;
-          wm.cb(msg);
-        }
-        if (wm.value) {
-          wm.value->set_value(msg);
-        }
-      }
-      awaited_messages.erase(key);
+      AWaitedVariables::check(v_msg, awaited_variables);
     }
   }
 
   bool connect_and_start(const std::string &target, unsigned wait_ms,
-                         int max_retries) {
+                         int max_retries, bool ping = true) {
     bool failed = false;
     bool connected = false;
     max_retries = std::max(max_retries, 0);
@@ -348,7 +490,7 @@ struct PyNodesManager : public Aseba::NodesManager {
         // HACK: else coppelia-sim aseba not connected if started after python
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       }
-      start();
+      start(ping);
     }
     return connected;
   }
@@ -360,25 +502,36 @@ struct PyNodesManager : public Aseba::NodesManager {
     }
   }
 
-  void start() {
+  void ping() {
+    Aseba::ListNodes listNodes;
+    sendMessage(listNodes);
+  }
+
+  void start(bool ping = true) {
     if (stopped) {
       stopped = false;
-      ping_thread =
-          std::make_unique<std::thread>(&PyNodesManager::run_ping, this, 1000);
+      if (ping) {
+        ping_thread = std::make_unique<std::thread>(&PyNodesManager::run_ping,
+                                                    this, 1000);
+      }
       process_msgs_thread = std::make_unique<std::thread>(
           &PyNodesManager::run_process_msgs, this);
       hub.start();
     }
   }
 
+  std::map<unsigned, std::string> get_connected_targets() const {
+    return hub.get_targets();
+  }
+
   bool connect(const std::string &target) {
-    if (stream) {
-      std::cerr << "Already connected to " << stream->getTargetName()
-                << std::endl;
-      return false;
-    }
+    // if (stream) {
+    //   std::cerr << "Already connected to " << stream->getTargetName()
+    //             << std::endl;
+    //   return false;
+    // }
     try {
-      stream = hub.connect(target);
+      hub.connect(target);
       return true;
     } catch (const Dashel::DashelException &e) {
       std::cerr << e.what() << std::endl;
@@ -386,11 +539,11 @@ struct PyNodesManager : public Aseba::NodesManager {
     }
   }
 
-  bool is_connected() const { return stream != nullptr; }
+  bool is_connected() const { return hub.is_connected(); }
 
   void clear_in_msgs() {
     std::unique_lock<std::mutex> lck(in_msgs_mutex);
-    std::queue<std::shared_ptr<Aseba::Message>> q;
+    std::queue<QueuedMessage> q;
     in_msgs.swap(q);
     in_msgs_cv.notify_all();
   }
@@ -410,10 +563,11 @@ struct PyNodesManager : public Aseba::NodesManager {
   }
 
   void close() {
-    if (stream) {
-      hub.closeStream(stream);
-    }
-    stream = nullptr;
+    // if (stream) {
+    //   hub.closeStream(stream);
+    // }
+    hub.close();
+    // stream = nullptr;
   }
 
   void stop_and_close() {
@@ -435,7 +589,12 @@ struct PyNodesManager : public Aseba::NodesManager {
   }
 
   void sendMessage(const Aseba::Message &message) override {
-    hub.sendMessage(&message);
+    send_message(message);
+  }
+
+  void send_message(const Aseba::Message &message, int target = -1,
+                    const std::set<unsigned> &exclude_target_indices = {}) {
+    hub.sendMessage(&message, target, exclude_target_indices);
   }
 
   void sendUserMessage(unsigned type, const Aseba::VariablesDataVector &data) {
@@ -455,14 +614,7 @@ struct PyNodesManager : public Aseba::NodesManager {
     const auto &m = getVariablesMap(nodeId);
     if (!m.count(name))
       return;
-    auto [index, size] = m.at(name);
-    // bool ok;
-    // const auto index = getVariablePos(nodeId, name, &ok);
-    // if (!ok)
-    //   return;
-    // const auto size = getVariableSize(nodeId, name, &ok);
-    // if (!ok || size != value.size())
-    //   return;
+    const auto [index, size] = m.at(name);
     set_variable_at_index(nodeId, index, value);
   }
 
@@ -474,15 +626,15 @@ struct PyNodesManager : public Aseba::NodesManager {
     hub.sendMessage(&message);
     AWaitedMessage::Callback mcb = nullptr;
     if (cb) {
-      mcb = [cb](const std::shared_ptr<Aseba::Message> &msg) {
+      mcb = [cb](const std::shared_ptr<Aseba::Message> &msg, unsigned target) {
         if (const auto v_msg =
                 std::dynamic_pointer_cast<Aseba::Variables>(msg)) {
           cb(v_msg->variables);
         }
       };
     }
-    auto msg = get_message(nodeId, static_cast<int>(ASEBA_MESSAGE_VARIABLES),
-                           wait_ms, mcb);
+    const auto [msg, _] = get_message(
+        nodeId, static_cast<int>(ASEBA_MESSAGE_VARIABLES), wait_ms, mcb);
     if (const auto v_msg = std::dynamic_pointer_cast<Aseba::Variables>(msg)) {
       return v_msg->variables;
     }
@@ -513,10 +665,30 @@ struct PyNodesManager : public Aseba::NodesManager {
     return variable_size_map.at(nodeId);
   }
 
+  std::set<unsigned> scan(int number = -1, unsigned wait_ms = 1000,
+                          const AWaitedNodes::Callback &cb = nullptr) {
+    if (!wait_ms && !cb) {
+      return {};
+    }
+    auto &awaited = scans.emplace_back(
+        std::set<unsigned>(), std::set<unsigned>(), number, wait_ms, cb);
+    ping();
+    if (!wait_ms) {
+      return {};
+    }
+    auto future = awaited.value->get_future();
+    py::gil_scoped_release release;
+    const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
+    if (s == std::future_status::ready) {
+      return future.get();
+    }   
+    awaited.complete = true;
+    return awaited.nodes;
+  }
+
   std::optional<VariablesMap>
   get_variables(int nodeId, unsigned wait_ms,
                 const AWaitedVariables::Callback &cb = nullptr) {
-    // py::gil_scoped_release release;
     if (!variable_size_map.count(nodeId)) {
       return std::nullopt;
     }
@@ -525,19 +697,18 @@ struct PyNodesManager : public Aseba::NodesManager {
     }
     const auto &m = getVariablesMap(nodeId);
     const unsigned size = variable_size_map.at(nodeId);
-    auto &awaited = awaited_variables[nodeId].emplace_back(wait_ms, m, cb);
+    auto &awaited = awaited_variables.emplace_back(nodeId, m, wait_ms, cb);
     get_variable_at_index(nodeId, 0, size, 0, nullptr);
     if (!wait_ms) {
       return std::nullopt;
     }
     auto future = awaited.value->get_future();
-    std::optional<VariablesMap> r = std::nullopt;
     py::gil_scoped_release release;
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
-      r = future.get();
+      return future.get();
     }
-    return r;
+    return std::nullopt;
   }
 
   void load_script(unsigned nodeId, const std::string &code,
@@ -660,49 +831,20 @@ struct PyNodesManager : public Aseba::NodesManager {
     variable_size_map[nodeId] = compute_variables_size(variable_maps[nodeId]);
   }
 
-  void
-  check_awaited_node(unsigned targetId, unsigned nodeId,
-                     std::map<int, std::vector<AWaitedNode>> &awaited_nodes) {
-    if (awaited_nodes.count(targetId)) {
-      for (auto &awaited_node : awaited_nodes.at(targetId)) {
-        if (awaited_node.cb) {
-          py::gil_scoped_acquire acquire;
-          awaited_node.cb(nodeId);
-        }
-        if (awaited_node.value) {
-          awaited_node.value->set_value(nodeId);
-        }
-      }
-      awaited_nodes.erase(targetId);
-    }
-  }
-
   void nodeConnected(unsigned nodeId) override {
-    for (const auto &cb : connection_callbacks) {
+    for (const auto &cb : node_connection_callbacks) {
       py::gil_scoped_acquire acquire;
       cb(nodeId);
     }
-    check_awaited_node(nodeId, nodeId, awaited_node_connections);
-    check_awaited_node(-1, nodeId, awaited_node_connections);
+    AWaitedNodes::check(nodeId, awaited_nodes);
   }
 
   void nodeDisconnected(unsigned nodeId) override {
-    for (const auto &cb : disconnection_callbacks) {
+    for (const auto &cb : node_disconnection_callbacks) {
       py::gil_scoped_acquire acquire;
       cb(nodeId);
     }
-    for (auto &awaited : awaited_disconnections) {
-      if (awaited.cb) {
-        py::gil_scoped_acquire acquire;
-        awaited.cb(true);
-      }
-      if (awaited.value) {
-        awaited.value->set_value(true);
-      }
-    }
-    awaited_disconnections.clear();
-    check_awaited_node(nodeId, nodeId, awaited_node_disconnections);
-    check_awaited_node(-1, nodeId, awaited_node_disconnections);
+    AWaitedNode::check(nodeId, awaited_node_disconnections);
     variable_maps.erase(nodeId);
     event_maps.erase(nodeId);
   }
@@ -716,74 +858,120 @@ struct PyNodesManager : public Aseba::NodesManager {
     const int type = event_maps[nodeId].at(name);
     AWaitedMessage::Callback mcb = nullptr;
     if (cb) {
-      mcb = [cb, this](const std::shared_ptr<Aseba::Message> &msg) {
+      mcb = [cb, this](const std::shared_ptr<Aseba::Message> &msg,
+                       unsigned target) {
         auto e = Event::from_msg(msg, event_maps);
         if (e) {
           cb(e);
         }
       };
     }
-    const auto msg = get_message(nodeId, type, wait_ms, mcb);
+    const auto [msg, _] = get_message(nodeId, type, wait_ms, mcb);
     return Event::from_msg(msg, event_maps);
   }
 
-  std::shared_ptr<Aseba::Message>
+  AWaitedMessage::Value
   get_message(int nodeId = -1, int type = -1, int wait_ms = 0,
               const AWaitedMessage::Callback &cb = nullptr) {
     if (!wait_ms && !cb) {
-      return nullptr;
+      return {nullptr, 0};
     }
-    if (nodeId < 0) {
-      nodeId = -1;
-    }
-    if (type < 0) {
-      type = -1;
-    }
-    const auto key = std::make_tuple(nodeId, type);
-    const auto &[it, _] = awaited_messages.try_emplace(key);
-    auto &ls = it->second;
-    auto &awaited_msg = it->second.emplace_back(wait_ms, cb);
+    auto &awaited_msg =
+        awaited_messages.emplace_back(nodeId, type, wait_ms, cb);
     if (!wait_ms) {
-      return nullptr;
+      return {nullptr, 0};
     }
     auto future = awaited_msg.value->get_future();
-    std::shared_ptr<Aseba::Message> r = nullptr;
     py::gil_scoped_release release;
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
-      r = future.get();
+      return future.get();
     }
-    return r;
+    return {nullptr, 0};
+  }
+
+  std::set<unsigned> wait_nodes(const std::set<unsigned> &candidates,
+                                int number, unsigned wait_ms,
+                                const AWaitedNodes::Callback &cb = nullptr) {
+    std::set<unsigned> c_nodes;
+    if (number < 0 && candidates.size()) {
+      number = static_cast<int>(candidates.size());
+    }
+    {
+      ReadLock lock;
+      for (auto &[k, n] : nodes) {
+        if (n.isComplete() && n.connected &&
+            (candidates.size() == 0 || candidates.count(k))) {
+          c_nodes.insert(k);
+          number--;
+          if (number == 0) {
+            break;
+          }
+        }
+      }
+    }
+    if (cb && (c_nodes.size() || number == 0)) {
+      cb(c_nodes, number == 0);
+    }
+    if (number == 0) {
+      return c_nodes;
+    }
+    if (!wait_ms && !cb) {
+      return c_nodes;
+    }
+    auto &awaited =
+        awaited_nodes.emplace_back(c_nodes, candidates, number, wait_ms, cb);
+    if (!wait_ms) {
+      return c_nodes;
+    }
+    auto future = awaited.value->get_future();
+    py::gil_scoped_release release;
+    const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
+    if (s == std::future_status::ready) {
+      return future.get();
+    } 
+    awaited.complete = true;
+    return awaited.nodes;
   }
 
   std::optional<unsigned>
   wait_node_connection(int nodeId = -1, unsigned wait_ms = 1000,
                        const AWaitedNode::Callback &cb = nullptr) {
-    std::optional<unsigned> r = std::nullopt;
-    {
-      ReadLock lock;
-      for (auto &[k, n] : nodes) {
-        if (n.isComplete() && n.connected && (nodeId < 0 || nodeId == k)) {
-          if (cb) {
-            cb(k);
-          }
-          return k;
+
+    std::set<unsigned> c_nodes;
+    if (nodeId > 0) {
+      c_nodes.insert(static_cast<unsigned>(nodeId));
+    }
+    AWaitedNodes::Callback ncb = nullptr;
+    if (cb) {
+      ncb = [cb](const std::set<unsigned> &value, bool complete) {
+        if (value.size() && complete) {
+          cb(*(value.begin()));
         }
-      }
+      };
     }
+    const auto rs = wait_nodes(c_nodes, 1, wait_ms, ncb);
+    if (rs.size()) {
+      return *(rs.begin());
+    }
+    return std::nullopt;
+  }
+
+  std::tuple<int, std::string>
+  wait_target_connection(int index = -1, unsigned wait_ms = 1000,
+                         const AWaitedTarget::Callback &cb = nullptr) {
+    if (hub.is_connected_to(index)) {
+      return {index, hub.get_target_name(index)};
+    }
+    std::tuple<int, std::string> r{-1, ""};
     if (!wait_ms && !cb) {
-      return std::nullopt;
+      return r;
     }
-    if (nodeId < 0) {
-      nodeId = -1;
-    }
-    const auto &[it, _] = awaited_node_connections.try_emplace(nodeId);
-    auto &ls = it->second;
-    auto &awaited_node = it->second.emplace_back(wait_ms, cb);
+    auto &awaited = awaited_target_connections.emplace_back(index, wait_ms, cb);
     if (!wait_ms) {
       return r;
     }
-    auto future = awaited_node.value->get_future();
+    auto future = awaited.value->get_future();
     py::gil_scoped_release release;
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
@@ -792,16 +980,18 @@ struct PyNodesManager : public Aseba::NodesManager {
     return r;
   }
 
-  std::optional<bool>
-  wait_disconnection(unsigned wait_ms = 1000,
-                     const AWaitedDisconnection::Callback &cb = nullptr) {
-    std::optional<bool> r = std::nullopt;
-    if (!stream)
-      return true;
+  std::tuple<int, std::string>
+  wait_target_disconnection(int index = -1, unsigned wait_ms = 1000,
+                            const AWaitedTarget::Callback &cb = nullptr) {
+    std::tuple<int, std::string> r{-1, ""};
+    if (!hub.is_connected_to(index)) {
+      return r;
+    }
     if (!wait_ms && !cb) {
       return r;
     }
-    auto &awaited = awaited_disconnections.emplace_back(wait_ms, cb);
+    auto &awaited =
+        awaited_target_disconnections.emplace_back(index, wait_ms, cb);
     if (!wait_ms) {
       return r;
     }
@@ -817,7 +1007,6 @@ struct PyNodesManager : public Aseba::NodesManager {
   std::optional<unsigned>
   wait_node_disconnection(int nodeId = -1, unsigned wait_ms = 1000,
                           const AWaitedNode::Callback &cb = nullptr) {
-    std::optional<unsigned> r = std::nullopt;
     {
       ReadLock lock;
       for (auto &[k, n] : nodes) {
@@ -832,22 +1021,18 @@ struct PyNodesManager : public Aseba::NodesManager {
     if (!wait_ms && !cb) {
       return std::nullopt;
     }
-    if (nodeId < 0) {
-      nodeId = -1;
-    }
-    const auto &[it, _] = awaited_node_disconnections.try_emplace(nodeId);
-    auto &ls = it->second;
-    auto &awaited_node = it->second.emplace_back(wait_ms, cb);
+    auto &awaited_node =
+        awaited_node_disconnections.emplace_back(nodeId, wait_ms, cb);
     if (!wait_ms) {
-      return r;
+      return std::nullopt;
     }
     auto future = awaited_node.value->get_future();
     py::gil_scoped_release release;
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
-      r = future.get();
+      return future.get();
     }
-    return r;
+    return std::nullopt;
   }
 };
 

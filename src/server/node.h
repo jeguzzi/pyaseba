@@ -88,7 +88,7 @@ public:
 
   virtual ~Node() = default;
 
-  virtual void init() { std::cout << "Node::init" << std::endl; };
+  virtual void init() { };
 
   virtual void tick(float) {}
 
@@ -228,7 +228,6 @@ public:
   };
 
   virtual void reset() {
-    std::cout << "Node::reset" << std::endl;
     memset(vm.variables, 0, vm.variablesSize * sizeof(int16_t));
     variables[ID] = static_cast<int16_t>(vm.nodeId);
   }

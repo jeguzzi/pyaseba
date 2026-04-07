@@ -60,10 +60,10 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(DISABLE_WARNINGS "-w")
-  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wconversion)
+  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wconversion -Wnounused-parameter)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(DISABLE_WARNINGS "-Wno-everything")
-  set(WARNINGS -Wall -Wextra -Wno-gnu-flexible-array-initializer -Wno-c99-extensions -Wconversion)
+  set(WARNINGS -Wall -Wextra -Wno-gnu-flexible-array-initializer -Wno-c99-extensions -Wno-unused-parameter -Wno-sign-compare) # -Wconversion 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(WARNINGS "/W3")
   set(DISABLE_WARNINGS "/w")

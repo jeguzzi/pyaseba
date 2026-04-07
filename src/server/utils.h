@@ -17,7 +17,7 @@
 #define DEVICE_INFO_NAME 2
 #endif
 
-#if 0
+#if 1
 #define log_debug(...)                                                         \
   {                                                                            \
     printf(__VA_ARGS__);                                                       \

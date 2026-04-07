@@ -25,8 +25,7 @@ class Network : public Dashel::Hub {
 
 public:
   // vm -> stream
-  inline static std::map<const AsebaVMState *,
-                         std::pair<Network *, Node *>>
+  inline static std::map<const AsebaVMState *, std::pair<Network *, Node *>>
       endpoints = {};
 
   static Network *client_for_vm(const AsebaVMState *vm) {
@@ -44,11 +43,12 @@ public:
   }
 
 private:
-  inline static std::string address = "0.0.0.0";
   inline static bool advertise_enabled = true;
 
 public:
-  static void set_address(const std::string &a) { address = a; }
+  // void set_address(const std::string &a) { address = a; }
+  const std::string &get_address() const { return address; }
+  int get_port() const { return port; }
 
   static void configure_advertisement(bool enabled, bool external) {
     advertise_enabled = enabled;
@@ -57,6 +57,7 @@ public:
 private:
   // stream for listening to incoming connections
   Dashel::Stream *listenStream;
+  std::string address;
   int timeout;
   int port;
   std::set<Dashel::Stream *> toDisconnect;
@@ -70,8 +71,10 @@ public:
   Aseba::DashelhubZeroconf zeroconf;
 #endif
   // all streams that must be disconnected at next step
-  explicit Network(const int port = ASEBA_DEFAULT_PORT, int timeout = 0)
-      : Dashel::Hub(true), timeout(timeout), port(port), stream(NULL) //, next_id(0)
+  explicit Network(const std::string &address = "0.0.0.0",
+                   const int port = ASEBA_DEFAULT_PORT, int timeout = 0)
+      : Dashel::Hub(true), address(address), timeout(timeout), port(port),
+        stream(NULL) //, next_id(0)
 #ifdef ZEROCONF
         ,
         zeroconf(*this)

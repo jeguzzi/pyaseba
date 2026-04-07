@@ -1,5 +1,4 @@
 import collections.abc
-import typing
 
 class ArrayAccessOutOfBounds(Message):
     index: int
@@ -10,16 +9,16 @@ class ArrayAccessOutOfBounds(Message):
 
 class BreakpointClear(CmdMessage):
     pc: int
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ..., pc: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ..., pc: int = ...) -> None: ...
 
 
 class BreakpointClearAll(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class BreakpointSet(CmdMessage):
     pc: int
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ..., pc: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ..., pc: int = ...) -> None: ...
 
 
 class BreakpointSetResult(Message):
@@ -64,18 +63,18 @@ class GetDescription(Message):
 
 
 class GetExecutionState(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class GetNodeDescription(CmdMessage):
     version: int
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class GetVariables(CmdMessage):
     length: int
     start: int
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ..., start: typing.SupportsInt | typing.SupportsIndex = ..., length: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ..., start: int = ..., length: int = ...) -> None: ...
 
 
 class ListNodes(Message):
@@ -112,48 +111,48 @@ class NodeSpecificError(Message):
 
 
 class Pause(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class Reboot(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class Reset(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class Run(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class SetBytecode(CmdMessage):
     bytecode: list[int]
     start: int
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ..., start: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ..., start: int = ...) -> None: ...
 
 
 class SetVariables(CmdMessage):
     start: int
     variables: list[int]
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ..., start: typing.SupportsInt | typing.SupportsIndex = ..., variables: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex] = ...) -> None: ...
+    def __init__(self, dest: int = ..., start: int = ..., variables: collections.abc.Sequence[int] = ...) -> None: ...
 
 
 class Sleep(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class Step(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class Stop(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
 
 class UserMessage(Message):
     data: list[int]
-    def __init__(self, type: typing.SupportsInt | typing.SupportsIndex, data: collections.abc.Sequence[typing.SupportsInt | typing.SupportsIndex] = ...) -> None: ...
+    def __init__(self, type: int, data: collections.abc.Sequence[int] = ...) -> None: ...
 
 
 class Variables(Message):
@@ -163,5 +162,5 @@ class Variables(Message):
 
 
 class WriteBytecode(CmdMessage):
-    def __init__(self, dest: typing.SupportsInt | typing.SupportsIndex = ...) -> None: ...
+    def __init__(self, dest: int = ...) -> None: ...
 
