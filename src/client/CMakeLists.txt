@@ -1,6 +1,6 @@
 pybind11_add_module(_client_impl python.cpp)
 target_link_libraries(_client_impl PRIVATE dashel asebacommon asebacompiler
-                                           asebadashelplugins)
+                                           asebadashelplugins ${EXTRA_LIBS})
 target_include_directories(_client_impl PRIVATE ${aseba_SOURCE_DIR}
                                                 ${dashel_SOURCE_DIR})
 target_compile_definitions(_client_impl
@@ -12,7 +12,7 @@ if(ipo_supported)
   set_property(TARGET _client_impl PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-message("WARNINGS ${WARNINGS}")
+# message("WARNINGS ${WARNINGS}")
 
 target_compile_options(dashel PRIVATE ${DISABLE_WARNINGS})
 target_compile_options(asebacommon PRIVATE ${DISABLE_WARNINGS})

@@ -41,6 +41,15 @@ if(NOT aseba_FOUND)
   FetchContent_MakeAvailable(aseba)
 endif()
 
+if(TARGET zeroconf)
+  message("With Zeroconf support")
+  add_compile_definitions(ZEROCONF=1)
+  set(EXTRA_LIBS asebazeroconf)
+else()
+  message("Without Zeroconf support")
+endif()
+
+
 set(Python3_FIND_STRATEGY LOCATION)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(pybind11 3 QUIET)

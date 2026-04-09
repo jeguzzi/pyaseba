@@ -14,6 +14,7 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
   using Node::Node;
 
   void init() override {
+    Node::init();
     init_variables();
     init_events();
     init_functions();
@@ -21,17 +22,21 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
   }
 
   void init_events() {
-    const auto events =
-        py::cast(this).attr("events").cast<std::vector<std::string>>();
+    auto obj = py::cast(this);
+    if (!py::hasattr(obj, "events"))
+      return;
+    const auto events = obj.attr("events").cast<std::vector<std::string>>();
     for (const auto &name : events) {
       add_event(name, "");
     }
   }
 
   void init_variables() {
+    auto obj = py::cast(this);
+    if (!py::hasattr(obj, "variables"))
+      return;
     const auto variables =
-        py::cast(this)
-            .attr("variables")
+        obj.attr("variables")
             .cast<std::vector<std::tuple<std::string, unsigned>>>();
     for (const auto &[name, size] : variables) {
       add_variable(name, size);
@@ -39,14 +44,16 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
   }
 
   void init_functions() {
+    auto obj = py::cast(this);
+    if (!py::hasattr(obj, "functions"))
+      return;
     auto signature = py::module_::import("inspect").attr("signature");
     const auto functions =
-        py::cast(this).attr("functions").cast<std::vector<FunctionSpec>>();
+        obj.attr("functions").cast<std::vector<FunctionSpec>>();
     for (const auto &[name, args] : functions) {
-      const auto p = py::cast(this);
       const auto n = py::cast(name);
-      if (py::hasattr(p, n)) {
-        const auto &fun = py::cast(this).attr(n);
+      if (py::hasattr(obj, n)) {
+        const auto &fun = obj.attr(n);
         const auto inputs = py::len(signature(fun).attr("parameters"));
         add_function(name, "", args, inputs);
       }
@@ -101,15 +108,19 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
     Node::reset();
     PYBIND11_OVERRIDE(void, Node, reset);
   }
+
+  std::string advertized_name() const override {
+    PYBIND11_OVERRIDE(std::string, Node, advertized_name);
+  }
 };
 
 PYBIND11_MODULE(_server_impl, m) {
 
   py::classh<Network>(m, "Server", R"doc(
 )doc")
-      .def(py::init<const std::string &, int, int>(),
+      .def(py::init<const std::string &, int, int, const std::string &>(),
            py::arg("address") = "0.0.0.0", py::arg("port") = ASEBA_DEFAULT_PORT,
-           py::arg("timeout") = 0)
+           py::arg("timeout") = 0, py::arg("advertise_as") = "")
       .def_property("port", &Network::get_port, nullptr)
       .def_property("address", &Network::get_address, nullptr)
       .def("spin", &Network::spin, py::arg("time_step"))
@@ -120,6 +131,11 @@ PYBIND11_MODULE(_server_impl, m) {
       .def(py::init_alias<unsigned, const std::string &>(), py::arg("node_id"),
            py::arg("name"))
       .def("emit", &Node::emit_name, py::arg("name"))
+      .def_readonly("name", &Node::name)
+      .def("get_variables", &Node::get_variables)
+      .def_property("description", [](Node &node){
+        return node.description.get_target_description();
+      }, nullptr)
       .def("set", &Node::set_variable, py::arg("name"), py::arg("value"))
       .def("get", &Node::get_variable, py::arg("name"));
 }

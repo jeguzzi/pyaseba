@@ -93,10 +93,24 @@ template <> struct type_caster<Aseba::NamedValue> {
 } // namespace pybind11
 
 void DashelHub::incomingData(Dashel::Stream *stream) {
+#ifdef ZEROCONF
+  if (zeroconf.isStreamHandled(stream)) {
+    // log_debug("Incoming data for zeroconf");
+    try {
+      zeroconf.dashelIncomingData(stream);
+    } catch (const std::exception &e) {
+      // log_error("incomingData zeroconf: %s", e.what());
+    }
+    return;
+  }
+#endif // ZEROCONF
   Aseba::Message *message = nullptr;
+  // std::cout << "incomingData from " << stream->getTargetName() << std::endl;
   try {
     message = Aseba::Message::receive(stream);
   } catch (Dashel::DashelException e) {
+    return;
+  } catch (std::runtime_error e) {
     return;
   }
   if (message) {
@@ -109,6 +123,9 @@ void DashelHub::incomingData(Dashel::Stream *stream) {
 }
 
 void DashelHub::connectionClosed(Dashel::Stream *stream, bool abnormal) {
+#ifdef ZEROCONF
+  zeroconf.dashelConnectionClosed(stream);
+#endif // ZEROCONF
   if (stream_indices.count(stream)) {
     const auto i = stream_indices.at(stream);
     nm->connectionClosed(i, stream->getTargetName());
@@ -575,6 +592,7 @@ PYBIND11_MODULE(_client_impl, m) {
       // py::return_value_policy::reference)
       .def("clear_incoming_messages", &PyNodesManager::clear_in_msgs)
       .def_readwrite("query", &PyNodesManager::query)
+      .def("_query", &PyNodesManager::query_description, py::arg("node"), py::arg("wait_ms") = 1000, py::arg("callback") = nullptr, py::return_value_policy::copy)
       .def_property("nodes", &PyNodesManager::get_nodes, nullptr)
       .def_property("_nodes", &PyNodesManager::get_nodes_, nullptr)
       .def("connect", &PyNodesManager::connect_and_start, py::arg("target"),
@@ -665,6 +683,8 @@ PYBIND11_MODULE(_client_impl, m) {
            py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
       .def("get_variables_size", &PyNodesManager::get_variables_size,
            py::arg("node"))
+      .def("advertise", &PyNodesManager::advertise)
+      .def("deadvertise", &PyNodesManager::deadvertise)
       .def("load_script", &PyNodesManager::load_script, py::arg("node"),
            py::arg("script"),
            py::arg("events") = std::vector<Aseba::NamedValue>{},

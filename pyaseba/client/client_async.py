@@ -3,7 +3,7 @@ from collections.abc import Callable
 from functools import partial
 from typing import Protocol, Unpack, cast
 
-from ._client_impl import Client, Event
+from ._client_impl import Client, Event, Description
 from .msgs import Message
 
 
@@ -52,7 +52,7 @@ async def call_async_partial[T](f: WaitCallablePartial[T], wait_ms: int) -> T | 
 
     def cb(arg: T, complete: bool) -> None:
         nonlocal p
-        if not future.cancelled():
+        if complete and not future.cancelled():
             loop.call_soon_threadsafe(future.set_result, arg)
         p = arg
 
@@ -83,6 +83,10 @@ class ClientAsync(Client):
         # return nodes
         r = await call_async_partial(partial(super().scan, number=number), wait_ms=wait_ms)
         return r or set()
+
+    async def _query(self, #type: ignore[override]
+                          node: int) -> Description:
+        return await call_async(partial(super()._query, node=node))
 
     async def get_message(self, #type: ignore[override]
                           node: int = -1,

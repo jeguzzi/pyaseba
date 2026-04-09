@@ -273,6 +273,8 @@ struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
 
 struct PyNodesManager : public Aseba::NodesManager {
 
+  using TargetDescriptionCallback =
+      std::function<void(const Aseba::TargetDescription *)>;
   using VariablesCallback =
       std::function<void(const Aseba::VariablesDataVector &)>;
   using MessageCallback =
@@ -452,6 +454,11 @@ struct PyNodesManager : public Aseba::NodesManager {
         msg_type = msg->type;
         msg->type = 0;
       }
+      // HACK
+      auto *description = dynamic_cast<Aseba::Description *>(msg.get());
+      if (description) {
+        description->protocolVersion = ASEBA_PROTOCOL_VERSION;
+      }
       Aseba::NodesManager::processMessage(msg.get());
       if (msg_type) {
         msg->type = *msg_type;
@@ -595,17 +602,20 @@ struct PyNodesManager : public Aseba::NodesManager {
   void send_message(const Aseba::Message &message, int target = -1,
                     const std::set<unsigned> &exclude_target_indices = {}) {
     hub.sendMessage(&message, target, exclude_target_indices);
+    // hub.sendMessage(message, target, exclude_target_indices);
   }
 
   void sendUserMessage(unsigned type, const Aseba::VariablesDataVector &data) {
     Aseba::UserMessage message(type, data);
     hub.sendMessage(&message);
+    // hub.sendMessage(message);
   }
 
   void set_variable_at_index(unsigned nodeId, unsigned index,
                              const Aseba::VariablesDataVector &value) {
     Aseba::SetVariables message(nodeId, index, value);
     hub.sendMessage(&message);
+    // hub.sendMessage(message);
   }
 
   void set_variable(unsigned nodeId, const std::wstring &name,
@@ -681,7 +691,7 @@ struct PyNodesManager : public Aseba::NodesManager {
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
       return future.get();
-    }   
+    }
     awaited.complete = true;
     return awaited.nodes;
   }
@@ -709,6 +719,30 @@ struct PyNodesManager : public Aseba::NodesManager {
       return future.get();
     }
     return std::nullopt;
+  }
+
+  const Aseba::TargetDescription *
+  query_description(unsigned nodeId, unsigned wait_ms = 0,
+                    const TargetDescriptionCallback &cb = nullptr) {
+    const auto d = getDescription(nodeId);
+    if (d)
+      return d;
+    Aseba::GetNodeDescription message(nodeId);
+    hub.sendMessage(&message);
+    AWaitedNode::Callback ncb;
+    if (cb) {
+      ncb = [cb, this](unsigned node) {
+        const auto desc = getDescription(node);
+        if (desc) {
+          cb(desc);
+        }
+      };
+    }
+    auto node = wait_node_connection(nodeId, wait_ms, ncb);
+    if (node) {
+      return getDescription(*node);
+    }
+    return nullptr;
   }
 
   void load_script(unsigned nodeId, const std::string &code,
@@ -929,7 +963,7 @@ struct PyNodesManager : public Aseba::NodesManager {
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
       return future.get();
-    } 
+    }
     awaited.complete = true;
     return awaited.nodes;
   }
@@ -1033,6 +1067,18 @@ struct PyNodesManager : public Aseba::NodesManager {
       return future.get();
     }
     return std::nullopt;
+  }
+
+  void advertise() {
+#ifdef ZEROCONF
+    hub.advertise("Test 33333", get_nodes_());
+#endif
+  }
+
+  void deadvertise() {
+#ifdef ZEROCONF
+    hub.deadvertise("Test 33333");
+#endif
   }
 };
 

@@ -18,26 +18,33 @@
 
 struct Description {
 
+  using Variables = std::vector<std::tuple<uint16_t, std::string>>;
+
+  inline static Variables default_variables = {
+      {1, "id"},
+      {1, "source"},
+      {32, "args"},
+      {1, ASEBA_PID_VAR_NAME},
+  };
+
   Description()
-      : _variables({{1, "id"},
-                    {1, "source"},
-                    {32, "args"},
-                    {1, ASEBA_PID_VAR_NAME},
-                    {0, ""}}),
-        _events({{nullptr, nullptr}}),
+      : _variables(default_variables), _events({{nullptr, nullptr}}),
         _functions({ASEBA_NATIVES_STD_DESCRIPTIONS, nullptr}),
         _allocated_functions(), _desc(nullptr), _names() {}
 
   const AsebaVMDescription *get_description() {
+    std::cout << "AsebaVMDescription::get_description\n";
     if (!_desc) {
       _desc = (AsebaVMDescription *)malloc(
           sizeof(AsebaVMDescription) +
           (1 + _variables.size()) * sizeof(AsebaVariableDescription));
+      assert(_desc);
       _desc->name = _name.c_str();
       auto var = _desc->variables;
       for (const auto &[size, name] : _variables) {
         var->size = size;
         var->name = name.c_str();
+        var++;
       }
       var->size = 0;
       var->name = nullptr;
@@ -130,7 +137,7 @@ private:
     return _names.back().c_str();
   }
 
-  std::vector<std::tuple<uint16_t, std::string>> _variables;
+  Variables _variables;
   std::vector<AsebaLocalEventDescription> _events;
   std::vector<const AsebaNativeFunctionDescription *> _functions;
   std::vector<const AsebaNativeFunctionDescription *> _allocated_functions;

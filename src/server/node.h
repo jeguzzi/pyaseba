@@ -88,7 +88,13 @@ public:
 
   virtual ~Node() = default;
 
-  virtual void init() { };
+  virtual void init() {
+    for (const auto &[size, n] : Description::default_variables) {
+      named_variable.emplace(n, std::make_pair(next_variable, size));
+      next_variable += size;
+      log_debug("Added variable %s", n.c_str());
+    }
+  }
 
   virtual void tick(float) {}
 
@@ -113,6 +119,15 @@ public:
     next_variable += size;
     description.add_variable(name, size);
     log_debug("Added variable");
+  }
+
+  std::map<std::string, std::vector<int>> get_variables() const {
+    std::map<std::string, std::vector<int>> vs;
+    for (const auto &[name, v] : named_variable) {
+      const auto &[address, size] = v;
+      vs[name].assign(address, address + size);
+    }
+    return vs;
   }
 
   std::vector<int> get_variable(const std::string &name) {
