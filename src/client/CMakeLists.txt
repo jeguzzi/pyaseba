@@ -2,7 +2,8 @@ pybind11_add_module(_client_impl python.cpp)
 target_link_libraries(_client_impl PRIVATE dashel asebacommon asebacompiler
                                            asebadashelplugins ${EXTRA_LIBS})
 target_include_directories(_client_impl PRIVATE ${aseba_SOURCE_DIR}
-                                                ${dashel_SOURCE_DIR})
+                                                ${dashel_SOURCE_DIR}
+                                                ${CMAKE_SOURCE_DIR}/src)
 target_compile_definitions(_client_impl
                            PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES=1)
 

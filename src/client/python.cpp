@@ -1,5 +1,4 @@
-#include "dashel_hub.h"
-#include "node_manager.h"
+#include "py_node_manager.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -91,56 +90,6 @@ template <> struct type_caster<Aseba::NamedValue> {
 };
 } // namespace detail
 } // namespace pybind11
-
-void DashelHub::incomingData(Dashel::Stream *stream) {
-#ifdef ZEROCONF
-  if (zeroconf.isStreamHandled(stream)) {
-    // log_debug("Incoming data for zeroconf");
-    try {
-      zeroconf.dashelIncomingData(stream);
-    } catch (const std::exception &e) {
-      // log_error("incomingData zeroconf: %s", e.what());
-    }
-    return;
-  }
-#endif // ZEROCONF
-  Aseba::Message *message = nullptr;
-  // std::cout << "incomingData from " << stream->getTargetName() << std::endl;
-  try {
-    message = Aseba::Message::receive(stream);
-  } catch (Dashel::DashelException e) {
-    return;
-  } catch (std::runtime_error e) {
-    return;
-  }
-  if (message) {
-    if (!stream_indices.count(stream)) {
-      std::cerr << "Unindexed stream " << stream->getTargetName() << std::endl;
-    }
-    nm->received_msg(message, stream_indices.at(stream));
-    delete message;
-  }
-}
-
-void DashelHub::connectionClosed(Dashel::Stream *stream, bool abnormal) {
-#ifdef ZEROCONF
-  zeroconf.dashelConnectionClosed(stream);
-#endif // ZEROCONF
-  if (stream_indices.count(stream)) {
-    const auto i = stream_indices.at(stream);
-    nm->connectionClosed(i, stream->getTargetName());
-  }
-  remove_stream(stream);
-}
-
-void DashelHub::connectionCreated(Dashel::Stream *stream) {
-  add_stream(stream);
-  if (stream_indices.count(stream)) {
-    const auto i = stream_indices.at(stream);
-    nm->connectionCreated(i, stream->getTargetName());
-  }
-  // nm->connectionCreated(stream);
-}
 
 // PYBIND11_MAKE_OPAQUE(std::vector<PyNodesManager::MessageCallback>)
 
@@ -238,10 +187,20 @@ PYBIND11_MODULE(_client_impl, m) {
       .def_readwrite("name", &Aseba::Description::name)
       .def_readwrite("protocol_version", &Aseba::Description::protocolVersion)
       .def("__repr__", [](const Aseba::Description &msg) {
+        // return py::str("Description(source=") + py::str(py::cast(msg.source))
+        // +
+        //        py::str(", name='") + py::cast(msg.name) +
+        //        py::str("', protocol_version=") +
+        //        py::str(py::cast(msg.protocolVersion)) + py::str(")");
+
         return py::str("Description(source=") + py::str(py::cast(msg.source)) +
                py::str(", name='") + py::cast(msg.name) +
                py::str("', protocol_version=") +
-               py::str(py::cast(msg.protocolVersion)) + py::str(")");
+               py::str(py::cast(msg.protocolVersion)) +
+               py::str(", variables=") + py::str(py::cast(msg.namedVariables)) +
+               py::str(", events=") + py::str(py::cast(msg.localEvents)) +
+               py::str(", functions=") +
+               py::str(py::cast(msg.nativeFunctions)) + py::str(")");
       });
 
   py::classh<Aseba::NamedVariableDescription, Aseba::Message
@@ -252,7 +211,8 @@ PYBIND11_MODULE(_client_impl, m) {
       .def("__repr__", [](const Aseba::NamedVariableDescription &msg) {
         return py::str("NamedVariableDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
-               py::cast(msg.name) + py::str("')");
+               py::cast(msg.name) + py::str("', size=") +
+               py::str(py::cast(msg.size)) + py::str(")");
       });
 
   py::classh<Aseba::LocalEventDescription, Aseba::Message
@@ -264,7 +224,8 @@ PYBIND11_MODULE(_client_impl, m) {
       .def("__repr__", [](const Aseba::LocalEventDescription &msg) {
         return py::str("LocalEventDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
-               py::cast(msg.name) + py::str("')");
+               py::cast(msg.name) + py::str("', description='") +
+               py::cast(msg.description) + py::str("')");
       });
 
   py::classh<Aseba::NativeFunctionDescription, Aseba::Message
@@ -273,9 +234,21 @@ PYBIND11_MODULE(_client_impl, m) {
 )doc")
       .def(py::init<>())
       .def("__repr__", [](const Aseba::NativeFunctionDescription &msg) {
-        return py::str("NativeFunctionDescription(source=") +
-               py::str(py::cast(msg.source)) + py::str(", name='") +
-               py::cast(msg.name) + py::str("')");
+        auto s = py::str("NativeFunctionDescription(source=") +
+                 py::str(py::cast(msg.source)) + py::str(", name='") +
+                 py::cast(msg.name) + py::str("', description='") +
+                 py::cast(msg.description) + py::str("', parameters=[");
+        bool first = true;
+        for (const auto &p : msg.parameters) {
+          if (!first) {
+            s += py::str(", ");
+          }
+          s += py::cast(p.name) + py::str("(") + py::str(py::cast(p.size)) +
+               py::str(")");
+          first = false;
+        }
+        s += py::str("])");
+        return s;
       });
 
   py::classh<Aseba::Disconnected, Aseba::Message>(msgs, "Disconnected", R"doc(
@@ -592,7 +565,9 @@ PYBIND11_MODULE(_client_impl, m) {
       // py::return_value_policy::reference)
       .def("clear_incoming_messages", &PyNodesManager::clear_in_msgs)
       .def_readwrite("query", &PyNodesManager::query)
-      .def("_query", &PyNodesManager::query_description, py::arg("node"), py::arg("wait_ms") = 1000, py::arg("callback") = nullptr, py::return_value_policy::copy)
+      .def("_query", &PyNodesManager::query_description, py::arg("node"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::return_value_policy::copy)
       .def_property("nodes", &PyNodesManager::get_nodes, nullptr)
       .def_property("_nodes", &PyNodesManager::get_nodes_, nullptr)
       .def("connect", &PyNodesManager::connect_and_start, py::arg("target"),
@@ -604,7 +579,7 @@ PYBIND11_MODULE(_client_impl, m) {
       .def_property(
           "is_running", [](const PyNodesManager &m) { return !m.stopped; },
           nullptr)
-      .def("_connect", &PyNodesManager::connect, py::arg("target"))
+      .def("_connect", &PyNodesManager::try_to_connect, py::arg("target"))
       .def("_close", &PyNodesManager::close)
       .def("_start", &PyNodesManager::start, py::arg("ping") = true)
       .def("_stop", &PyNodesManager::stop)
@@ -631,16 +606,24 @@ PYBIND11_MODULE(_client_impl, m) {
            py::arg("node") = -1, py::arg("wait_ms") = 1000,
            py::arg("callback") = nullptr)
       // TODO: better name
-      .def("ping", &PyNodesManager::ping)
       .def("close", &PyNodesManager::stop_and_close)
-      .def("run", &PyNodesManager::run, py::arg("node"))
-      .def("stop", &PyNodesManager::stop_node, py::arg("node"))
-      .def("pause", &PyNodesManager::pause, py::arg("node"))
-      .def("reset", &PyNodesManager::reset, py::arg("node"))
-      .def("sleep", &PyNodesManager::sleep, py::arg("node"))
+      .def("ping", &PyNodesManager::send_message_of_type<Aseba::ListNodes>)
+      .def("run", &PyNodesManager::send_message_of_type<Aseba::Run, uint16_t>,
+           py::arg("node"))
+      .def("stop", &PyNodesManager::send_message_of_type<Aseba::Stop, uint16_t>,
+           py::arg("node"))
+      .def("pause",
+           &PyNodesManager::send_message_of_type<Aseba::Pause, uint16_t>,
+           py::arg("node"))
+      .def("reset",
+           &PyNodesManager::send_message_of_type<Aseba::Reset, uint16_t>,
+           py::arg("node"))
+      .def("sleep",
+           &PyNodesManager::send_message_of_type<Aseba::Sleep, uint16_t>,
+           py::arg("node"))
       .def("scan", &PyNodesManager::scan, py::arg("number") = -1,
            py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-      .def("send_user_message", &PyNodesManager::sendUserMessage,
+      .def("send_user_message", &PyNodesManager::send_user_message,
            py::arg("type"), py::arg("payload") = Aseba::VariablesDataVector())
       .def("send_message", &PyNodesManager::send_message, py::arg("message"),
            py::arg("target_index") = -1,

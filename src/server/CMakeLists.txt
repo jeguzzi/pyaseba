@@ -3,7 +3,8 @@ target_link_libraries(
   _server_impl PRIVATE dashel asebacommon asebavmbuffer asebavm asebacompiler
                        asebadashelplugins ${EXTRA_LIBS})
 target_include_directories(_server_impl PRIVATE ${aseba_SOURCE_DIR}
-                                                ${dashel_SOURCE_DIR})
+                                                ${dashel_SOURCE_DIR}
+                                                ${CMAKE_SOURCE_DIR}/src)
 target_compile_definitions(_server_impl
                            PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES=1)
 
