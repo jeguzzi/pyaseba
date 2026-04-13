@@ -29,7 +29,6 @@ async def call_async[T](f: WaitCallable[T]) -> T:
     def cb(arg: T) -> None:
         if not future.cancelled():
             loop.call_soon_threadsafe(future.set_result, arg)
-
     f(wait_ms=0, callback=cb)
     return await future
 
@@ -85,8 +84,8 @@ class ClientAsync(Client):
         return r or set()
 
     async def _query(self, #type: ignore[override]
-                          node: int) -> Description:
-        return await call_async(partial(super()._query, node=node))
+                          node: int, include: set[int] = set(), exclude: set[int] = set()) -> Description:
+        return await call_async(partial(super()._query, node=node, include=include, exclude=exclude))
 
     async def get_message(self, #type: ignore[override]
                           node: int = -1,
@@ -140,11 +139,11 @@ class ClientAsync(Client):
 
     async def wait_node_connection(self, #type: ignore[override]
                                    node: int = -1) -> int:
-        return await call_async(partial(super().wait_node_connection, node=node))
+        return await call_async_tuple(partial(super().wait_node_connection, node=node))
 
     async def wait_node_disconnection(self, #type: ignore[override]
                                       node: int = -1) -> int:
-        return await call_async(partial(super().wait_node_disconnection, node=node))
+        return await call_async_tuple(partial(super().wait_node_disconnection, node=node))
 
     async def connect(self, #type: ignore[override]
                       target: str,

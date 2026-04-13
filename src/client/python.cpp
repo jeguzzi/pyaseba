@@ -1,4 +1,4 @@
-#include "py_node_manager.h"
+#include "client.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -91,11 +91,11 @@ template <> struct type_caster<Aseba::NamedValue> {
 } // namespace detail
 } // namespace pybind11
 
-// PYBIND11_MAKE_OPAQUE(std::vector<PyNodesManager::MessageCallback>)
+// PYBIND11_MAKE_OPAQUE(std::vector<Client::MessageCallback>)
 
 PYBIND11_MODULE(_client_impl, m) {
 
-  // py::bind_vector<std::vector<PyNodesManager::MessageCallback>>(m,
+  // py::bind_vector<std::vector<Client::MessageCallback>>(m,
   // "CallbackList");
 
   py::classh<Event>(m, "Event", R"doc(
@@ -558,120 +558,188 @@ PYBIND11_MODULE(_client_impl, m) {
           },
           nullptr);
 
-  py::classh<PyNodesManager>(m, "Client", R"doc(
+  py::
+      classh<Client>(m, "Client", R"doc(
 )doc")
-      .def(py::init<int, bool>(), py::arg("port") = -1, py::arg("query") = true)
-      // .def_readwrite("message_callbacks", &PyNodesManager::message_callbacks,
-      // py::return_value_policy::reference)
-      .def("clear_incoming_messages", &PyNodesManager::clear_in_msgs)
-      .def_readwrite("query", &PyNodesManager::query)
-      .def("_query", &PyNodesManager::query_description, py::arg("node"),
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
-           py::return_value_policy::copy)
-      .def_property("nodes", &PyNodesManager::get_nodes, nullptr)
-      .def_property("_nodes", &PyNodesManager::get_nodes_, nullptr)
-      .def("connect", &PyNodesManager::connect_and_start, py::arg("target"),
-           py::arg("wait_ms") = 1000, py::arg("max_retries") = 3,
-           py::arg("ping") = true)
-      .def_property("is_connected", &PyNodesManager::is_connected, nullptr)
-      .def_property("connected_targets", &PyNodesManager::get_connected_targets,
-                    nullptr)
-      .def_property(
-          "is_running", [](const PyNodesManager &m) { return !m.stopped; },
-          nullptr)
-      .def("_connect", &PyNodesManager::try_to_connect, py::arg("target"))
-      .def("_close", &PyNodesManager::close)
-      .def("_start", &PyNodesManager::start, py::arg("ping") = true)
-      .def("_stop", &PyNodesManager::stop)
-      .def("has_node", &PyNodesManager::has_node, py::arg("node"))
-      .def("get_message", &PyNodesManager::get_message, py::arg("node") = -1,
-           py::arg("type") = -1, py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr)
-      .def("get_event", &PyNodesManager::get_event, py::arg("node") = -1,
-           py::arg("name") = "", py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr)
-      .def("wait_target_connection", &PyNodesManager::wait_target_connection,
-           py::arg("index") = -1, py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr)
-      .def("wait_target_disconnection",
-           &PyNodesManager::wait_target_disconnection, py::arg("index") = -1,
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-      .def("wait_nodes", &PyNodesManager::wait_nodes,
-           py::arg("nodes") = std::set<uint16_t>(), py::arg("number") = -1,
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-      .def("wait_node_connection", &PyNodesManager::wait_node_connection,
-           py::arg("node") = -1, py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr)
-      .def("wait_node_disconnection", &PyNodesManager::wait_node_disconnection,
-           py::arg("node") = -1, py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr)
-      // TODO: better name
-      .def("close", &PyNodesManager::stop_and_close)
-      .def("ping", &PyNodesManager::send_message_of_type<Aseba::ListNodes>)
-      .def("run", &PyNodesManager::send_message_of_type<Aseba::Run, uint16_t>,
-           py::arg("node"))
-      .def("stop", &PyNodesManager::send_message_of_type<Aseba::Stop, uint16_t>,
-           py::arg("node"))
-      .def("pause",
-           &PyNodesManager::send_message_of_type<Aseba::Pause, uint16_t>,
-           py::arg("node"))
-      .def("reset",
-           &PyNodesManager::send_message_of_type<Aseba::Reset, uint16_t>,
-           py::arg("node"))
-      .def("sleep",
-           &PyNodesManager::send_message_of_type<Aseba::Sleep, uint16_t>,
-           py::arg("node"))
-      .def("scan", &PyNodesManager::scan, py::arg("number") = -1,
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-      .def("send_user_message", &PyNodesManager::send_user_message,
-           py::arg("type"), py::arg("payload") = Aseba::VariablesDataVector())
-      .def("send_message", &PyNodesManager::send_message, py::arg("message"),
-           py::arg("target_index") = -1,
-           py::arg("exclude_target_indices") = std::set<unsigned>())
-      .def("emit_event", &PyNodesManager::emit_event, py::arg("node"),
-           py::arg("name"), py::arg("payload") = Aseba::VariablesDataVector())
-      .def("send_event", &PyNodesManager::send_event, py::arg("node"),
-           py::arg("type"), py::arg("payload") = Aseba::VariablesDataVector())
-      .def("get_description", &PyNodesManager::getDescription, py::arg("node"),
-           py::return_value_policy::copy)
-      .def("get_variable", &PyNodesManager::get_variable, py::arg("node"),
-           py::arg("name"), py::arg("wait_ms"), py::arg("callback") = nullptr)
-      .def("_get_variables", &PyNodesManager::get_variable_at_index,
-           py::arg("node"), py::arg("index"), py::arg("length"),
-           py::arg("wait_ms"), py::arg("callback") = nullptr)
-      .def("set_variable", &PyNodesManager::set_variable, py::arg("node"),
-           py::arg("name"), py::arg("value"))
-      .def("set_variables", &PyNodesManager::set_variable_at_index,
-           py::arg("node"), py::arg("index"), py::arg("values"))
-      .def("add_event_callback", &PyNodesManager::add_event_callback,
-           py::arg("callback"))
-      .def("add_message_callback", &PyNodesManager::add_message_callback,
-           py::arg("callback"))
-      .def("remove_message_callback", &PyNodesManager::remove_message_callback,
-           py::arg("index"))
-      .def("clear_message_callbacks", &PyNodesManager::clear_message_callbacks)
-      .def("add_target_connection_callback",
-           &PyNodesManager::add_target_connection_callback, py::arg("callback"))
-      .def("add_target_disconnection_callback",
-           &PyNodesManager::add_target_disconnection_callback,
-           py::arg("callback"))
-      .def("add_node_connection_callback",
-           &PyNodesManager::add_node_connection_callback, py::arg("callback"))
-      .def("add_node_disconnection_callback",
-           &PyNodesManager::add_node_disconnection_callback,
-           py::arg("callback"))
-      .def("get_user_events", &PyNodesManager::getEvents, py::arg("node"))
-      .def("get_variables", &PyNodesManager::getVariables, py::arg("node"))
-      .def("get_all_variables", &PyNodesManager::get_variables, py::arg("node"),
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-      .def("get_variables_size", &PyNodesManager::get_variables_size,
-           py::arg("node"))
-      .def("advertise", &PyNodesManager::advertise)
-      .def("deadvertise", &PyNodesManager::deadvertise)
-      .def("load_script", &PyNodesManager::load_script, py::arg("node"),
-           py::arg("script"),
-           py::arg("events") = std::vector<Aseba::NamedValue>{},
-           py::arg("constants") = std::vector<Aseba::NamedValue>{});
+          .def(py::init<int, bool, unsigned, unsigned>(), py::arg("port") = -1,
+               py::kw_only(), py::arg("query") = true,
+               py::arg("min_protocol_version") =
+                   ASEBA_MIN_TARGET_PROTOCOL_VERSION,
+               py::arg("max_protocol_version") = ASEBA_PROTOCOL_VERSION)
+          // .def_readwrite("message_callbacks", &Client::message_callbacks,
+          // py::return_value_policy::reference)
+          .def("__enter__", [](Client &client) { return &client; })
+          .def("__exit__", [](Client &client, void *exc_type, void *exc_value,
+                              void *traceback) { client.stop_and_close(); })
+          .def("clear_incoming_messages", &Client::clear_in_msgs)
+          .def_readwrite("query", &Client::query)
+          .def("_query", &Client::query_description, py::arg("node"),
+               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{},
+               py::return_value_policy::copy)
+          .def_property(
+              "nodes", [](Client &client) { return client.get_node_ids(); },
+              nullptr)
+          .def("get_nodes", &Client::get_node_ids,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{},
+               py::arg("connected") = true)
+          .def_property(
+              "descriptions",
+              [](Client &client) { return client.get_descriptions(); }, nullptr)
+          .def("get_descriptions", &Client::get_descriptions,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{},
+               py::arg("connected") = true)
+          .def("connect", &Client::connect_and_start, py::arg("target"),
+               py::pos_only(), py::arg("wait_ms") = 1000,
+               py::arg("max_retries") = 3, py::arg("ping") = true)
+          .def_property("is_connected", &Client::is_connected, nullptr)
+          .def_property("connections", &Client::get_connected_targets, nullptr)
+          .def_property(
+              "is_running", [](const Client &m) { return !m.stopped; }, nullptr)
+          .def("_connect", &Client::try_to_connect_, py::arg("target"),
+               py::pos_only())
+          .def("_close", &Client::close, py::arg("connection"))
+          .def("_start", &Client::start, py::arg("ping") = true)
+          .def("_stop", &Client::stop)
+          .def("has_node", &Client::has_node, py::arg("node"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{},
+               py::arg("connected") = true)
+          .def("get_message", &Client::get_message, py::arg("node") = -1,
+               py::arg("type") = -1, py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("get_event", &Client::get_event, py::arg("node") = -1,
+               py::arg("name") = "", py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("wait_target_connection", &Client::wait_target_connection,
+               py::arg("index") = -1, py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr)
+          .def("wait_target_disconnection", &Client::wait_target_disconnection,
+               py::arg("index") = -1, py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr)
+          .def("wait_nodes", &Client::wait_nodes,
+               py::arg("nodes") = std::set<uint16_t>(), py::arg("number") = -1,
+               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("wait_node_connection", &Client::wait_node_connection,
+               py::arg("node") = -1, py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("wait_node_disconnection", &Client::wait_node_disconnection,
+               py::arg("node") = -1, py::arg("wait_ms") = 1000,
+               py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          // TODO: better name
+          .def("close", &Client::stop_and_close)
+          .def("ping", &Client::send_message_of_type<Aseba::ListNodes>)
+          .def("run", &Client::send_message_of_type<Aseba::Run, uint16_t>,
+               py::arg("node"), py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("stop", &Client::send_message_of_type<Aseba::Stop, uint16_t>,
+               py::arg("node"), py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("pause", &Client::send_message_of_type<Aseba::Pause, uint16_t>,
+               py::arg("node"), py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("reset", &Client::send_message_of_type<Aseba::Reset, uint16_t>,
+               py::arg("node"), py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("sleep", &Client::send_message_of_type<Aseba::Sleep, uint16_t>,
+               py::arg("node"), py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("scan", &Client::scan, py::arg("number") = -1,
+               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
+          .def("send_user_message", &Client::send_user_message, py::arg("type"),
+               py::arg("payload") = Aseba::VariablesDataVector(),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("send_message", &Client::send_message, py::arg("message"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("emit_event", &Client::emit_event, py::arg("node"),
+               py::arg("name"),
+               py::arg("payload") = Aseba::VariablesDataVector(),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("send_event", &Client::send_event, py::arg("type"),
+               py::arg("payload") = Aseba::VariablesDataVector(),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("get_description", &Client::get_description, py::arg("node"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{},
+               py::arg("connected") = true, py::return_value_policy::copy)
+          .def("get_variable", &Client::get_variable, py::arg("node"),
+               py::arg("name"), py::arg("wait_ms"),
+               py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("_get_variables", &Client::get_variable_at_index,
+               py::arg("node"), py::arg("index"), py::arg("length"),
+               py::arg("wait_ms"), py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("set_variable", &Client::set_variable, py::arg("node"),
+               py::arg("name"), py::arg("value"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("set_variables", &Client::set_variable_at_index, py::arg("node"),
+               py::arg("index"), py::arg("values"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("add_event_callback", &Client::add_event_callback,
+               py::arg("callback"))
+          .def("add_message_callback", &Client::add_message_callback,
+               py::arg("callback"))
+          .def("remove_message_callback", &Client::remove_message_callback,
+               py::arg("index"))
+          .def("clear_message_callbacks", &Client::clear_message_callbacks)
+          .def("add_target_connection_callback",
+               &Client::add_target_connection_callback, py::arg("callback"))
+          .def("add_target_disconnection_callback",
+               &Client::add_target_disconnection_callback, py::arg("callback"))
+          .def("add_node_connection_callback",
+               &Client::add_node_connection_callback, py::arg("callback"))
+          .def("add_node_disconnection_callback",
+               &Client::add_node_disconnection_callback, py::arg("callback"))
+          .def("get_user_events", &Client::get_event_names, py::arg("node"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("get_variables", &Client::get_variable_names, py::arg("node"),
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def("get_all_variables", &Client::get_variables, py::arg("node"),
+               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{})
+          .def(
+              "get_variables_size",
+              [](Client &client, unsigned id) -> unsigned {
+                auto node = client.get_node(id);
+                if (node) {
+                  return node->variables_size;
+                }
+                return 0;
+              },
+              py::arg("node"))
+          .def("advertise", &Client::advertise)
+          .def("deadvertise", &Client::deadvertise)
+          .def("load_script", &Client::load_script, py::arg("node"),
+               py::arg("script"),
+               py::arg("events") = std::vector<Aseba::NamedValue>{},
+               py::arg("constants") = std::vector<Aseba::NamedValue>{},
+               py::arg("include") = std::set<unsigned>{},
+               py::arg("exclude") = std::set<unsigned>{});
 
   m.def("scan_serial_ports", &Dashel::SerialPortEnumerator::getPorts);
 }

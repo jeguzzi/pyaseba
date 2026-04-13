@@ -3,6 +3,7 @@
 
 #include "aseba/common/msg/msg.h"
 #include "utils.h"
+#include "utils_client.h"
 
 #include <future>
 #include <map>
@@ -31,7 +32,7 @@ template <bool P, typename... T> struct AWaitedCallback<P, std::tuple<T...>> {
                     bool complete) {
     if constexpr (P) {
       std::apply(cb, std::tuple_cat(arg, std::tuple<bool>{complete}));
-    } else {
+    } else if (complete) {
       std::apply(cb, arg);
     }
   }
@@ -79,34 +80,42 @@ template <typename C, bool P, typename V, typename... T> struct AWaited {
   }
 };
 
-struct AWaitedNode : AWaited<AWaitedNode, false, uint16_t, uint16_t> {
+struct AWaitedNode : AWaited<AWaitedNode, false, std::tuple<uint16_t, uint16_t>,
+                             uint16_t, uint16_t> {
   int target;
-  using A = AWaited<AWaitedNode, false, uint16_t, uint16_t>;
+  std::set<unsigned> targets;
+  using A = AWaited<AWaitedNode, false, std::tuple<uint16_t, uint16_t>,
+                    uint16_t, uint16_t>;
   using A::Callback;
   using A::Value;
 
-  explicit AWaitedNode(int node, bool awaited, const Callback &cb = nullptr)
-      : A(awaited, cb), target(node) {}
+  explicit AWaitedNode(int node, const std::set<unsigned> &targets,
+                       bool awaited, const Callback &cb = nullptr)
+      : A(awaited, cb), target(node), targets(targets) {}
 
-  bool is_complete(uint16_t node) { return (target < 0 || node == target); }
+  bool is_complete(uint16_t node, uint16_t t) {
+    return (targets.size() == 0 || targets.count(t)) &&
+           (target < 0 || node == target);
+  }
 
-  Value get(uint16_t node) { return node; }
+  Value get(uint16_t node, uint16_t t) { return {node, t}; }
 };
 
 struct AWaitedTarget
     : AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>, unsigned,
               std::string> {
-  int target;
+  std::set<unsigned> targets;
   using A = AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>,
                     unsigned, std::string>;
   using A::Callback;
   using A::Value;
 
-  AWaitedTarget(int index, bool awaited, const Callback &cb = nullptr)
-      : A(awaited, cb), target(index) {}
+  AWaitedTarget(const std::set<unsigned> targets, bool awaited,
+                const Callback &cb = nullptr)
+      : A(awaited, cb), targets(targets) {}
 
   bool is_complete(unsigned index, const std::string &name) {
-    return (target < 0 || target == index);
+    return (targets.size() == 0 || targets.count(index));
   }
 
   Value get(unsigned index, const std::string &name) { return {index, name}; }
@@ -124,14 +133,17 @@ struct AWaitedMessage
 
   int target_source;
   int target_type;
+  std::set<unsigned> targets;
 
-  AWaitedMessage(int source, int type, bool awaited,
-                 const Callback &cb = nullptr)
-      : A(awaited, cb), target_source(source), target_type(type) {}
+  AWaitedMessage(int source, int type, const std::set<unsigned> &targets,
+                 bool awaited, const Callback &cb = nullptr)
+      : A(awaited, cb), target_source(source), target_type(type),
+        targets(targets) {}
 
   bool is_complete(const std::shared_ptr<Aseba::Message> &msg,
                    unsigned target_index) {
-    return (target_source < 0 || target_source == msg->source) &&
+    return (targets.size() == 0 || targets.count(target_index) > 0) &&
+           (target_source < 0 || target_source == msg->source) &&
            (target_type < 0 || target_type == msg->type);
   }
 
@@ -141,38 +153,40 @@ struct AWaitedMessage
 };
 
 struct AWaitedNodes
-    : AWaited<AWaitedNodes, true, std::set<unsigned>, unsigned> {
+    : AWaited<AWaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
+              unsigned, unsigned> {
 
-  using A = AWaited<AWaitedNodes, true, std::set<unsigned>, unsigned>;
+  using A = AWaited<AWaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
+                    unsigned, unsigned>;
   using A::Callback;
   using A::Value;
 
-  std::set<unsigned> nodes;
+  Value nodes;
   std::set<unsigned> candidates;
+  std::set<unsigned> targets;
   int number;
 
-  AWaitedNodes(std::set<unsigned> nodes, const std::set<unsigned> &candidates,
-               int number, bool awaited, const Callback &cb = nullptr)
-      : A(awaited, cb), nodes(nodes), candidates(candidates), number(number) {}
+  AWaitedNodes(Value nodes, const std::set<unsigned> &candidates,
+               const std::set<unsigned> &targets, int number, bool awaited,
+               const Callback &cb = nullptr)
+      : A(awaited, cb), nodes(nodes), candidates(candidates), targets(targets),
+        number(number) {}
 
-  bool is_complete(unsigned n) {
+  bool is_complete(unsigned n, unsigned t) {
     if (candidates.size() && !candidates.count(n))
       return false;
-    nodes.insert(n);
-    return (number >= 0 && nodes.size() >= number);
+    if (targets.size() && !targets.count(t))
+      return false;
+    nodes[t].insert(n);
+    unsigned num = 0;
+    for (const auto &[_, ns] : nodes) {
+      num += ns.size();
+    }
+    return (number >= 0 && num >= number);
   }
 
-  Value get(unsigned n) { return {nodes}; }
+  Value get(unsigned n, unsigned t) { return nodes; }
 };
-
-inline unsigned compute_variables_size(const Aseba::VariablesMap &m) {
-  unsigned c = 0;
-  for (const auto &[k, v] : m) {
-    const auto &[_, size] = v;
-    c += size;
-  }
-  return c;
-}
 
 using VariablesMap = std::map<std::wstring, Aseba::VariablesDataVector>;
 
