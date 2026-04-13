@@ -37,9 +37,9 @@ protected:
   std::array<uint8_t, 16> uuid;
   std::string friendly_name;
   std::set<void *> sent_device_info;
+  bool initialized;
 
 public:
-  bool finalized;
   std::string name;
   AsebaVMState vm;
   Description description;
@@ -47,7 +47,7 @@ public:
   uint16_t lastMessageSource;
   std::valarray<uint8_t> lastMessageData;
 
-  Aseba::UnifiedTime lastTime;
+  // Aseba::UnifiedTime lastTime;
   // name -> (pointer, size)
   std::map<std::string, std::pair<int16_t *, unsigned int>> named_variable;
   int16_t *next_variable;
@@ -57,11 +57,14 @@ public:
   std::vector<std::tuple<std::string, std::vector<int>, size_t>> functions;
 
 public:
-  Node(unsigned node_id, const std::string &_name,
-       const std::array<uint8_t, 16> &uuid_ = {},
-       const std::string &friendly_name_ = "")
+  explicit Node(unsigned node_id, const std::string &_name,
+                bool default_variables = true, bool default_functions = true,
+                const std::array<uint8_t, 16> &uuid_ = {},
+                const std::string &friendly_name_ = "")
       : uuid(uuid_), friendly_name(friendly_name_), sent_device_info(),
-        finalized(false), name(_name), description() {
+        initialized(false), name(_name),
+        description(name, default_variables, default_functions),
+        lastMessageSource(0), lastMessageData() {
     // setup variables
     vm.nodeId = static_cast<uint16_t>(node_id);
     bytecode.resize(BYTECODE_SIZE);
@@ -79,17 +82,13 @@ public:
     description.set_name(name);
   }
 
-  void finalize() {
-    if (!finalized) {
-      init();
-      finalized = true;
-    }
-  }
-
   virtual ~Node() = default;
 
   virtual void init() {
-    for (const auto &[size, n] : Description::default_variables) {
+    if (initialized)
+      return;
+    initialized = true;
+    for (const auto &[size, n] : description.get_variables()) {
       named_variable.emplace(n, std::make_pair(next_variable, size));
       next_variable += size;
       log_debug("Added variable %s", n.c_str());
@@ -202,10 +201,6 @@ public:
     log_debug("Added function");
   }
 
-  void connect() { finalized = true; }
-
-  void do_step(double) {};
-
   void set_uuid(const std::array<uint8_t, 16> &uuid_) {
     uuid = uuid_;
     send_uuid(uuid_);
@@ -226,7 +221,12 @@ public:
     sent_device_info.insert(stream);
   }
 
-  virtual std::string advertized_name() const { return "Dummy Node"; }
+  const std::string &get_advertized_name() const {
+    if (friendly_name.empty()) {
+      return name;
+    }
+    return friendly_name;
+  }
 
   void call_function(AsebaVMState *vm, unsigned id) {
     const auto num = static_cast<unsigned>(native_functions.size());

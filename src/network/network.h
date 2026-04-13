@@ -24,6 +24,7 @@
 #include <set>
 #include <sstream>
 #include <stack>
+#include <thread>
 
 class Network : public Dashel::Hub {
 
@@ -32,7 +33,7 @@ public:
   inline static std::map<const AsebaVMState *, std::pair<Network *, Node *>>
       endpoints = {};
 
-  static Network *client_for_vm(const AsebaVMState *vm) {
+  static Network *network_for_vm(const AsebaVMState *vm) {
     if (endpoints.count(vm)) {
       return endpoints[vm].first;
     }
@@ -50,22 +51,19 @@ public:
   // void set_address(const std::string &a) { address = a; }
   const std::string &get_address() const { return address; }
   int get_port() const { return port; }
-  void set_advertise_enabled(bool enabled) {
-    advertise_enabled = enabled;
-  }
-  bool get_advertise_enabled() const {
-    return advertise_enabled;
-  }
+  void set_advertise_enabled(bool enabled) { advertise_enabled = enabled; }
+  bool get_advertise_enabled() const { return advertise_enabled; }
 
 private:
   // stream for listening to incoming connections
   Dashel::Stream *listenStream;
   std::string address;
-  int timeout;
   int port;
   std::string advertise_name;
   bool advertise_enabled;
   std::set<Dashel::Stream *> toDisconnect;
+  std::atomic_bool spinning;
+  std::unique_ptr<std::thread> thread;
 
 public:
   std::map<int, std::shared_ptr<Node>> nodes;
@@ -76,31 +74,30 @@ public:
 #endif
   // all streams that must be disconnected at next step
   explicit Network(const std::string &address = "0.0.0.0",
-                   const int port = ASEBA_DEFAULT_PORT, int timeout = 0,
+                   const int port = ASEBA_DEFAULT_PORT,
                    const std::string &advertise_name = "")
-      : Dashel::Hub(true), address(address), timeout(timeout), port(port),
+      : Dashel::Hub(true), address(address), port(port),
         advertise_name(advertise_name),
-        advertise_enabled(advertise_name.size()), stream(NULL) //, next_id(0)
+        advertise_enabled(advertise_name.size()), spinning(false),
+        thread(nullptr), stream(NULL) //, next_id(0)
 #ifdef ZEROCONF
         ,
         zeroconf(*this)
 #endif
   {
     if (listen())
-      log_info("Created Aseba client listening on tcp:port=%s",
+      log_info("Created Aseba network listening on tcp:port=%s",
                listenStream->getTargetParameter("port").c_str());
   }
 
   ~Network() {
-    // for (auto kv : nodes) {
-    //   delete kv.second;
-    // }
-    log_info("Deleted client on tcp:port=%d", port);
+    log_info("Deleted network on tcp:port=%d", port);
+    stop();
   }
 
   void add_node(const std::shared_ptr<Node> &node) {
     // log_info("Add node");
-    node->finalize();
+    node->init();
     endpoints[&(node->vm)] = std::make_pair(this, node.get());
     nodes[node->vm.nodeId] = node;
 #ifdef ZEROCONF
@@ -134,7 +131,7 @@ public:
     // unsigned protocolVersion{ASEBA_PROTOCOL_VERSION};
     unsigned protocolVersion{9};
     for (auto const &[id, node] : nodes) {
-      std::string n_name = node->advertized_name();
+      std::string n_name = node->get_advertized_name();
       if (name.empty()) {
         name = n_name;
       } else if (name != n_name) {
@@ -234,7 +231,8 @@ public:
       return;
     }
 #endif // ZEROCONF
-    std::cout << "incomingData from " << stream->getTargetName() << " (" << this->stream->getTargetName() << ")" << std::endl;
+    // std::cout << "incomingData from " << stream->getTargetName() << " ("
+    //           << this->stream->getTargetName() << ")" << std::endl;
     // only process data for the current stream
     if (stream != this->stream) {
       // printf("[DASHEL] incomingData from %p (%p) -> ignore\n", stream,
@@ -256,13 +254,13 @@ public:
     memcpy(&type, &lastMessageData[0], 2);
     std::cout << std::hex << type;
     type = bswap16(type);
-    std::cout << " => " << std::hex << type << std::dec << std::endl;
+    // std::cout << " => " << std::hex << type << std::dec << std::endl;
     // memcpy(data, &node->lastMessageData[0], node->lastMessageData.size());
 
-    // printf("[DASHEL] incomingData %d %d => %d\n", lastMessageData[0],
-    // lastMessageData[1], type);
-    log_debug("Incoming data (%d bytes) of type 0x%X %d from %d", len, (unsigned)type, type,
-              lastMessageSource);
+    log_debug("[DASHEL] incomingData %d %d => %d\n", lastMessageData[0],
+              lastMessageData[1], type);
+    log_debug("Incoming data (%d bytes) of type 0x%X %d from %d", len,
+              (unsigned)type, type, lastMessageSource);
     // std::vector<std::shared_ptr<Node>> dest_nodes;
     /* from IDE to a specific node */
     if (type >= ASEBA_MESSAGE_SET_BYTECODE &&
@@ -270,60 +268,98 @@ public:
       uint16_t dest;
       memcpy(&dest, &lastMessageData[2], 2);
       dest = bswap16(dest);
-      log_debug("Got cmd message of type %d from IDE (%d) for node %d\n",
-              type, lastMessageSource, dest);
+      log_debug("Got cmd message of type %d from IDE (%d) for node %d\n", type,
+                lastMessageSource, dest);
       if (nodes.count(dest)) {
         auto node = nodes.at(dest);
-        if (node->finalized) {
-          if (type == ASEBA_MESSAGE_GET_EXECUTION_STATE) {
-            node->send_device_info((void *)stream);
-          }
-
-          node->lastMessageSource = lastMessageSource;
-          node->lastMessageData = lastMessageData;
-          AsebaProcessIncomingEvents(&(node->vm));
-          AsebaVMRun(&(node->vm), 1000);
+        if (type == ASEBA_MESSAGE_GET_EXECUTION_STATE) {
+          node->send_device_info((void *)stream);
         }
-      }
-      return;
-    }
-    printf("Got cmd message of type %d from node %d\n", type, lastMessageSource);
-    for (auto &[id, node] : nodes) {
-      if (node->finalized) {
+
         node->lastMessageSource = lastMessageSource;
         node->lastMessageData = lastMessageData;
         AsebaProcessIncomingEvents(&(node->vm));
         AsebaVMRun(&(node->vm), 1000);
       }
+      return;
+    }
+    log_debug("Got cmd message of type %d from node %d\n", type,
+              lastMessageSource);
+    for (auto &[id, node] : nodes) {
+      node->lastMessageSource = lastMessageSource;
+      node->lastMessageData = lastMessageData;
+      AsebaProcessIncomingEvents(&(node->vm));
+      AsebaVMRun(&(node->vm), 1000);
     }
   }
 
-  bool spin(float dt) {
+  bool spin_once(unsigned timeout_ms) {
+    // std::cout << "spin_once " << timeout_ms << std::endl;
 #ifdef ZEROCONF
-    if (!zeroconf.dashelStep(timeout))
+    if (!zeroconf.dashelStep(timeout_ms))
 #else
-    if (!step(timeout))
+    if (!step(timeout_ms))
 #endif // ZEROCONF
       return false;
-
-    for (const auto &[id, node] : nodes) {
-      node->finalized = true;
-      node->step(dt);
-    }
     // disconnect old streams
-    lock();
+    // No need to lock
+    // lock();
     for (auto &stream : toDisconnect) {
       closeStream(stream);
       log_info("Stream %s closed in spin", stream->getTargetName().c_str());
     }
     toDisconnect.clear();
-    unlock();
+    // unlock();
     return true;
   }
-  //
-  // void run() {
-  //   while (spin()) {}
-  // }
+
+  void tick(double dt) {
+    for (const auto &[_, node] : nodes) {
+      node->step(dt);
+    }
+  }
+
+  void start(double dt, double duration = -1) {
+    thread = std::make_unique<std::thread>(&Network::spin, this, dt, duration);
+  }
+
+  void stop() {
+    spinning = false;
+    if (thread) {
+      thread->join();
+    }
+    thread = nullptr;
+  }
+
+  void spin(double dt, double duration = -1) {
+    if (spinning)
+      return;
+    spinning = true;
+    Aseba::UnifiedTime deadline;
+    const Aseba::UnifiedTime until =
+        Aseba::UnifiedTime(deadline) + Aseba::UnifiedTime(duration * 1e3);
+    const bool terminated = duration > 0;
+    const Aseba::UnifiedTime delta = (static_cast<unsigned>(dt * 1e3));
+    while (spinning) {
+      if (dt > 0) {
+        const auto now = Aseba::UnifiedTime();
+        if (terminated && now > until)
+          break;
+        while (deadline <= now) {
+          tick(dt);
+          deadline += delta;
+        }
+        const auto d = deadline - now;
+        // std::cout << "will spin_once " << d.value << std::endl;
+        if (!spin_once(d.value))
+          break;
+      } else {
+        if (!spin_once(10))
+          break;
+      }
+    }
+    spinning = false;
+  }
 };
 
 #endif // NETWORK_H

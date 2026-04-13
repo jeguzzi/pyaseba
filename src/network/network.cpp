@@ -10,7 +10,7 @@ extern "C" void AsebaPutVmToSleep(AsebaVMState *) {
 
 extern "C" void AsebaSendBuffer(AsebaVMState *vm, const uint8_t *data,
                                 uint16_t length) {
-  Dashel::Stream *stream = Network::client_for_vm(vm)->stream;
+  Dashel::Stream *stream = Network::network_for_vm(vm)->stream;
   log_debug("AsebaSendBuffer: %u", length);
   if (stream) {
     try {

@@ -1,4 +1,4 @@
 from .client import Client, ClientAsync
-from .server import Server
+from .network import Network
 
-__all__ = ['Client', 'ClientAsync', 'Server']
+__all__ = ['Client', 'ClientAsync', 'Network']

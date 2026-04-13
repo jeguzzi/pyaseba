@@ -1,17 +1,17 @@
-pybind11_add_module(_server_impl python.cpp network.cpp)
+pybind11_add_module(_network_impl python.cpp network.cpp)
 target_link_libraries(
-  _server_impl PRIVATE dashel asebacommon asebavmbuffer asebavm asebacompiler
+  _network_impl PRIVATE dashel asebacommon asebavmbuffer asebavm asebacompiler
                        asebadashelplugins ${EXTRA_LIBS})
-target_include_directories(_server_impl PRIVATE ${aseba_SOURCE_DIR}
+target_include_directories(_network_impl PRIVATE ${aseba_SOURCE_DIR}
                                                 ${dashel_SOURCE_DIR}
                                                 ${CMAKE_SOURCE_DIR}/src)
-target_compile_definitions(_server_impl
+target_compile_definitions(_network_impl
                            PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES=1)
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported OUTPUT error)
 if(ipo_supported)
-  set_property(TARGET _server_impl PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_property(TARGET _network_impl PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -27,6 +27,6 @@ target_compile_options(asebavm PRIVATE ${DISABLE_WARNINGS})
 target_compile_options(_client_impl PRIVATE ${WARNINGS})
 
 install(
-  TARGETS _server_impl
-  DESTINATION pyaseba/server
+  TARGETS _network_impl
+  DESTINATION pyaseba/network
   COMPONENT pyaseba)

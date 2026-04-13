@@ -79,6 +79,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 add_subdirectory(src/client)
-add_subdirectory(src/server)
+add_subdirectory(src/network)
 
 

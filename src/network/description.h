@@ -27,13 +27,24 @@ struct Description {
       {1, ASEBA_PID_VAR_NAME},
   };
 
-  Description()
-      : _variables(default_variables), _events({{nullptr, nullptr}}),
-        _functions({ASEBA_NATIVES_STD_DESCRIPTIONS, nullptr}),
-        _allocated_functions(), _desc(nullptr), _names() {}
+  explicit Description(const std::string &name = "node",
+                       bool add_default_variables = true,
+                       bool add_default_functions = true)
+      : _variables(), _events({{nullptr, nullptr}}), _functions({nullptr}),
+        _allocated_functions(), _desc(nullptr), _name(name), _names() {
+
+    if (add_default_variables) {
+      _variables = default_variables;
+    }
+    if (add_default_functions) {
+      _functions = {ASEBA_NATIVES_STD_DESCRIPTIONS, nullptr};
+    }
+  }
+
+  const Variables &get_variables() const { return _variables; }
 
   const AsebaVMDescription *get_description() {
-    std::cout << "AsebaVMDescription::get_description\n";
+    // std::cout << "AsebaVMDescription::get_description\n";
     if (!_desc) {
       _desc = (AsebaVMDescription *)malloc(
           sizeof(AsebaVMDescription) +

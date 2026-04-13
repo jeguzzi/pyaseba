@@ -1,6 +1,6 @@
-import time
+# import time
 
-from pyaseba.server import Server, Node
+from pyaseba.network import Network, Node
 
 
 class MyNode(Node):
@@ -9,9 +9,16 @@ class MyNode(Node):
     variables = [("value", 3), ("counter", 1)]
     functions = [("duplicate", [(3, "input"), (3, "result")])]
 
-    def __init__(self, node_id: int, name: str):
-        Node.__init__(self, node_id, name)
+    def __init__(self, node_id: int):
+        Node.__init__(self,
+                      node_id,
+                      name="MyNode",
+                      default_functions=False,
+                      advertised_name="Advertised Node")
+
+    def init(self):
         self.counter = 0
+        self.set("_productId", [9])
 
     @property
     def counter(self) -> int:
@@ -23,7 +30,7 @@ class MyNode(Node):
         self.set("counter", [value])
 
     def tick(self, time_step: float) -> None:
-        # self.counter += 1
+        self.counter += 1
         self.emit("event")
 
     def reset(self) -> None:
@@ -34,13 +41,15 @@ class MyNode(Node):
 
 
 def main() -> None:
-    server = Server()
+    network = Network(port=10000)
     for i in range(2):
-        node = MyNode(i, "MyNode")
-        server.add_node(node)
-    for _ in range(6000):
-        server.spin(0.1)
-        time.sleep(0.1)
+        node = MyNode(i)
+        network.add_node(node)
+    network.spin(time_step=0.1, duration=10)
+
+    # for _ in range(6000):
+    #     server.spin(0.1)
+    #     time.sleep(0.1)
 
 
 if __name__ == '__main__':

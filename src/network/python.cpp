@@ -63,6 +63,7 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
   void call_extra_function(AsebaVMState *vm, unsigned id) override {
     if (id > functions.size())
       return;
+    pybind11::gil_scoped_acquire acquire;
     const auto &[name, args, inputs] = functions[id];
     const auto &fun = py::cast(this).attr(py::cast(name));
     // std::vector<std::vector<int16_t>> arg_values(args.size());
@@ -102,40 +103,49 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
     }
   }
 
-  void tick(float dt) override { PYBIND11_OVERRIDE(void, Node, tick, dt); }
+  void tick(float dt) override {
+    pybind11::gil_scoped_acquire acquire;
+    PYBIND11_OVERRIDE(void, Node, tick, dt);
+  }
 
   void reset() override {
     Node::reset();
     PYBIND11_OVERRIDE(void, Node, reset);
   }
-
-  std::string advertized_name() const override {
-    PYBIND11_OVERRIDE(std::string, Node, advertized_name);
-  }
 };
 
-PYBIND11_MODULE(_server_impl, m) {
+PYBIND11_MODULE(_network_impl, m) {
 
-  py::classh<Network>(m, "Server", R"doc(
+  py::classh<Network>(m, "Network", R"doc(
 )doc")
-      .def(py::init<const std::string &, int, int, const std::string &>(),
+      .def(py::init<const std::string &, int, const std::string &>(),
            py::arg("address") = "0.0.0.0", py::arg("port") = ASEBA_DEFAULT_PORT,
-           py::arg("timeout") = 0, py::arg("advertise_as") = "")
+           py::arg("advertised_name") = "pyaseba")
       .def_property("port", &Network::get_port, nullptr)
       .def_property("address", &Network::get_address, nullptr)
-      .def("spin", &Network::spin, py::arg("time_step"))
+      .def("spin", &Network::spin, py::arg("time_step"),
+           py::arg("duration") = -1)
+      .def("start", &Network::start, py::arg("time_step"),
+           py::arg("duration") = -1)
+      .def("stop", &Network::stop)
       .def("add_node", &Network::add_node, py::arg("node"));
 
   py::classh<Node, PyNode>(m, "Node", R"doc(
 )doc")
-      .def(py::init_alias<unsigned, const std::string &>(), py::arg("node_id"),
-           py::arg("name"))
+      .def(py::init<unsigned, const std::string &, bool, bool,
+                    const std::array<uint8_t, 16>, const std::string &>(),
+           py::arg("node_id"), py::arg("name") = "node",
+           py::arg("default_variables") = true,
+           py::arg("default_functions") = true,
+           py::arg("uuid") = std::array<uint8_t, 16>(),
+           py::arg("advertised_name") = "")
       .def("emit", &Node::emit_name, py::arg("name"))
       .def_readonly("name", &Node::name)
       .def("get_variables", &Node::get_variables)
-      .def_property("description", [](Node &node){
-        return node.description.get_target_description();
-      }, nullptr)
+      .def_property(
+          "description",
+          [](Node &node) { return node.description.get_target_description(); },
+          nullptr)
       .def("set", &Node::set_variable, py::arg("name"), py::arg("value"))
       .def("get", &Node::get_variable, py::arg("name"));
 }
