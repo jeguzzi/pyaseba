@@ -15,6 +15,7 @@
 #include "node.h"
 #include "utils.h"
 
+#include <atomic>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
