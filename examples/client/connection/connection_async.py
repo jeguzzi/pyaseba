@@ -8,11 +8,11 @@ async def main(target: str) -> None:
     client = ClientAsync()
     if await client.connect(target, max_retries=10):
         print(f'Connected {target}')
-        node = await client.wait_node_connection()
-        if node is not None:
-            print(f'Connected node {node}')
-            task = asyncio.Task(client.wait_node_disconnection(node=node))
-            await asyncio.wait([task], timeout=5)
+        node_id, connection = await client.wait_node()
+        assert connection
+        print(f'Connected node {node_id} on #{connection}')
+        task = asyncio.Task(client.wait_node_disconnection(node_id=node_id))
+        await asyncio.wait([task], timeout=5)
         client.close()
     else:
         print(f"Could not connect to {target}")

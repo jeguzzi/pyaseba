@@ -1,38 +1,39 @@
 import time
 import argparse
-from pyaseba.client import connect, Event
+from pyaseba.client import Client, Event
 
 
 def main(target: str) -> None:
-    with connect(target) as client:
-        node = client.wait_node_connection(wait_ms=5000)
-        if node:
-            print(f'node {node}')
+    client = Client()
+    if client.connect(target):
+        node_id, conn = client.wait_node(wait_ms=5000)
+        if conn:
+            print(f'node {node_id}')
             done = False
             script = """
 onevent prox
 emit proxh prox.horizontal
 """
-            client.load_script(node=node,
-                                script=script,
-                                events=[("proxh", 7)])
-            desc = client.get_description(node)
-            assert(desc is not None)
-            index, _ = desc._variables_map['motor.left.target']
+            client.load_script(node_id=node_id,
+                               script=script,
+                               events={"proxh": 7})
+            desc = client.get_description(node_id)
+            assert desc
+            index, _ = desc.variables['motor.left.target']
 
             def cb(event: Event) -> None:
                 nonlocal done
-                if event.name == 'proxh' and event.source == node:
+                if event.name == 'proxh' and event.source == node_id:
                     if event.data[2] > 2000:
                         done = True
 
             client.add_event_callback(cb)
-            client.run(node=node)
-            client.set_variables(node, index, [100, 100])
-            client.set_variable(node, "leds.top", [0, 32, 0])
+            client.cmd_run(node_id)
+            client.set_variable_by_index(node_id, index, [100, 100])
+            client.set_variable(node_id, "leds.top", [0, 32, 0])
             while not done:
                 time.sleep(0.1)
-            client.reset(node=node)
+            client.cmd_reset(node_id)
             time.sleep(0.2)
         else:
             print('no node')

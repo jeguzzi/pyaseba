@@ -16,7 +16,7 @@ class MyNode(Node):
                       default_functions=False,
                       advertised_name="Advertised Node")
 
-    def init(self):
+    def init(self) -> None:
         self.counter = 0
         self.set("_productId", [9])
 
@@ -30,6 +30,7 @@ class MyNode(Node):
         self.set("counter", [value])
 
     def tick(self, time_step: float) -> None:
+        print('tick', time_step)
         self.counter += 1
         self.emit("event")
 

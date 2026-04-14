@@ -3,6 +3,27 @@ from ..node_async import NodeAsync
 
 
 class Thymio(Node):
+    """
+    High-level interface to a remote Thymio.
+
+    >>> thymio = Thymio()
+    >>> thymio.connect()
+    >>> thymio.leds_top = [32, 0, 32]
+    >>> thymio.prox_horizontal
+    [0, 0, 1215, 1563, 2065, 0, 0]
+
+    that can run an offboard Python controller like
+
+    >>> def control(thymio: Thymio) -> None
+            if thymio.prox_horizontal[2] > 2000:
+                thymio.motor_left_target = 0
+                thymio.motor_right_target = 0
+            else:
+                thymio.motor_left_target = 100
+                thymio.motor_right_target = 100
+    >>>
+    >>> thymio.set_controller(control)
+    """
 
     events = {
         "prox":
@@ -64,6 +85,14 @@ class Thymio(Node):
     def __init__(self,
                  cached: bool = False,
                  record_prox_comm: bool = False) -> None:
+        """
+        Constructs a new instance.
+
+        :param cached:  The default value of ``cached``
+           used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`
+        :param record_prox_comm:  Whether to record all ``prox.comm`` events emitted in-between
+           ``prox`` events.
+        """
         super().__init__(cached=cached)
         self._should_record_prox_comm = record_prox_comm
         self.prox_comm_buffer: list[tuple[int, list[int]]] = []
@@ -141,6 +170,10 @@ class Thymio(Node):
 
 
 class ThymioAsync(NodeAsync, Thymio):
+    """
+    Asynchronous version of :py:class:`pyaseba.client.thymio.Thymio`
+    based on :py:class:`pyaseba.client.NodeAsync`.
+    """
 
     def __init__(self,
                  cached: bool = False,

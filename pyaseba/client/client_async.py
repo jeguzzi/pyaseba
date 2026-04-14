@@ -1,10 +1,9 @@
 import asyncio
 from collections.abc import Callable
 from functools import partial
-from typing import Protocol, Unpack, cast
+from typing import Any, Protocol, Unpack, cast
 
-from ._client_impl import Client, Event, Description
-from .msgs import Message
+from ._client_impl import Client, Description, Event, Message, complete_target
 
 
 class WaitCallable[T](Protocol):
@@ -63,108 +62,142 @@ async def call_async_partial[T](f: WaitCallablePartial[T], wait_ms: int) -> T | 
     return p
 
 class ClientAsync(Client):
+    """
+    Offers an asynchronous alternative to :py:class:`pyaseba.client.Client`
+    replacing methods that blocks (and typically takes ``wait_ms: int`` as argument)
+    with coroutines.
 
-    async def scan(self, number: int = -1, wait_ms: int = 1000) -> set[int]:  # type: ignore[override]
-        # self.ping()
-        # nodes: set[int] = set()
-        # async def f():
-        #     while number <=0 or len(nodes) < number:
-        #         r = await self.get_message()
-        #         if r is not None:
-        #             msg, _ = r
-        #             if msg.type == 0x900C:
-        #                 nodes.add(msg.source)
-        # wait_ms = max(0, wait_ms)
-        # try:
-        #     await asyncio.wait_for(f(), timeout=wait_ms*1e-3)
-        # except TimeoutError:
-        #     pass
-        # return nodes
+    The reset of the interface is identical to :py:class:`pyaseba.client.Client`.
+    """
+
+    async def scan(self, #type: ignore[override]
+                   number: int = -1,
+                   wait_ms: int = 1000) -> dict[int, set[int]]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.scan`
+        """
         r = await call_async_partial(partial(super().scan, number=number), wait_ms=wait_ms)
-        return r or set()
+        return r or {}
 
-    async def _query(self, #type: ignore[override]
-                          node: int, include: set[int] = set(), exclude: set[int] = set()) -> Description:
-        return await call_async(partial(super()._query, node=node, include=include, exclude=exclude))
+    async def query_description(self, #type: ignore[override]
+                                node_id: int,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()) -> Description:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_description`
+        """
+        return await call_async(partial(super().query_description, node_id=node_id, include=include, exclude=exclude))
 
     async def get_message(self, #type: ignore[override]
-                          node: int = -1,
-                          type: int = -1) -> tuple[Message, int]:
-        msg, target = await call_async_tuple(partial(super().get_message, node=node, type=type))
+                          node_id: int = -1,
+                          type: int = -1,
+                          include: set[int] = set(),
+                          exclude: set[int] = set()) -> tuple[Message, int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.get_message`
+        """
+        msg, target = await call_async_tuple(partial(super().get_message, node_id=node_id, type=type, include=include, exclude=exclude))
         return cast('Message', msg), target
 
     async def get_event(self, #type: ignore[override]
-                        node: int, name: str) -> Event:
-        return await call_async(partial(super().get_event, node=node, name=name))
+                        node_id: int,
+                        name: str,
+                        include: set[int] = set(),
+                        exclude: set[int] = set()) -> Event:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.get_event`
+        """
+        return await call_async(partial(super().get_event, node_id=node_id, name=name, include=include, exclude=exclude))
 
 
     async def get_variable(self, #type: ignore[override]
-                           node: int, name: str) -> list[int]:
-        return await call_async(partial(super().get_variable, node=node, name=name))
+                           node_id: int,
+                           name: str,
+                           include: set[int] = set(),
+                           exclude: set[int] = set()) -> list[int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.get_variable`
+        """
+        return await call_async(partial(super().get_variable, node_id=node_id, name=name, include=include, exclude=exclude))
 
     async def get_all_variables(self, #type: ignore[override]
-                           node: int) -> dict[str, list[int]]:
-        return await call_async(partial(super().get_all_variables, node=node))
+                                node_id: int,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()) -> dict[str, list[int]]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.get_all_variables`
+        """
+        return await call_async(partial(super().get_all_variables, node_id=node_id, include=include, exclude=exclude))
 
     async def wait_nodes(self, #type: ignore[override]
-                                   nodes: set[int] = set(), number: int = -1, wait_ms: int = 1000) -> set[int]:
-        # wait_ms = max(0, wait_ms)
-        # loop = asyncio.get_running_loop()
-        # future: asyncio.Future[None] = loop.create_future()
-        # c_nodes: set[int] = set()
+                         node_ids: set[int] = set(),
+                         number: int = -1,
+                         wait_ms: int = 1000,
+                         include: set[int] = set(),
+                         exclude: set[int] = set()) -> dict[int, set[int]]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.wait_nodes`
+        """
+        r = await call_async_partial(partial(super().wait_nodes, node_ids=node_ids, number=number, include=include, exclude=exclude), wait_ms=wait_ms)
+        return r or {}
 
-        # def cb(nodes: set[int], done: bool) -> None:
-        #     nonlocal c_nodes
-        #     if not future.cancelled():
-        #         c_nodes = nodes
-        #         if done:
-        #             loop.call_soon_threadsafe(future.set_result, None)
+    async def wait_connection(self, #type: ignore[override]
+                              connection: int = -1) -> tuple[int, str]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.wait_connection`
+        """
+        return await call_async_tuple(partial(super().wait_connection, connection=connection))
 
-        # super().wait_nodes(nodes=nodes, number=number, wait_ms=0, callback=cb)
-        # try:
-        #     await asyncio.wait_for(future, timeout=wait_ms*1e-3)
-        # except TimeoutError:
-        #     pass
-        # return c_nodes
-        r = await call_async_partial(partial(super().wait_nodes, number=number), wait_ms=wait_ms)
-        return r or set()
+    async def wait_disconnection(self, #type: ignore[override]
+                                 connection: int = -1) -> tuple[int, str]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.wait_disconnection`
+        """
+        return await call_async_tuple(partial(super().wait_disconnection, connection=connection))
 
-    async def wait_target_connection(self, #type: ignore[override]
-                                     index: int = -1) -> tuple[int, str]:
-        return await call_async_tuple(partial(super().wait_target_connection, index=index))
-
-    async def wait_target_disconnection(self, #type: ignore[override]
-                                     index: int = -1) -> tuple[int, str]:
-        return await call_async_tuple(partial(super().wait_target_disconnection, index=index))
-
-    async def wait_node_connection(self, #type: ignore[override]
-                                   node: int = -1) -> int:
-        return await call_async_tuple(partial(super().wait_node_connection, node=node))
+    async def wait_node(self, #type: ignore[override]
+                        node_id: int = -1,
+                        include: set[int] = set(),
+                        exclude: set[int] = set()) -> tuple[int, int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.wait_node`
+        """
+        return await call_async_tuple(partial(super().wait_node, node_id=node_id, include=include, exclude=exclude))
 
     async def wait_node_disconnection(self, #type: ignore[override]
-                                      node: int = -1) -> int:
-        return await call_async_tuple(partial(super().wait_node_disconnection, node=node))
+                                      node_id: int = -1,
+                                      include: set[int] = set(),
+                                      exclude: set[int] = set()) -> tuple[int, int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.wait_node_disconnection`
+        """
+        return await call_async_tuple(partial(super().wait_node_disconnection, node_id=node_id, include=include, exclude=exclude))
 
     async def connect(self, #type: ignore[override]
                       target: str,
                       wait_ms: int = 1000,
                       max_retries: int = 3,
-                      ping: bool = True) -> bool:
+                      **kwargs: Any) -> int:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.connect`
+        """
+        target = complete_target(target, **kwargs)
         failed = False
-        connected = False
+        connection = 0
         max_retries = int(max_retries)
         wait_ms = int(wait_ms)
         max_retries = max(max_retries, 0)
         while max_retries >= 0:
-            connected = self._connect(target)
-            if connected:
+            connection = self._connect(target)
+            if connection:
                 break
             max_retries -= 1
             failed = True
             await asyncio.sleep(wait_ms * 1e-3)
-        if connected:
+        if connection:
             if failed:
-                # HACK: else coppelia-sim aseba not connected if started after python
+                # HACK: else does not connect coppelia-sim aseba
+                # if started after python
                 await asyncio.sleep(1)
-            self._start(ping=ping)
-        return connected
+            self._start()
+        return connection

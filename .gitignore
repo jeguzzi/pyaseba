@@ -208,3 +208,8 @@ __marimo__/
 
 .DS_Store
 private
+docs/gen_*
+docs/gallery
+docs/sg*
+docs/Make*
+docs/make*

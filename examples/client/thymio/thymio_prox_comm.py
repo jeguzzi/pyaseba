@@ -24,19 +24,20 @@ async def main(target: str) -> None:
     client = ClientAsync()
 
     if await client.connect(target=target):
-        while len(client.nodes) < 2:
-            await asyncio.sleep(1)
-    print(client.nodes)
-    for i, node in enumerate(client.nodes):
-        thymio = ThymioAsync(record_prox_comm=True)
-        if await thymio.connect(client=client, node_id=node):
-            thymios.append(thymio)
-            await thymio.wait('prox')
-            thymio.prox_comm_tx = int(node & (2**11 - 1))
-            thymio.motor_left_target = -50 * (2 * i - 1)
-            thymio.motor_right_target = 50 * (2 * i - 1)
-            thymio.sync()
-            thymio.call_prox_comm_enable(1)
+        await client.wait_nodes(number=2)
+    d = 1
+    for conn, node_ids in client.node_ids.items():
+        for node_id in node_ids:
+            thymio = ThymioAsync(record_prox_comm=True)
+            if await thymio.connect(client=client, node_id=node_id):
+                thymios.append(thymio)
+                await thymio.wait('prox')
+                thymio.prox_comm_tx = int(node_id & (2**11 - 1))
+                d *= -1
+                thymio.motor_left_target = -50 * d
+                thymio.motor_right_target = 50 * d
+                thymio.sync()
+                thymio.call_prox_comm_enable(1)
 
     try:
         while True:

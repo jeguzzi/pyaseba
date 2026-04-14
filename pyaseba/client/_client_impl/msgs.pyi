@@ -1,4 +1,5 @@
 import collections.abc
+from . import Message
 
 class ArrayAccessOutOfBounds(Message):
     index: int
@@ -84,11 +85,6 @@ class ListNodes(Message):
 
 class LocalEventDescription(Message):
     def __init__(self) -> None: ...
-
-
-class Message:
-    source: int
-    type: int
 
 
 class NamedVariableDescription(Message):

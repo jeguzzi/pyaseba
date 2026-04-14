@@ -14,19 +14,24 @@ onevent send
 emit echo event.args[0:2]
 """
 
+script = """
+onevent send
+emit echo args[0:2]
+"""
+
 
 def main(target: str) -> None:
     client = Client()
     client.add_event_callback(cb)
     if client.connect(target, max_retries=10):
-        node = client.wait_node_connection(wait_ms=1000)
-        if node:
-            client.load_script(node=node,
-                                script=script,
-                                events=[("send", 3), ("echo", 3)])
-            client.run(node=node)
+        node_id, conn = client.wait_node(wait_ms=1000)
+        if conn:
+            client.load_script(node_id=node_id,
+                               script=script,
+                               events={"send": 3, "echo": 3})
+            client.cmd_run(node_id=node_id)
             for i in range(5):
-                client.emit_event(node, "send", [3, 2, i])
+                client.emit_event(node_id, "send", [3, 2, i])
                 time.sleep(0.5)
         client.close()
 

@@ -17,21 +17,23 @@ emit d [a, b]
 def main(target: str) -> None:
     client = Client()
     if client.connect(target, max_retries=10):
-        node = client.wait_node_connection(wait_ms=1000)
-        if node is not None:
-            client.load_script(node=node,
-                                script=script,
-                                events=[("c", 0), ("d", 2)])
-            client.run(node)
-            print(f'variables: {client.get_variables(node)}')
-            print(f'events: {client.get_user_events(node)}')
-            client.set_variable(node, "b", [10])
-            client.emit_event(node, "c", [])
-            e = client.get_event(node, "d", wait_ms=1000)
+        node_id, conn = client.wait_node(wait_ms=1000)
+        if conn:
+            client.load_script(node_id=node_id,
+                               script=script,
+                               events={"c": 0, "d": 2})
+            client.cmd_run(node_id)
+            desc = client.get_description(node_id)
+            assert desc
+            print(f'variables: {desc.variables}')
+            print(f'events: {desc.user_events}')
+            client.set_variable(node_id, "b", [10])
+            client.emit_event(node_id, "c", [])
+            e = client.get_event(node_id, "d", wait_ms=1000)
             if e:
                 print(f"Got {e}")
-            print(f"a = {client.get_variable(node, 'a', wait_ms=1000)}")
-            print(f"b = {client.get_variable(node, 'b', wait_ms=1000)}")
+            print(f"a = {client.get_variable(node_id, 'a', wait_ms=1000)}")
+            print(f"b = {client.get_variable(node_id, 'b', wait_ms=1000)}")
         client.close()
 
 

@@ -6,10 +6,12 @@ from pyaseba import Client
 def main(target: str) -> None:
     client = Client()
     if client.connect(target, max_retries=10):
-        node = client.wait_node_connection(wait_ms=1000)
-        if node is not None:
-            description = client.get_description(node)
-            print(f"Node {node}: {description}")
+        node_id, conn = client.wait_node(wait_ms=1000)
+        if conn:
+            description = client.get_description(node_id)
+            assert description
+            print(f"Node {node_id}: {description}")
+            print(f"Variable map: {description.variables}")
         client.close()
 
 

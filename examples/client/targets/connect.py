@@ -3,9 +3,8 @@ from pyaseba import Client
 
 
 def main(target: str) -> None:
-    client = Client(port=33333)
-    print(client.connect(target, max_retries=0))
-    print('close')
+    client = Client()
+    connection = client.connect(target, max_retries=0)
     client.close()
 
 

@@ -1,13 +1,14 @@
 import time
 import argparse
-from pyaseba.client import connect, Event
+from pyaseba.client import Client, Event
 
 
 def main(target: str) -> None:
-    with connect(target) as client:
-        node = client.wait_node_connection(wait_ms=5000)
-        if node:
-            print(f'node {node}')
+    client = Client()
+    if client.connect(target):
+        node_id, conn = client.wait_node(wait_ms=5000)
+        if conn:
+            print(f'node {node_id}')
             done = False
             script = """
 motor.left.target = 100
@@ -18,20 +19,20 @@ if prox.horizontal[2] > 2000 then
   emit done
 end
 """
-            client.load_script(node=node,
-                                script=script,
-                                events=[("done", 0)])
+            client.load_script(node_id=node_id,
+                               script=script,
+                               events={"done": 0})
 
             def cb(event: Event) -> None:
                 nonlocal done
-                if event.name == 'done' and event.source == node:
+                if event.name == 'done' and event.source == node_id:
                     done = True
 
             client.add_event_callback(cb)
-            client.run(node=node)
+            client.cmd_run(node_id)
             while not done:
                 time.sleep(0.1)
-            client.reset(node=node)
+            client.cmd_reset(node_id)
             time.sleep(0.2)
         else:
             print('no node')

@@ -6,16 +6,15 @@ from pyaseba import Client
 def main(target: str) -> None:
     client = Client()
     if client.connect(target, max_retries=10):
-        node = client.wait_node_connection(wait_ms=5000)
-        if node is not None:
-            description = client.get_description(node)
-            if description:
-                name, size = description.variables[0]
-                value = client.get_variable(node, name, wait_ms=1000)
-                print(f"Variable {name} = {value}")
-                client.set_variable(node, name, [1] * size)
-                value = client.get_variable(node, name, wait_ms=1000)
-                print(f"Variable {name} = {value}")
+        node_id, conn = client.wait_node(wait_ms=5000)
+        description = client.get_description(node_id)
+        if description:
+            (name, (_, size)), *_ = description.variables.items()
+            value = client.get_variable(node_id, name, wait_ms=1000)
+            print(f"Variable {name} = {value}")
+            client.set_variable(node_id, name, [1] * size)
+            value = client.get_variable(node_id, name, wait_ms=1000)
+            print(f"Variable {name} = {value}")
         client.close()
 
 

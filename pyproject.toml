@@ -7,6 +7,9 @@ name = "pyaseba"
 version = "0.0.0"
 dependencies = [
 ]
+
+[console_scripts]
+simple = "network.simple:main"
  
 [tool.scikit-build]
 minimum-version = "build-system.requires"

@@ -95,6 +95,9 @@ template <> struct type_caster<Aseba::NamedValue> {
 
 PYBIND11_MODULE(_client_impl, m) {
 
+  py::options options;
+  options.enable_function_signatures();
+
   // py::bind_vector<std::vector<Client::MessageCallback>>(m,
   // "CallbackList");
 
@@ -110,7 +113,7 @@ PYBIND11_MODULE(_client_impl, m) {
       });
 
   auto msgs = m.def_submodule("msgs", "TODO");
-  py::classh<Aseba::Message>(msgs, "Message", R"doc(
+  py::classh<Aseba::Message>(m, "Message", R"doc(
 )doc")
       .def_readwrite("source", &Aseba::Message::source)
       .def_readwrite("type", &Aseba::Message::type);
@@ -532,6 +535,38 @@ PYBIND11_MODULE(_client_impl, m) {
                py::str(", dest=") + py::str(py::cast(msg.dest)) + py::str(")");
       });
 
+  py::classh<ClientNode>(m, "Description", R"doc(
+)doc")
+      .def_readonly("name", &Aseba::TargetDescription::name)
+      .def_readonly("protocol_version",
+                    &Aseba::TargetDescription::protocolVersion)
+      .def_readonly("variables", &ClientNode::variables)
+      .def_readonly("local_events", &Aseba::TargetDescription::localEvents)
+      .def_readonly("user_events", &ClientNode::events)
+      .def_readonly("functions", &Aseba::TargetDescription::nativeFunctions)
+      .def_property("event_names", &ClientNode::get_event_names, nullptr)
+      .def_property("variable_names", &ClientNode::get_variable_names, nullptr)
+      .def_property("function_names", &ClientNode::get_function_names, nullptr)
+      .def("__repr__",
+           [](const ClientNode &d) {
+             return py::str("Description(name='") + py::cast(d.name) +
+                    py::str("', protocol_version=") +
+                    py::str(py::cast(d.protocolVersion)) +
+                    py::str(", variables=") +
+                    py::str(py::cast(d.get_variable_names())) +
+                    py::str(", events=") +
+                    py::str(py::cast(d.get_event_names())) +
+                    py::str(", functions=") +
+                    py::str(py::cast(d.get_function_names())) + py::str(")");
+           })
+      .def_property(
+          "_variables_map",
+          [](const ClientNode &desc) {
+            unsigned i;
+            return desc.getVariablesMap(i);
+          },
+          nullptr);
+#if 0
   py::classh<Aseba::TargetDescription>(m, "Description", R"doc(
 )doc")
       .def_readonly("name", &Aseba::TargetDescription::name)
@@ -557,189 +592,765 @@ PYBIND11_MODULE(_client_impl, m) {
             return desc.getVariablesMap(i);
           },
           nullptr);
+#endif
+  options.disable_function_signatures();
+  auto client = py::classh<Client>(m, "Client", R"doc(
+Client(port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...)
 
-  py::
-      classh<Client>(m, "Client", R"doc(
+Args:
+  port: If positive, it will listen for connection on that port. Other clients
+        will be able to connect the target at "tcp:host=<ip address>;port=<port>".
+  ping_period_ms: The period in milliseconds to broadcast node discovery messages (:py:class:`pyaseba.client.msgs.ListNodes`).
+        Set it to zero to disable node discovery.
+  automatic_query: Whether to automatically query discovered nodes for their description.
+        If selected, it will effectively call :py:meth:`query_description` 
+        when a presence message from a new node is received. 
+  min_protocol_version: minimal Aseba protocol version that nodes must satisfy to interact with them.
+  max_protocol_version: maximal Aseba protocol version that nodes must satisfy to interact with them.
+
+Examples:
+    The typical life-cycle of a client starts by creating it
+
+    >>> client = Client()
+
+    and then connecting to one or more networks.
+
+    >>> connection = client.connect(...)
+    1
+
+    After interacting with the networks, 
+    we should close the connection
+
+    >>> client.close_connection(connection)
+    True
+
+    and/or close the client, which would also close all connections
+
+    >>> client.close()
+
+    Alternatively, we can use the client in a context that closes 
+    it automatically when it exits.
+
+    >>> with Client() as client:
+            connection = client.connect(...)
+            ...
+
+)doc");
+  client
+      .def(py::init<int, unsigned, bool, unsigned, unsigned>(), py::kw_only(),
+           py::arg("port") = -1, py::arg("ping_period_ms") = 1000,
+           py::arg("automatic_query") = true,
+           py::arg("min_protocol_version") = ASEBA_MIN_TARGET_PROTOCOL_VERSION,
+           py::arg("max_protocol_version") = ASEBA_PROTOCOL_VERSION, R"doc(
+__init__(self, port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...) -> None
+
+Constructs an instance.
 )doc")
-          .def(py::init<int, bool, unsigned, unsigned>(), py::arg("port") = -1,
-               py::kw_only(), py::arg("query") = true,
-               py::arg("min_protocol_version") =
-                   ASEBA_MIN_TARGET_PROTOCOL_VERSION,
-               py::arg("max_protocol_version") = ASEBA_PROTOCOL_VERSION)
-          // .def_readwrite("message_callbacks", &Client::message_callbacks,
-          // py::return_value_policy::reference)
-          .def("__enter__", [](Client &client) { return &client; })
-          .def("__exit__", [](Client &client, void *exc_type, void *exc_value,
-                              void *traceback) { client.stop_and_close(); })
-          .def("clear_incoming_messages", &Client::clear_in_msgs)
-          .def_readwrite("query", &Client::query)
-          .def("_query", &Client::query_description, py::arg("node"),
-               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{},
-               py::return_value_policy::copy)
-          .def_property(
-              "nodes", [](Client &client) { return client.get_node_ids(); },
-              nullptr)
-          .def("get_nodes", &Client::get_node_ids,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{},
-               py::arg("connected") = true)
-          .def_property(
-              "descriptions",
-              [](Client &client) { return client.get_descriptions(); }, nullptr)
-          .def("get_descriptions", &Client::get_descriptions,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{},
-               py::arg("connected") = true)
-          .def("connect", &Client::connect_and_start, py::arg("target"),
-               py::pos_only(), py::arg("wait_ms") = 1000,
-               py::arg("max_retries") = 3, py::arg("ping") = true)
-          .def_property("is_connected", &Client::is_connected, nullptr)
-          .def_property("connections", &Client::get_connected_targets, nullptr)
-          .def_property(
-              "is_running", [](const Client &m) { return !m.stopped; }, nullptr)
-          .def("_connect", &Client::try_to_connect_, py::arg("target"),
-               py::pos_only())
-          .def("_close", &Client::close, py::arg("connection"))
-          .def("_start", &Client::start, py::arg("ping") = true)
-          .def("_stop", &Client::stop)
-          .def("has_node", &Client::has_node, py::arg("node"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{},
-               py::arg("connected") = true)
-          .def("get_message", &Client::get_message, py::arg("node") = -1,
-               py::arg("type") = -1, py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("get_event", &Client::get_event, py::arg("node") = -1,
-               py::arg("name") = "", py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("wait_target_connection", &Client::wait_target_connection,
-               py::arg("index") = -1, py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr)
-          .def("wait_target_disconnection", &Client::wait_target_disconnection,
-               py::arg("index") = -1, py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr)
-          .def("wait_nodes", &Client::wait_nodes,
-               py::arg("nodes") = std::set<uint16_t>(), py::arg("number") = -1,
-               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("wait_node_connection", &Client::wait_node_connection,
-               py::arg("node") = -1, py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("wait_node_disconnection", &Client::wait_node_disconnection,
-               py::arg("node") = -1, py::arg("wait_ms") = 1000,
-               py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          // TODO: better name
-          .def("close", &Client::stop_and_close)
-          .def("ping", &Client::send_message_of_type<Aseba::ListNodes>)
-          .def("run", &Client::send_message_of_type<Aseba::Run, uint16_t>,
-               py::arg("node"), py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("stop", &Client::send_message_of_type<Aseba::Stop, uint16_t>,
-               py::arg("node"), py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("pause", &Client::send_message_of_type<Aseba::Pause, uint16_t>,
-               py::arg("node"), py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("reset", &Client::send_message_of_type<Aseba::Reset, uint16_t>,
-               py::arg("node"), py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("sleep", &Client::send_message_of_type<Aseba::Sleep, uint16_t>,
-               py::arg("node"), py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("scan", &Client::scan, py::arg("number") = -1,
-               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr)
-          .def("send_user_message", &Client::send_user_message, py::arg("type"),
-               py::arg("payload") = Aseba::VariablesDataVector(),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("send_message", &Client::send_message, py::arg("message"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("emit_event", &Client::emit_event, py::arg("node"),
-               py::arg("name"),
-               py::arg("payload") = Aseba::VariablesDataVector(),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("send_event", &Client::send_event, py::arg("type"),
-               py::arg("payload") = Aseba::VariablesDataVector(),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("get_description", &Client::get_description, py::arg("node"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{},
-               py::arg("connected") = true, py::return_value_policy::copy)
-          .def("get_variable", &Client::get_variable, py::arg("node"),
-               py::arg("name"), py::arg("wait_ms"),
-               py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("_get_variables", &Client::get_variable_at_index,
-               py::arg("node"), py::arg("index"), py::arg("length"),
-               py::arg("wait_ms"), py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("set_variable", &Client::set_variable, py::arg("node"),
-               py::arg("name"), py::arg("value"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("set_variables", &Client::set_variable_at_index, py::arg("node"),
-               py::arg("index"), py::arg("values"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("add_event_callback", &Client::add_event_callback,
-               py::arg("callback"))
-          .def("add_message_callback", &Client::add_message_callback,
-               py::arg("callback"))
-          .def("remove_message_callback", &Client::remove_message_callback,
-               py::arg("index"))
-          .def("clear_message_callbacks", &Client::clear_message_callbacks)
-          .def("add_target_connection_callback",
-               &Client::add_target_connection_callback, py::arg("callback"))
-          .def("add_target_disconnection_callback",
-               &Client::add_target_disconnection_callback, py::arg("callback"))
-          .def("add_node_connection_callback",
-               &Client::add_node_connection_callback, py::arg("callback"))
-          .def("add_node_disconnection_callback",
-               &Client::add_node_disconnection_callback, py::arg("callback"))
-          .def("get_user_events", &Client::get_event_names, py::arg("node"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("get_variables", &Client::get_variable_names, py::arg("node"),
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def("get_all_variables", &Client::get_variables, py::arg("node"),
-               py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{})
-          .def(
-              "get_variables_size",
-              [](Client &client, unsigned id) -> unsigned {
-                auto node = client.get_node(id);
-                if (node) {
-                  return node->variables_size;
-                }
-                return 0;
-              },
-              py::arg("node"))
-          .def("advertise", &Client::advertise)
-          .def("deadvertise", &Client::deadvertise)
-          .def("load_script", &Client::load_script, py::arg("node"),
-               py::arg("script"),
-               py::arg("events") = std::vector<Aseba::NamedValue>{},
-               py::arg("constants") = std::vector<Aseba::NamedValue>{},
-               py::arg("include") = std::set<unsigned>{},
-               py::arg("exclude") = std::set<unsigned>{});
+      .def("connect", &Client::connect_and_start_kwargs, py::arg("target"),
+           py::arg("wait_ms") = 1000, py::arg("max_retries") = 3,
+           R"DOC(
+connect(self, target: str, wait_ms: int = 1000, max_retries: int = 3, **kwargs: Any) -> int
 
-  m.def("scan_serial_ports", &Dashel::SerialPortEnumerator::getPorts);
+Connects to an Aseba network.
+
+Args:
+  target: a valid `Dashel target <https://aseba-community.github.io/dashel/>`_
+  wait_ms: time to wait before retrying to connect in case of failure.
+  max_retries: maximal number of time to try to connect before returning a failure.
+  **kwargs: parameters that are appended to ``target`` as ``"<key>=<value>"``. 
+    For example, if target is ``"tcp"``, passing ``port=33333`` 
+    will result in a target ``"tcp:port=33333"``.
+Returns:
+  The positive index of the connected network in case of success, or ``0`` in case of failure.
+)DOC")
+      .def("close_connection", &Client::close, py::arg("connection"), R"DOC(
+close_connection(self, connection: int) -> bool
+
+Closes a connection.
+
+Args:
+  connection: a connection
+Returns:
+  Whether the connection has been closed.
+)DOC")
+      .def("close", &Client::stop_and_close, R"DOC(
+close(self) -> None
+
+Closes all connections.
+)DOC")
+
+      .def("_connect", &Client::try_to_connect_, py::arg("target"),
+           py::pos_only(), R"DOC(
+_connect(self, target: str) -> int
+
+Tries to connect to a target once, without starting the client.
+
+Args:
+  target: a valid `Dashel target <https://aseba-community.github.io/dashel/>`_
+Returns:
+  The positive index of the connected network in case of success, or ``0`` in case of failure.
+)DOC")
+      .def("_start", &Client::start, R"DOC(
+_start(self) -> None
+
+Starts the client.
+)DOC")
+      .def("_stop", &Client::stop, R"DOC(
+_stop(self) -> None
+
+Stops the client.
+)DOC")
+      // .def_readwrite("message_callbacks", &Client::message_callbacks,
+      // py::return_value_policy::reference)
+      .def("__enter__", [](Client &client) { return &client; })
+      .def("__exit__", [](Client &client, void *exc_type, void *exc_value,
+                          void *traceback) { client.stop_and_close(); })
+      .def("wait_connection", &Client::wait_target_connection,
+           py::arg("index") = -1, py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr, R"DOC(
+wait_connection(self, connection: int, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
+
+Waits for a new connection.
+
+Args:
+  index: the index of the connection to wait. Set it to ``-1`` to wait for the any connection.
+  wait_ms: the maximal time in ms to wait for a connection.
+  callback: An optional callback called when a connection is established.
+            It receives the connection index as argument.
+Returns:
+  The positive index of the new connection or ``0`` in case of timeouts.
+)DOC")
+      .def("wait_disconnection", &Client::wait_target_disconnection,
+           py::arg("index") = -1, py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr, R"DOC(
+wait_disconnection(self, connection: int, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
+
+Waits for a disconnection.
+
+Args:
+  index: the index of the connection to wait. Set it to ``-1`` to wait for the any disconnection.
+  wait_ms: the maximal time in ms to wait for a disconnection.
+  callback: An optional callback called when a connection is closed. 
+            It receives the connection index as argument.
+Returns:
+  The positive index of the connection closed or ``0`` in case of timeouts.
+)DOC")
+      .def("add_connection_callback", &Client::add_target_connection_callback,
+           py::arg("callback"),
+           R"DOC(
+add_connection_callback(self, callback: Callable[[int, str], None]) -> None
+
+Adds a callback called when a connection is opened.
+
+Args:
+  callback: The callback that receives the connection index as argument.
+)DOC")
+      .def("add_disconnection_callback",
+           &Client::add_target_disconnection_callback, py::arg("callback"),
+           R"DOC(
+add_disconnection_callback(self, callback: Callable[[int, str], None]) -> None
+
+Adds a callback called when a connection is closed.
+
+Args:
+  callback: The callback that receives the connection index as argument.
+)DOC")
+      .def("wait_nodes", &Client::wait_nodes,
+           py::arg("node_ids") = std::set<uint16_t>(), py::arg("number") = -1,
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+wait_nodes(self, node_ids: set[int] = set(), number: int = -1, wait_ms: int = 1000, callback: Callable[[int, int, bool], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> dict[int, set[int]]
+
+Waits until nodes are discovered. 
+
+Nodes are considered as discovered when their complete description is received.
+
+Args:
+  node_ids: A set of ids. If not empty, only nodes with ids in this set will be considered as discovered.
+  wait_ms: The maximal time in milliseconds to wait.
+  number: The number of nodes to discover.
+  callback: An optional callback, called each time a node is discovered. 
+           It receives a three arguments ``(node_id, connection, complete)`` where
+           complete is `True` only if ``number`` nodes have been discovered.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+
+Returns:
+  A dictionary with the discovered node ids indexed by connection.
+)DOC")
+      .def("wait_node", &Client::wait_node_connection, py::arg("node_id") = -1,
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+wait_node(self, node_id: int = -1, wait_ms: int = 1000, callback: Callable[[int, int], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> tuple[int, int]
+
+Waits until one node is discovered. 
+
+Nodes are considered as discovered when their complete description is received.
+
+Args:
+  node_id: The id of the node to wait. If negative, it will match any node id.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback, called each time a node is discovered. 
+           It receives a two arguments ``(node_id, connection)``.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+
+Returns:
+  A tuple ``(node_id, connection)``. If it fails discovering a node, it returns ``(0, 0)``.
+  Else ``connection`` will be strictly positive.
+)DOC")
+      .def("wait_node_disconnection", &Client::wait_node_disconnection,
+           py::arg("node_id") = -1, py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+wait_node_disconnection(self, node_id: int = -1, wait_ms: int = 1000, callback: Callable[[int, int], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> tuple[int, int]
+
+Waits until one node is discovered. 
+
+Nodes are considered as discovered when their complete description is received.
+
+Args:
+  node_id: The id of the node to wait. If negative, it will match any node id.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback, called each time a node is discovered. 
+           It receives a two arguments ``(node_id, connection)``.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+
+Returns:
+  A tuple ``(node_id, connection)``. If the node has not disconnected, it returns ``(0, 0)``.
+  Else ``connection`` will be strictly positive.
+)DOC")
+      .def("get_node_ids", &Client::get_node_ids,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           py::arg("connected") = true, R"DOC(
+get_node_ids(self, include: set[int] = set(), exclude: set[int] = set(), connected: bool = True) -> dict[int, set[int]]
+
+Gets the discovered node ids.
+
+Args:
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+  connected: An optional criterion for the current connection state of the node.
+
+Returns:
+  A dictionary with discovered node ids indexed by connection.
+)DOC")
+      .def("has_node", &Client::has_node, py::arg("node_id"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           py::arg("connected") = true, R"DOC(
+has_node(self, node_id: int, include: set[int] = set(), exclude: set[int] = set(), connected: bool = True) -> bool
+
+Checks if a node is known.
+
+Args:
+  node_id: The id of the node.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+  connected: An optional criterion for the current connection state of the node.
+Returns:
+  True if a corresponding node is known.
+)DOC")
+      .def("get_descriptions", &Client::get_nodes,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           py::arg("connected") = true, R"DOC(
+get_descriptions(self, include: set[int] = set(), exclude: set[int] = set(), connected: bool = True) -> dict[int, dict[int, Description]]
+
+Gets the discovered node descriptions.
+
+Args:
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+  connected: An optional criterion for the current connection state of the node.
+
+Returns:
+  A dictionary with discovered node descriptions indexed by connection.
+)DOC")
+      .def("get_description", &Client::get_node, py::arg("node_id"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           py::arg("connected") = true, py::return_value_policy::copy,
+           R"DOC(
+get_description(self, node_id: int, include: set[int] = set(), exclude: set[int] = set(), connected: bool = True) -> Description | None
+
+Gets a node description.
+
+Args:
+  node_id: The id of the node to wait. If negative, it will match any node id.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+  connected: An optional criterion for the current connection state of the node.
+
+Returns:
+  The node description or ``None`` is no suitable node was found. 
+)DOC")
+      .def("scan", &Client::scan, py::arg("number") = -1,
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr, R"DOC(
+scan(self, number: int = -1, wait_ms: int = 1000, callback: Callable[[int, int, bool], None]| None = None) -> dict[int, set[int]]
+
+Scans for nodes on all connected networks.
+
+Args:
+  number: The minimal number of nodes to find before returning.
+  wait_ms: the maximal time in ms to wait.
+  callback: An optional callback called each time a node is found.
+            It receives a three arguments ``(node_id, connection, complete)`` where
+            complete is `True` only if ``number`` nodes have been found.
+Returns:
+  A dictionary of node ids indexed by connection.
+)DOC")
+      .def("ping", &Client::send_message_of_type<Aseba::ListNodes>, R"DOC(
+ping(self) -> None
+
+Broadcast a :py:class:`pyaseba.client.msgs.ListNodes` message on all connected networks.
+)DOC")
+      .def("query_description", &Client::query_description, py::arg("node_id"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           py::return_value_policy::copy, R"DOC(
+query_description(self, node_id: int, wait_ms: int = 1000, callback: Callable[[Description], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Queries the description of a node.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the description is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  A description or ``None`` if not received in time.
+)DOC")
+      .def("add_node_callback", &Client::add_node_connection_callback,
+           py::arg("callback"), R"DOC(
+add_node_callback(self, callback: Callable[[int, int], None]) -> None
+
+Adds a callback called called when a node is discovered. 
+
+Args:
+  callback: A callback that receives a two arguments ``(node_id, connection)``.
+
+)DOC")
+      .def("add_node_disconnection_callback",
+           &Client::add_node_disconnection_callback, py::arg("callback"),
+           R"DOC(
+add_node_disconnection_callback(self, callback: Callable[[int, int], None]) -> None
+
+Adds a callback called when a node is disconnected. 
+
+Args:
+  callback: A callback that receives a two arguments ``(node_id, connection)``.
+
+)DOC")
+      .def("add_message_callback", &Client::add_message_callback,
+           py::arg("callback"), R"DOC(
+add_message_callback(self, callback: Callable[[Message, int], None]) -> None
+
+Adds a callback called when a message is received. 
+
+Args:
+  callback: A callback that receives a two arguments ``(message, connection)``.
+
+)DOC")
+      .def("remove_message_callback", &Client::remove_message_callback,
+           py::arg("index"), R"DOC(
+remove_message_callback(self, index: int) -> None
+
+Removes a message callback. 
+
+Args:
+  index: The index of the callback.
+
+)DOC")
+      .def("clear_message_callbacks", &Client::clear_message_callbacks, R"DOC(
+clear_message_callbacks(self) -> None
+
+Clears all message callbacks. 
+
+)DOC")
+      .def("clear_incoming_messages", &Client::clear_in_msgs, R"DOC(
+clear_incoming_messages(self) -> None
+
+Deletes all incoming messages. 
+
+)DOC")
+      .def("get_message", &Client::get_message, py::arg("node_id") = -1,
+           py::arg("type") = -1, py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_message(self, node_id: int = -1, type: int = -1, wait_ms: int = 1000, callback: Callable[[Message, int], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> tuple[Message | None, int]
+
+Wait until a message is received.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the message is received.  
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+Returns:
+  A message or ``None`` if not received in time.
+)DOC")
+      .def("send_user_message", &Client::send_user_message, py::arg("type"),
+           py::arg("payload") = Aseba::VariablesDataVector(),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+send_user_message(self, type: int = -1, payload: Sequence[int] = (), include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Send a message of arbitrary type.
+
+Args:
+  type: The type of the Aseba message
+  payload: The payload of the message
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("send_message", &Client::send_message, py::arg("message"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+send_message(self, message: Message, include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Send a message.
+
+Args:
+  message: The message.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("add_event_callback", &Client::add_event_callback,
+           py::arg("callback"), R"DOC(
+add_event_callback(self, callback: Callable[[Event], None]) -> None
+
+Adds a callback called when an event is received. 
+
+Args:
+  callback: A callback.
+
+)DOC")
+      .def("get_event", &Client::get_event, py::arg("node_id") = -1,
+           py::arg("name") = "", py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_event(self, node_id: int, name: str, wait_ms: int = 1000, callback: Callable[[Event], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Wait until an event is received.
+
+Args:
+  node_id: The id of the node.
+  name: The name of the event.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the event is received.  
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+Returns:
+  A message or ``None`` if not received in time.
+)DOC")
+      .def("emit_event", &Client::emit_event, py::arg("node_id"),
+           py::arg("name"), py::arg("payload") = Aseba::VariablesDataVector(),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+emit_event(self, node_id: int, name: str, *, payload: Sequence[int] = (), include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Send a message.
+
+Args:
+  node_id: The id of the node defining the event.
+  name: The name of the event.
+  payload: The payload of the event
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("send_event", &Client::send_event, py::arg("type"),
+           py::arg("payload") = Aseba::VariablesDataVector(),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+send_event(self, type: int, *, payload: Sequence[int] = (), include: set[int] = set(), exclude: set[int] = set()) -> Description | None
+
+Send an event of arbitrary type. Same as :py:meth:`send_user_message`.
+
+Args:
+  type: The type of the event.
+  payload: The payload of the event
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      // TODO: better name
+      .def("cmd_run", &Client::send_message_of_type<Aseba::Run, uint16_t>,
+           py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+cmd_run(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Sends a command to a node to start running
+
+Args:
+  node_id: The id of the node.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("cmd_stop", &Client::send_message_of_type<Aseba::Stop, uint16_t>,
+           py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+cmd_stop(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Sends a command to a node to stop running
+
+Args:
+  node_id: The id of the node.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("cmd_pause", &Client::send_message_of_type<Aseba::Pause, uint16_t>,
+           py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+cmd_pause(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Sends a command to a node to pause
+
+Args:
+  node_id: The id of the node.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("cmd_reset", &Client::send_message_of_type<Aseba::Reset, uint16_t>,
+           py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+cmd_reset(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Sends a command to a node to reset
+
+Args:
+  node_id: The id of the node.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("cmd_sleep", &Client::send_message_of_type<Aseba::Sleep, uint16_t>,
+           py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+cmd_sleep(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Sends a command to a node to sleep
+
+Args:
+  node_id: The id of the node.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("get_variable", &Client::get_variable, py::arg("node_id"),
+           py::arg("name"), py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_variable(self, node_id: int, name: str, wait_ms: int = 1000, callback: Callable[[list[int]], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> list[int]
+
+Query a node for the value of a variable by name.
+
+Args:
+  node_id: The id of the node.
+  name: The name of the variable.
+  callback: An optional callback called when the value is received.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("get_variable_by_index", &Client::get_variable_at_index,
+           py::arg("node_id"), py::arg("index"), py::arg("length"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_variable_by_index(self, node_id: int, index: int, length: int, wait_ms: int = 1000, callback: Callable[[list[int]], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> list[int]
+
+Query a node for the value of a variable by index and length
+
+Args:
+  node_id: The id of the node.
+  index: The index of the variable.
+  length: The size of the variable.
+  callback: An optional callback called when the value is received.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("get_all_variables", &Client::get_variables, py::arg("node_id"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_all_variables(self, node_id: int, wait_ms: int = 1000, callback: Callable[[list[int]], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> dict[str, list[int]]
+
+Query a node for the value of all variables
+
+Args:
+  node_id: The id of the node.
+  callback: An optional callback called when the value is received.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("set_variable", &Client::set_variable, py::arg("node_id"),
+           py::arg("name"), py::arg("value"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_variable(self, node_id: int, name: str, value: Sequence[int], wait_ms: int = 1000, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Set the value of a variable by name
+
+Args:
+  node_id: The id of the node.
+  name: The name of the variable.
+  value: The value.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      // TODO: better _by_index
+      .def("set_variable_by_index", &Client::set_variable_at_index,
+           py::arg("node_id"), py::arg("index"), py::arg("value"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_variable_by_index(self, node_id: int, index: int, value: Sequence[int], wait_ms: int = 1000, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Set the value of a variable by index.
+
+Args:
+  node_id: The id of the node.
+  index: The index of the variable.
+  value: The value.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      // TODO: better to use dictionaries for events and constants
+      .def("load_script", &Client::load_script, py::arg("node_id"),
+           py::arg("script"), py::arg("events") = std::map<std::wstring, int>(),
+           py::arg("constants") = std::map<std::wstring, int>(),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+load_script(self, node_id: int, script: str, events: dict[str, int] = {}, constants: dict[str, int] = {}, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Set the value of a variable by index.
+
+Args:
+  node_id: The id of the node.
+  script: The Aseba code.
+  events: A dictionary of {name -> payload size} defining each event in the script.
+  constants: A dictionary of {name -> value} defining each constant in the script.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+
+      .def("advertise", &Client::advertise_nodes, py::arg("name") = "pyaseba",
+           py::arg("specs") =
+               std::map<std::string, std::tuple<std::string, unsigned>>(
+                   {{"thymio-II", {"Thymio II", 8}}}),
+           py::arg("query_product_id") = false, R"DOC(
+advertise(self, name: str = "pyaseba", specs: dict[str, tuple[str, int]] = {"thymio-II: ("Thymio II", 8)}, query_product_id: bool = false) -> None
+
+Advertise all nodes with zeroconf.
+
+Args:
+  name: The name of the zeroconf record.
+  specs: An optional mapping between node description names and a tuple with name and product id.
+  query_product_id: Whether to query the product id. If not set and no key is provided in ``specs``, 
+                    the product id will default to ``0``.
+)DOC")
+      .def("deadvertise", &Client::deadvertise_nodes,
+           py::arg("name") = "pyaseba", R"DOC(
+deadvertise(self, name: str) -> None
+
+De-advertise all nodes with zeroconf.
+
+Args:
+  name: The name of the zeroconf record.
+)DOC");
+  m.def("scan_serial_ports", &Dashel::SerialPortEnumerator::getPorts, R"DOC(
+scan_serial_ports() -> dict[int, tuple[str, str]]
+
+Lists the serial ports on this device.
+
+Args:
+  A list of ``(device, description)`` tuples.
+)DOC");
+
+  m.def("complete_target", &Client::complete_target, R"DOC(
+complete_target(target: str, **kwargs: Any) -> str
+
+Add parameters to a Dashel target.
+
+Args:
+  **kwargs: parameters that are appended to ``target`` as ``"<key>=<value>"``. 
+            For example, if target is ``"tcp"``, passing ``port=33333`` 
+            will result in a target ``"tcp:port=33333"``.
+
+Returns:
+  The dashel target
+
+)DOC");
+
+  options.enable_function_signatures();
+  client
+      .def_readwrite("automatic_query", &Client::query, R"DOC(
+Readonly
+
+Whether to automatically query discovered nodes for their description.
+If set, it will effectively call :py:meth:`query_description` 
+when a presence message from a new node is received. 
+)DOC")
+      .def_property("is_connected", &Client::is_connected, nullptr, R"DOC(
+Readonly
+
+Whether at least the client has at least one open connection.
+)DOC")
+      .def_readonly("port", &Client::port, R"DOC(
+Readonly
+
+Whether at least the client has at least one open connection.
+)DOC")
+      .def_property("connections", &Client::get_connected_targets, nullptr,
+                    R"DOC(
+Readonly
+
+A dictionary of connected dashel target indexed by connection.
+)DOC")
+      .def_property("ping_period_ms", &Client::get_ping_period_ms,
+                    &Client::set_ping_period_ms, R"DOC(
+The period in milliseconds to broadcast node discovery messages (:py:class:`pyaseba.client.msgs.ListNodes`).
+Set it to zero to disable node discovery. 
+)DOC")
+      .def_property(
+          "node_ids", [](Client &client) { return client.get_node_ids(); },
+          nullptr, R"DOC(
+Readonly
+
+A dictionary with all discovered node ids indexed by connection.
+)DOC")
+      .def_property(
+          "descriptions", [](Client &client) { return client.get_nodes(); },
+          nullptr,
+          R"DOC(
+Readonly
+
+A dictionary with all discovered node descriptions indexed by connection.
+)DOC")
+      .def_property(
+          "_is_running", [](const Client &m) { return !m.stopped; }, nullptr);
+
+  // .def("get_user_events", &Client::get_event_names, py::arg("node_id"),
+  //      py::arg("include") = std::set<unsigned>{},
+  //      py::arg("exclude") = std::set<unsigned>{})
+  // .def("get_variables", &Client::get_variable_names, py::arg("node_id"),
+  //      py::arg("include") = std::set<unsigned>{},
+  //      py::arg("exclude") = std::set<unsigned>{})
+  // .def(
+  //     "get_variables_size",
+  //     [](Client &client, unsigned id) -> unsigned {
+  //       auto node = client.get_node(id);
+  //       if (node) {
+  //         return node->variables_size;
+  //       }
+  //       return 0;
+  //     },
+  //     py::arg("node_id"))
 }

@@ -7,16 +7,15 @@ from pyaseba import ClientAsync
 async def main(target: str) -> None:
     client = ClientAsync()
     if await client.connect(target, max_retries=10):
-        node = await client.wait_node_connection()
-        if node is not None:
-            description = client.get_description(node)
-            if description:
-                name, size = description.variables[0]
-                value = await client.get_variable(node, name)
-                print(f"Variable {name} = {value}")
-                client.set_variable(node, name, [1] * size)
-                value = await client.get_variable(node, name)
-                print(f"Variable {name} = {value}")
+        node_id, conn = await client.wait_node()
+        description = client.get_description(node_id)
+        if description:
+            (name, (_, size)), *_ = description.variables.items()
+            value = await client.get_variable(node_id, name)
+            print(f"Variable {name} = {value}")
+            client.set_variable(node_id, name, [1] * size)
+            value = await client.get_variable(node_id, name)
+            print(f"Variable {name} = {value}")
         client.close()
 
 

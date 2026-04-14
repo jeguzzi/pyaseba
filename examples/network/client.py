@@ -1,18 +1,16 @@
 import argparse
 
 from pyaseba import Client
-import time
 
 
 def main(target: str) -> None:
     client = Client()
     if client.connect(target, max_retries=1):
-        while len(client.nodes) < 2:
-            time.sleep(1)
-        for node in client.nodes:
-            if client.wait_node_connection(node=node, wait_ms=1000) is not None:
-                description = client.get_description(node)
-                print(f"Node {node}: {description}")
+        client.wait_nodes(number=2, wait_ms=50000)
+        for conn, node_ids in client.node_ids.items():
+            for node_id in node_ids:
+                description = client.get_description(node_id)
+                print(f"Node {node_id}: {description}")
         client.close()
 
 

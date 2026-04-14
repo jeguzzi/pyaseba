@@ -10,13 +10,12 @@ async def main(target: str) -> None:
     client = ClientAsync()
 
     if await client.connect(target=target):
-        while len(client.nodes) < 3:
-            await asyncio.sleep(1)
-    print(client.nodes)
-    for node in client.nodes[:]:
-        thymio = ThymioAsync(record_prox_comm=True)
-        if await thymio.connect(client=client, node_id=node):
-            thymios.append(thymio)
+        await client.wait_nodes(number=2)
+    for conn, node_ids in client.node_ids.items():
+        for node_id in node_ids:
+            thymio = ThymioAsync(record_prox_comm=True)
+            if await thymio.connect(client=client, node_id=node_id):
+                thymios.append(thymio)
 
     for i in range(100):
         print(f'step {i}')

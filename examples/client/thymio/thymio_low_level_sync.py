@@ -1,25 +1,28 @@
 import argparse
 import time
 
-from pyaseba.client import connect
+from pyaseba.client import Client
 
 
 def main(target: str) -> None:
-    with connect(target) as client:
-        node = client.wait_node_connection(wait_ms=5000)
-        if node:
-            print(f'node {node}')
-            desc = client.get_description(node)
+    client = Client()
+    if client.connect(target):
+        node_id, conn = client.wait_node(wait_ms=5000)
+        if conn:
+            print(f'node {node_id}')
+            desc = client.get_description(node_id)
             if desc:
-                index, _ = desc._variables_map['motor.left.target']
-                client.set_variables(node, index, [100, 100])
-                client.set_variable(node, "leds.top", [0, 32, 0])
+                index, _ = desc.variables['motor.left.target']
+                client.set_variable_by_index(node_id, index, [100, 100])
+                client.set_variable(node_id, "leds.top", [0, 32, 0])
                 while True:
-                    data = client.get_variable(node, "prox.horizontal", wait_ms=1000)
+                    data = client.get_variable(node_id,
+                                               "prox.horizontal",
+                                               wait_ms=1000)
                     if data is not None and data[2] > 2000:
                         break
                     time.sleep(0.1)
-                client.reset(node=node)
+                client.cmd_reset(node_id)
                 time.sleep(0.2)
         else:
             print('no node')

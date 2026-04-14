@@ -7,11 +7,12 @@ from pyaseba import ClientAsync
 async def main(target: str) -> None:
     client = ClientAsync()
     if await client.connect(target, max_retries=10):
-        node = await client.wait_node_connection()
-        if node is not None:
-            description = client.get_description(node)
-            print(f"Node {node}: {description}")
-            print(f"Varible map: {description._variables_map}")
+        node_id, conn = await client.wait_node()
+        if conn:
+            description = client.get_description(node_id)
+            assert description
+            print(f"Node {node_id}: {description}")
+            print(f"Variables: {description.variables}")
         client.close()
 
 

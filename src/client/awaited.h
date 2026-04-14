@@ -206,9 +206,10 @@ struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
   AWaitedVariables(int node, const Aseba::VariablesMap &d, bool awaited,
                    const Callback &cb = nullptr)
       : A(awaited, cb), d(d), rs(compute_variables_size(d), false),
-        vs(d.size()), target_node(node) {}
+        vs(rs.size()), target_node(node) {}
 
   bool is_complete(const Aseba::Variables *msg) {
+    std::cout << "AWaitedVariables::is_complete\n";
     if (target_node >= 0 && target_node != msg->source)
       return false;
     const auto start = msg->start;
@@ -221,12 +222,15 @@ struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
   }
 
   Value get(const Aseba::Variables *msg) {
+    std::cout << "AWaitedVariables::get\n";
     VariablesMap m;
     for (const auto &[k, v] : d) {
       const auto [index, size] = v;
+      std::cout << index << " " << size << "\n";
       m[k] = Aseba::VariablesDataVector(vs.begin() + index,
                                         vs.begin() + index + size);
     }
+    std::cout << "-AWaitedVariables::get\n";
     return m;
   }
 };
