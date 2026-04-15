@@ -5,9 +5,14 @@ from pyaseba.network import Network, Node
 
 class MyNode(Node):
 
-    events = ["event"]
-    variables = [("value", 3), ("counter", 1)]
-    functions = [("duplicate", [(3, "input"), (3, "result")])]
+    events = {
+        "event": "emitted at each control step after incrementing counter"
+    }
+    variables = {"counter": 1, "value": 3}
+    functions = {
+        "duplicate": ("duplicates the input", [("input", 3), ("result", 3)]),
+        "square": ("sets the square of the input to value", [("input", 3)])
+    }
 
     def __init__(self, node_id: int):
         Node.__init__(self,
@@ -17,12 +22,16 @@ class MyNode(Node):
                       advertised_name="Advertised Node")
 
     def init(self) -> None:
+        print('MyNode.init')
         self.counter = 0
         self.set("_productId", [9])
 
     @property
     def counter(self) -> int:
-        return self._c
+        vs = self.get("counter")
+        if vs:
+            return vs[0]
+        return 0
 
     @counter.setter
     def counter(self, value: int) -> None:
@@ -30,11 +39,12 @@ class MyNode(Node):
         self.set("counter", [value])
 
     def tick(self, time_step: float) -> None:
-        print('tick', time_step)
+        print(f'MyNode.tick({time_step:.1f})')
         self.counter += 1
         self.emit("event")
 
     def reset(self) -> None:
+        print('MyNode.reset')
         self.counter = 0
 
     def duplicate(self, xs: list[int]) -> list[int]:
@@ -47,10 +57,6 @@ def main() -> None:
         node = MyNode(i)
         network.add_node(node)
     network.spin(time_step=0.1, duration=10)
-
-    # for _ in range(6000):
-    #     server.spin(0.1)
-    #     time.sleep(0.1)
 
 
 if __name__ == '__main__':

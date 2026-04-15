@@ -3,7 +3,7 @@ from collections.abc import Callable, Collection, Iterable, Sequence
 from functools import Placeholder, partial
 from typing import Any, NamedTuple, Self, TypeVar
 
-from ._client_impl import Client, Description, Event, complete_target
+from .._client_impl import Client, Description, Event, complete_target
 
 T = TypeVar("T")
 
@@ -187,8 +187,8 @@ class Node:
         return "<Node unconnected>"
 
     def _matches(self, name: str) -> bool:
-        return (any(re.match(e, name) for e in self.function_include)
-                and not any(re.match(e, name) for e in self.function_exclude))
+        return (any(re.findall(e, name) for e in self.function_include)
+                and not any(re.findall(e, name) for e in self.function_exclude))
 
     @property
     def node_id(self) -> int:
@@ -536,6 +536,23 @@ emit {event_name} {event_variables}
         for name, value in self._next_variables_values.items():
             self.set(name, value, cached=False)
         self._next_variables_values.clear()
+
+    def get_all(self, wait_ms: int = 1000, cached: bool | None = None) -> dict[str, list[int]]:
+        """
+        Gets all variable.
+
+        :param      wait_ms:  The maximal time to wait in milliseconds.
+        :param      cached:   Whether to return cached values if present.
+                              If false, it will query the remote object
+                              for an updated value.
+                              If not set, it will default to :py:attr:`cached`.
+        """
+        assert (self._client)
+        if cached is None:
+            cached = self.cached
+        if not cached:
+            self.update(wait_ms)
+        return self._variable_values
 
     def update(self, wait_ms: int = 1000) -> None:
         """

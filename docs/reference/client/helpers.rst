@@ -5,5 +5,3 @@ Helpers
 
 .. autofunction:: find_serial_targets
 
-.. autofunction:: print_description
-

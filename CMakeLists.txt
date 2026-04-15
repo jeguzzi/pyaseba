@@ -16,7 +16,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 if(WIN32)
   add_compile_definitions(NOMINMAX _ALLOW_KEYWORD_MACROS)
-  add_definitions(-DDISABLE_WEAK_CALLBACKS)
+  # add_definitions(-DDISABLE_WEAK_CALLBACKS)
 else()
   add_compile_options(-fPIC)
 endif()

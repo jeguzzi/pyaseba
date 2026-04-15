@@ -1,7 +1,6 @@
 import argparse
 
-from pyaseba import Client
-from pyaseba.client import print_description
+from pyaseba import Client, print_description
 
 
 def main(target: str) -> None:

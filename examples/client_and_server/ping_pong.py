@@ -1,4 +1,3 @@
-import time
 from functools import partial
 from pyaseba import Client, Network
 from pyaseba.client import Event
@@ -30,12 +29,10 @@ def make_network() -> Network:
     from pyaseba.network import Node
 
     class MyNode(Node):
-        events: list[str] = []
-        variables: list[tuple[str, int]] = []
-        functions: list[tuple[str, list[tuple[str, int]]]] = [('ping', [])]
+        functions = {'ping': ('', [])}
 
     network = Network()
-    node = MyNode(0, "MyNode")
+    node = MyNode(0, "MyNode", default_variables=False, default_functions=False)
     network.add_node(node)
     return network
 

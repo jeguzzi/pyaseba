@@ -6,9 +6,6 @@
 
 namespace py = pybind11;
 
-using FunctionArgSpec = std::tuple<int16_t, std::string>;
-using FunctionSpec = std::tuple<std::string, std::vector<FunctionArgSpec>>;
-
 struct PyNode : public Node, public py::trampoline_self_life_support {
 
   using Node::Node;
@@ -25,9 +22,9 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
     auto obj = py::cast(this);
     if (!py::hasattr(obj, "events"))
       return;
-    const auto events = obj.attr("events").cast<std::vector<std::string>>();
-    for (const auto &name : events) {
-      add_event(name, "");
+    const auto events = obj.attr("events").cast<Description::EventsMap>();
+    for (const auto &[name, desc] : events) {
+      add_event(name, desc);
     }
   }
 
@@ -36,8 +33,7 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
     if (!py::hasattr(obj, "variables"))
       return;
     const auto variables =
-        obj.attr("variables")
-            .cast<std::vector<std::tuple<std::string, unsigned>>>();
+        obj.attr("variables").cast<std::map<std::string, uint16_t>>();
     for (const auto &[name, size] : variables) {
       add_variable(name, size);
     }
@@ -49,24 +45,23 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
       return;
     auto signature = py::module_::import("inspect").attr("signature");
     const auto functions =
-        obj.attr("functions").cast<std::vector<FunctionSpec>>();
-    for (const auto &[name, args] : functions) {
+        obj.attr("functions").cast<Description::FunctionsMap>();
+    for (const auto &[name, fun] : functions) {
       const auto n = py::cast(name);
       if (py::hasattr(obj, n)) {
-        const auto &fun = obj.attr(n);
-        const auto inputs = py::len(signature(fun).attr("parameters"));
-        add_function(name, "", args, inputs);
+        const auto &f = obj.attr(n);
+        const auto inputs = py::len(signature(f).attr("parameters"));
+        add_function(name, fun, inputs);
       }
     }
   }
 
   void call_extra_function(AsebaVMState *vm, unsigned id) override {
-    if (id > functions.size())
+    if (id >= functions.size())
       return;
     pybind11::gil_scoped_acquire acquire;
     const auto &[name, args, inputs] = functions[id];
     const auto &fun = py::cast(this).attr(py::cast(name));
-    // std::vector<std::vector<int16_t>> arg_values(args.size());
     std::stack<uint16_t> addresses;
     size_t i = 0;
     py::tuple pyargs(inputs);
@@ -91,7 +86,6 @@ struct PyNode : public Node, public py::trampoline_self_life_support {
       rs = {{r.cast<int16_t>()}};
     }
     const auto num = std::min(args.size(), rs.size());
-    // py::print("set result to ", num, py::cast(rs));
     for (i = 0; i < num; i++) {
       const size_t size = static_cast<size_t>(args[args.size() - i - 1]);
       uint16_t address = addresses.top();
@@ -219,31 +213,79 @@ Examples:
     >>> network.stop()
 )doc");
 
-  network
-      .def_property("port", &Network::get_port, nullptr, R"doc(
-Readonly
+  auto desc = py::classh<Description>(m, "Description", R"doc(
+The description of an Aseba node.
+)doc");
 
-The port.
+  network
+      .def("__repr__",
+           [](const Network &n) {
+             return py::str("Network(address='") + py::str(n.get_address()) +
+                    py::str("', port='") + py::str(py::cast(n.get_port())) +
+                    py::str(")");
+           })
+      .def_property("port", &Network::get_port, nullptr, R"doc(
+The port (readonly).
 )doc")
       .def_property("address", &Network::get_address, nullptr, R"doc(
-Readonly
-
-The IP address.
+The IP address (readonly).
 )doc");
 
-  node.def_property(
-          "description",
-          [](Node &node) { return node.description.get_target_description(); },
-          nullptr, R"doc(
-Readonly
-
-The node description.
+  node.def("__repr__",
+           [](const Node &n) {
+             return py::str("Node(node_id='") +
+                    py::str(py::cast(n.get_node_id())) + py::str("', name='") +
+                    py::str(n.name) + py::str(")");
+           })
+      .def_property("node_id", &Node::get_node_id, nullptr, R"doc(
+The node id (readonly).
+)doc")
+      .def_readonly("description", &Node::description, R"doc(
+The node description (readonly).
 )doc")
       .def_readonly("name", &Node::name, R"doc(
-Readonly
-
-The node name.
+The node name (readonly)..
 )doc");
+
+  desc.def_property("name", &Description::get_name, nullptr, R"doc(
+The name of the Aseba node (readonly).
+)doc")
+      .def_property("protocol_version", &Description::get_protocol_version,
+                    nullptr,
+                    R"doc(
+The version of Aseba used by the node (readonly).
+)doc")
+      .def_property("variables", &Description::get_variables_map, nullptr,
+                    R"doc(
+The variables defined by the Aseba node as a dictionary
+of ``(index, size)`` tuples keyed by name (readonly).
+)doc")
+      .def_property("local_events", &Description::get_events_map, nullptr,
+                    R"doc(
+The local events defined by the Aseba node as a dictionary
+of descriptions keyed by name (readonly).
+
+Local events are locally emitted by the Aseba node and 
+can only be accessed through an Aseba script running on the node.
+)doc")
+      .def_property("functions", &Description::get_functions_map, nullptr,
+                    R"doc(
+The local functions defined by the Aseba node 
+as a dictionary of ``(description, arguments)`` tuples keyed by name,
+where each argument is a tuple ``(name, size)`` (readonly).
+
+Local functions can be called through an Aseba script running on the node.
+)doc")
+      .def("__repr__", [](const Description &d) {
+        return py::str("Description(name='") + py::cast(d.get_name()) +
+               py::str("', protocol_version=") +
+               py::str(py::cast(d.get_protocol_version())) +
+               py::str(", variables=") + py::str(py::cast(d.get_variables_map())) +
+               py::str(", local_events=") +
+               py::str(py::cast(d.get_events_map())) +
+               py::str(", functions=") + py::str(py::cast(d.get_functions_map())) +
+               py::str(")");
+      });
 
   options.disable_function_signatures();
 

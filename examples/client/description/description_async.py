@@ -1,8 +1,7 @@
 import argparse
 import asyncio
 
-from pyaseba import ClientAsync
-from pyaseba.client import print_description
+from pyaseba import ClientAsync, print_description
 
 
 async def main(target: str) -> None:

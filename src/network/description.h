@@ -19,6 +19,11 @@
 struct Description {
 
   using Variables = std::vector<std::tuple<uint16_t, std::string>>;
+  using VariablesMap = std::map<std::string, std::tuple<int, int>>;
+  using EventsMap = std::map<std::string, std::string>;
+  using FunctionArgument = std::tuple<std::string, int16_t>;
+  using Function = std::tuple<std::string, std::vector<FunctionArgument>>;
+  using FunctionsMap = std::map<std::string, Function>;
 
   inline static Variables default_variables = {
       {1, "id"},
@@ -30,18 +35,34 @@ struct Description {
   explicit Description(const std::string &name = "node",
                        bool add_default_variables = true,
                        bool add_default_functions = true)
-      : _variables(), _events({{nullptr, nullptr}}), _functions({nullptr}),
-        _allocated_functions(), _desc(nullptr), _name(name), _names() {
+      : _variables(), _variables_map(), _variables_size(0),
+        _events({{nullptr, nullptr}}), _events_map(), _functions({nullptr}),
+        _allocated_functions(), _functions_map(), _desc(nullptr), _name(name),
+        _names() {
 
     if (add_default_variables) {
       _variables = default_variables;
+      for (const auto &[s, n] : default_variables) {
+        _variables_map[n] = {_variables_size, s};
+        _variables_size += s;
+      }
     }
     if (add_default_functions) {
       _functions = {ASEBA_NATIVES_STD_DESCRIPTIONS, nullptr};
+      for (const auto &f : _functions) {
+        if (f) {
+          std::vector<FunctionArgument> args;
+          for (auto arg = f->arguments; arg->size && arg->name; arg++) {
+            args.emplace_back(std::string(arg->name), arg->size);
+          }
+          _functions_map[std::string(f->name)] = {std::string(f->doc), args};
+        }
+      }
     }
   }
 
   const Variables &get_variables() const { return _variables; }
+  const VariablesMap &get_variables_map() const { return _variables_map; }
 
   const AsebaVMDescription *get_description() {
     // std::cout << "AsebaVMDescription::get_description\n";
@@ -103,26 +124,37 @@ struct Description {
     return d;
   }
 
+  const std::string &get_name() const { return _name; }
+  unsigned get_protocol_version() const { return ASEBA_PROTOCOL_VERSION; }
+
+  const EventsMap &get_events_map() const { return _events_map; }
+
+  const FunctionsMap &get_functions_map() const { return _functions_map; }
+
   void set_name(const std::string &name) { _name = name; }
 
   void add_variable(const std::string &name, uint16_t size) {
+    _variables_size += size;
+    _variables_map[name] = {_variables_size, size};
     _variables.emplace_back(size, name);
   }
 
   void add_event(const std::string &name, const std::string &description) {
     _events.insert(std::end(_events) - 1, {c_str(name), c_str(description)});
+    _events_map[name] = description;
   }
 
-  void add_function(const std::string &name, const std::string &description,
-                    const std::vector<std::tuple<int16_t, std::string>> &args) {
+  void add_function(const std::string &name, const Function &fun) {
+    _functions_map[name] = fun;
+    const auto &[doc, args] = fun;
     AsebaNativeFunctionDescription *desc =
         (AsebaNativeFunctionDescription *)malloc(
             sizeof(AsebaNativeFunctionDescription) +
             (1 + args.size()) * sizeof(AsebaNativeFunctionArgumentDescription));
     desc->name = c_str(name);
-    desc->doc = c_str(description);
+    desc->doc = c_str(doc);
     auto arg = desc->arguments;
-    for (const auto &[size, n] : args) {
+    for (const auto &[n, size] : args) {
       arg->size = size;
       arg->name = c_str(n);
       arg++;
@@ -149,9 +181,13 @@ private:
   }
 
   Variables _variables;
+  VariablesMap _variables_map;
+  unsigned _variables_size;
   std::vector<AsebaLocalEventDescription> _events;
+  EventsMap _events_map;
   std::vector<const AsebaNativeFunctionDescription *> _functions;
   std::vector<const AsebaNativeFunctionDescription *> _allocated_functions;
+  FunctionsMap _functions_map;
   AsebaVMDescription *_desc;
   std::string _name;
   std::list<std::string> _names;

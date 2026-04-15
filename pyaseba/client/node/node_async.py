@@ -2,7 +2,7 @@ import asyncio
 from collections.abc import Callable
 from typing import Awaitable, Self, TypeVar, cast
 
-from .client_async import ClientAsync
+from ..client_async import ClientAsync
 from .node import Node
 
 T = TypeVar("T")

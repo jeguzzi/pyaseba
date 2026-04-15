@@ -44,15 +44,13 @@ async def run_server() -> None:
     from pyaseba.network import Node, Network
 
     class MyNode(Node):
-        events: list[str] = []
-        variables: list[tuple[str, int]] = []
-        functions: list[tuple[str, list[tuple[str, int]]]] = [('ping', [])]
+        functions = {'ping': ('', [])}
 
         def ping(self) -> None:
             print('ping')
 
     network = Network()
-    node = MyNode(0, "MyNode")
+    node = MyNode(0, "MyNode", default_variables=False, default_functions=False)
     network.add_node(node)
     print('Start node loop')
     for _ in range(20):

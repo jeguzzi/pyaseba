@@ -141,7 +141,11 @@ public:
       ids.push_back(static_cast<unsigned int>(id));
       // names += node->name + " ";
       auto pid = node->get_variable(ASEBA_PID_VAR_NAME);
-      pids.push_back(pid[0]); // product id
+      if (pid.size()) {
+        pids.push_back(pid[0]);
+      } else {
+        pids.push_back(0);
+      }
     }
     if (name.empty()) {
       name = "Empty Group";
@@ -253,7 +257,7 @@ public:
     // uint16_t type = bswap16(lastMessageData[0]);
     uint16_t type;
     memcpy(&type, &lastMessageData[0], 2);
-    std::cout << std::hex << type;
+    // std::cout << std::hex << type;
     type = bswap16(type);
     // std::cout << " => " << std::hex << type << std::dec << std::endl;
     // memcpy(data, &node->lastMessageData[0], node->lastMessageData.size());

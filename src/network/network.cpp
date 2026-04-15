@@ -114,16 +114,18 @@ extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
 
 // TODO: Not linked/used.
 extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
-  log_info("Received request to reset");
-  std::cout << "Received request to reset\n";
+  log_info("AsebaVMResetCB");
   Node *node = Network::node_for_vm(vm);
   if (node) {
     node->reset();
   }
 }
 
-extern "C" void AsebaVMRunCB(AsebaVMState *) {}
+extern "C" void AsebaVMRunCB(AsebaVMState *) {
+  log_info("AsebaVMRunCB");
+}
 extern "C" void AsebaVMErrorCB(AsebaVMState *, const char *message) {
+  log_info("AsebaVMErrorCB");
   log_error("%s", message);
 }
 

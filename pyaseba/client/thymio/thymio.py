@@ -1,5 +1,5 @@
-from ..node import Event, EventSpec, Node
-from ..node_async import NodeAsync
+from ..node import EventSpec, Node, NodeAsync
+from .._client_impl import Event
 
 
 class Thymio(Node):
@@ -54,9 +54,9 @@ class Thymio(Node):
         "timer1":
         EventSpec([])
     }
-    function_prefixes = ('leds', '_leds', 'sound', 'prox')
-    function_exclude = ("wave", )
-    target = "ser:name=Thymio"
+    function_include = ('leds', '_leds', 'sound', 'prox')
+    function_exclude = (r"wave", )
+    default_target = "ser:name=Thymio"
     properties = [
         '_fwversion', '_id', '_imot', '_integrator', '_productId', '_vbat',
         'acc', 'acc._tap', 'button.backward', 'button.center',

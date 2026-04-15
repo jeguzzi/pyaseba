@@ -27,19 +27,6 @@ index a7f0388..0c13f35 100644
 +# add_subdirectory(clients)
 +# add_subdirectory(switches)
 +# add_subdirectory(targets)
-diff --git a/aseba/common/consts.h b/aseba/common/consts.h
-index e29a702..73d40e1 100644
---- a/aseba/common/consts.h
-+++ b/aseba/common/consts.h
-@@ -31,7 +31,7 @@ extern const char*  ASEBA_VERSION;
- extern const char*  ASEBA_REVISION;
- 
- /*! version of aseba protocol, including bytecodes types and constants */
--#define ASEBA_PROTOCOL_VERSION 5
-+#define ASEBA_PROTOCOL_VERSION 9
- 
- /*! minimal accepted protocol version in targets */
- #define ASEBA_MIN_TARGET_PROTOCOL_VERSION 4
 diff --git a/aseba/common/msg/TargetDescription.h b/aseba/common/msg/TargetDescription.h
 index 8f4d89c..078637a 100644
 --- a/aseba/common/msg/TargetDescription.h
@@ -52,3 +39,14 @@ index 8f4d89c..078637a 100644
  #include <map>
  #include <string>
  #include <vector>
+diff --git a/aseba/vm/CMakeLists.txt b/aseba/vm/CMakeLists.txt
+index 9a7e5de..c040869 100644
+--- a/aseba/vm/CMakeLists.txt
++++ b/aseba/vm/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ if (APPLE)
+-	add_definitions(-DDISABLE_WEAK_CALLBACKS)
++	# add_definitions(-DDISABLE_WEAK_CALLBACKS)
+ endif (APPLE)
+ set (ASEBAVM_SRC
+ 	vm.c

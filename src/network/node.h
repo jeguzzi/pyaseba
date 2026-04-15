@@ -55,6 +55,7 @@ public:
   std::map<std::string, uint16_t> named_event;
   // [<name, argument sizes>]
   std::vector<std::tuple<std::string, std::vector<int>, size_t>> functions;
+  const bool has_native_functions;
 
 public:
   explicit Node(unsigned node_id, const std::string &_name,
@@ -64,7 +65,8 @@ public:
       : uuid(uuid_), friendly_name(friendly_name_), sent_device_info(),
         initialized(false), name(_name),
         description(name, default_variables, default_functions),
-        lastMessageSource(0), lastMessageData() {
+        lastMessageSource(0), lastMessageData(),
+        has_native_functions(default_functions) {
     // setup variables
     vm.nodeId = static_cast<uint16_t>(node_id);
     bytecode.resize(BYTECODE_SIZE);
@@ -81,6 +83,8 @@ public:
     next_variable = variables;
     description.set_name(name);
   }
+
+  unsigned get_node_id() const { return vm.nodeId; }
 
   virtual ~Node() = default;
 
@@ -181,10 +185,8 @@ public:
     AsebaVMRun(&vm, 1000);
   }
 
-  void
-  add_function(const std::string &name, const std::string &desc,
-               const std::vector<std::tuple<int16_t, std::string>> &arguments,
-               size_t input_size) {
+  void add_function(const std::string &name, const Description::Function &fun,
+                    size_t input_size) {
     log_debug("Try to add function %s", name.c_str());
     for (const auto &[fname, a, i] : functions) {
       if (fname == name) {
@@ -193,10 +195,11 @@ public:
       }
     }
     std::vector<int> sizes;
-    for (auto &[size, _] : arguments) {
+    const auto &[d, arguments] = fun;
+    for (auto &[n, size] : arguments) {
       sizes.push_back(size);
     }
-    description.add_function(name, desc, arguments);
+    description.add_function(name, fun);
     functions.emplace_back(name, sizes, input_size);
     log_debug("Added function");
   }
@@ -229,12 +232,14 @@ public:
   }
 
   void call_function(AsebaVMState *vm, unsigned id) {
-    const auto num = static_cast<unsigned>(native_functions.size());
-    if (id < num) {
-      native_functions[id](vm);
-      return;
+    if (has_native_functions) {
+      const auto num = static_cast<unsigned>(native_functions.size());
+      if (id < num) {
+        native_functions[id](vm);
+        return;
+      }
+      id -= num;
     }
-    id -= num;
     call_extra_function(vm, id);
   };
 

@@ -23,9 +23,13 @@ network
 
 class SimpleNode(Node):
 
-    events = ["event"]
-    variables = [("counter", 1)]
-    functions = [("duplicate", [(1, "input"), (1, "result")])]
+    events = {
+        "event": "emitted at each control step after incrementing counter"
+    }
+    variables = {"counter": 1}
+    functions = {
+        "duplicate": ("duplicates the input", [("input", 1), ("result", 1)])
+    }
 
     def __init__(self, node_id: int):
         super().__init__(node_id, name="SimpleNode", default_functions=False)
@@ -36,11 +40,13 @@ class SimpleNode(Node):
 
     @property
     def counter(self) -> int:
-        return self._c
+        vs = self.get("counter")
+        if vs:
+            return vs[0]
+        return 0
 
     @counter.setter
     def counter(self, value: int) -> None:
-        self._c = value
         self.set("counter", [value])
 
     def tick(self, time_step: float) -> None:
@@ -53,10 +59,14 @@ class SimpleNode(Node):
     def duplicate(self, xs: list[int]) -> list[int]:
         return [x * 2 for x in xs]
 
+
 # %%
 # Nodes need to be added to a network to perform any work
 node = SimpleNode(0)
 network.add_node(node)
+
+# %%
+print(node.description)
 
 # %%
 # when the network spins

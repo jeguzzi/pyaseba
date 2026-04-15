@@ -1,3 +1,3 @@
-from ._network_impl import Network, Node
+from ._network_impl import Network, Node, Description
 
-__all__ = ["Network", "Node"]
+__all__ = ["Network", "Node", "Description"]

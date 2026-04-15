@@ -7,4 +7,5 @@ Reference
 
    client/index
    network/index
+   helpers
    
