@@ -1,6 +1,7 @@
 import argparse
 
 from pyaseba import Client
+from pyaseba.client import print_description
 
 
 script = """
@@ -25,8 +26,7 @@ def main(target: str) -> None:
             client.cmd_run(node_id)
             desc = client.get_description(node_id)
             assert desc
-            print(f'variables: {desc.variables}')
-            print(f'events: {desc.user_events}')
+            print_description(node_id, desc)
             client.set_variable(node_id, "b", [10])
             client.emit_event(node_id, "c", [])
             e = client.get_event(node_id, "d", wait_ms=1000)

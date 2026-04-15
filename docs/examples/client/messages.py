@@ -17,21 +17,19 @@ connection = client.connect("tcp", port=33333)
 msg, connection = client.get_message()
 print(f"Got message {msg} from network #{connection}")
 
-
 # %%
 # Sending messages is (almost) instantaneous instead
 # Let us send a (manual) request for some variables
+# and wait until we get a response
 
 client.send_message(GetVariables(dest=0, start=0, length=10))
-
-# %%
-# and wait until we get a response
 for _ in range(5):
     msg, connection = client.get_message()
     if isinstance(msg, Variables):
-        print(f"Got updated variables {msg}")
+        print(f"Got response {msg}")
+        break
     else:
-        print(f"Ignore {msg}")
+        print(f"Ignoring {msg}")
 
 
 client.close()

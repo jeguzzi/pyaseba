@@ -460,7 +460,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   static std::string complete_target(const std::string &partial,
-                              const pybind11::kwargs &kwargs) {
+                                     const pybind11::kwargs &kwargs) {
     std::string target(partial);
     if (kwargs) {
       pybind11::str params;
@@ -587,8 +587,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     const auto indices = get_stream_indices();
     const auto node = get_node(node_id, indices);
     if (node) {
-      if (node->events.count(name)) {
-        const auto index = node->events.at(name);
+      const auto index = node->get_event_index(name);
+      if (index >= 0) {
         send_event(index, data, indices);
       }
     }
@@ -757,6 +757,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
     node.update(*(compiler.getVariablesMap()));
     node.update(events);
+    node.script = code;
     MessageVector messages;
     auto bytes = std::vector<uint16_t>(bytecode.begin(), bytecode.end());
     Aseba::sendBytecode(messages, nodeId, bytes);
@@ -811,11 +812,11 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     std::cout << "get_event " << wait_ms << std::endl;
     const auto indices = get_stream_indices(include, exclude);
     const auto node = get_node(nodeId, indices);
-    if (!node || !node->events.count(name)) {
+    if (!node || !node->has_event(name)) {
       std::cerr << "no node or event\n";
       return nullptr;
     }
-    const auto type = node->events.at(name);
+    const auto type = node->get_event_index(name);
     AWaitedMessage::Callback mcb = nullptr;
     if (cb) {
       mcb = [cb, this](const std::shared_ptr<Aseba::Message> &msg,

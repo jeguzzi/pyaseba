@@ -30,9 +30,11 @@ node.get("value")
 node.get("value", cached=True)
 
 # %%
-# In this case, set values are not sent to the remote node
-
 node.set("value", 2, cached=True)
+
+# %%
+# When caching, modified values are not sent to the remote node
+
 node.get("value", cached=False)
 
 # %%

@@ -17,15 +17,15 @@ node_id, connection = client.wait_node()
 
 desc = client.get_description(node_id=node_id)
 assert desc
-desc.variables
+list(desc.variables)
 
 # %%
 # and events
 
-desc.local_events
+list(desc.local_events)
 
 # %%
-# which are accessible in Aseba scripts, like this one
+# which are accessible from Aseba scripts like this one
 
 script = """
 onevent reset
@@ -38,9 +38,9 @@ emit count counter
 # %%
 # where
 #
-# - event ``"reset"`` resets the counter variable
+# - event ``reset`` resets the counter variable
 #   when received on the remote node,
-# - event ``"count"`` is broadcasted each time the local
+# - event ``count`` is broadcasted each time the local
 #   event (which is not accessible outside the remote node)
 #   is emitted by the remote node.
 
@@ -65,7 +65,8 @@ client.cmd_run(node_id)
 
 client.emit_event(node_id=node_id, name="reset")
 
-# and start waiting for ``"count"`` events.
+# %%
+# and start waiting for ``count`` events.
 
 for _ in range(5):
     event = client.get_event(node_id=node_id, name="count", wait_ms=1000)

@@ -93,6 +93,8 @@ template <> struct type_caster<Aseba::NamedValue> {
 
 // PYBIND11_MAKE_OPAQUE(std::vector<Client::MessageCallback>)
 
+#define ASEBA_MAX_TARGET_PROTOCOL_VERSION 9  // ASEBA_PROTOCOL_VERSION
+
 PYBIND11_MODULE(_client_impl, m) {
 
   py::options options;
@@ -102,10 +104,23 @@ PYBIND11_MODULE(_client_impl, m) {
   // "CallbackList");
 
   py::classh<Event>(m, "Event", R"doc(
+A named Aseba event
 )doc")
-      .def_readonly("source", &Event::source)
-      .def_readonly("name", &Event::name)
-      .def_readonly("data", &Event::data)
+      .def_readonly("source", &Event::source, R"doc(
+Readonly
+
+The id of the node that emitted the event.
+)doc")
+      .def_readonly("name", &Event::name, R"doc(
+Readonly
+
+The name of the event.
+)doc")
+      .def_readonly("data", &Event::data, R"doc(
+Readonly
+
+The payload of the event.
+)doc")
       .def("__repr__", [](const Event &e) {
         return py::str("Event(source=") + py::str(py::cast(e.source)) +
                py::str(", name='") + py::cast(e.name) + py::str("', data=") +
@@ -536,29 +551,59 @@ PYBIND11_MODULE(_client_impl, m) {
       });
 
   py::classh<ClientNode>(m, "Description", R"doc(
+The description of an Aseba node.
 )doc")
-      .def_readonly("name", &Aseba::TargetDescription::name)
+      .def_readonly("name", &Aseba::TargetDescription::name, R"doc(
+The name of the Aseba node (readonly).
+)doc")
       .def_readonly("protocol_version",
-                    &Aseba::TargetDescription::protocolVersion)
-      .def_readonly("variables", &ClientNode::variables)
-      .def_readonly("local_events", &Aseba::TargetDescription::localEvents)
-      .def_readonly("user_events", &ClientNode::events)
-      .def_readonly("functions", &Aseba::TargetDescription::nativeFunctions)
-      .def_property("event_names", &ClientNode::get_event_names, nullptr)
-      .def_property("variable_names", &ClientNode::get_variable_names, nullptr)
-      .def_property("function_names", &ClientNode::get_function_names, nullptr)
+                    &Aseba::TargetDescription::protocolVersion, R"doc(
+The version of Aseba used by the node (readonly).
+)doc")
+      .def_property("variables", &ClientNode::get_variables, nullptr, R"doc(
+The variables defined by the Aseba node as a dictionary
+of ``(index, size)`` tuples keyed by name (readonly).
+)doc")
+      .def_property("local_events", &ClientNode::get_local_events, nullptr,
+                    R"doc(
+The local events defined by the Aseba node as a dictionary
+of descriptions keyed by name (readonly).
+
+Local events are locally emitted by the Aseba node and 
+can only be accessed through an Aseba script running on the node.
+)doc")
+      .def_property("user_events", &ClientNode::get_user_events, nullptr, R"doc(
+The user events defined in the script loaded on the Aseba node
+as a dictionary of payload sizes keyed by name (readonly).
+
+User events can be emitted and received by any Aseba node (including the client).
+)doc")
+      .def_property("functions", &ClientNode::get_functions, nullptr, R"doc(
+The local functions defined by the Aseba node 
+as a dictionary of ``(description, arguments)`` tuples keyed by name,
+where each argument is a tuple ``(name, size)`` (readonly).
+
+Local functions can be called through an Aseba script running on the node.
+)doc")
+      // .def_property("event_names", &ClientNode::get_event_names, nullptr)
+      // .def_property("variable_names", &ClientNode::get_variable_names,
+      // nullptr) .def_property("function_names",
+      // &ClientNode::get_function_names, nullptr)
       .def("__repr__",
            [](const ClientNode &d) {
              return py::str("Description(name='") + py::cast(d.name) +
                     py::str("', protocol_version=") +
                     py::str(py::cast(d.protocolVersion)) +
                     py::str(", variables=") +
-                    py::str(py::cast(d.get_variable_names())) +
-                    py::str(", events=") +
-                    py::str(py::cast(d.get_event_names())) +
+                    py::str(py::cast(d.get_variables())) +
+                    py::str(", local_events=") +
+                    py::str(py::cast(d.get_local_events())) +
+                    py::str(", user_events=") +
+                    py::str(py::cast(d.get_user_events())) +
                     py::str(", functions=") +
-                    py::str(py::cast(d.get_function_names())) + py::str(")");
-           })
+                    py::str(py::cast(d.get_functions())) + py::str(")");
+           });
+#if 0
       .def_property(
           "_variables_map",
           [](const ClientNode &desc) {
@@ -566,7 +611,6 @@ PYBIND11_MODULE(_client_impl, m) {
             return desc.getVariablesMap(i);
           },
           nullptr);
-#if 0
   py::classh<Aseba::TargetDescription>(m, "Description", R"doc(
 )doc")
       .def_readonly("name", &Aseba::TargetDescription::name)
@@ -641,7 +685,7 @@ Examples:
            py::arg("port") = -1, py::arg("ping_period_ms") = 1000,
            py::arg("automatic_query") = true,
            py::arg("min_protocol_version") = ASEBA_MIN_TARGET_PROTOCOL_VERSION,
-           py::arg("max_protocol_version") = ASEBA_PROTOCOL_VERSION, R"doc(
+           py::arg("max_protocol_version") = ASEBA_MAX_TARGET_PROTOCOL_VERSION, R"doc(
 __init__(self, port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...) -> None
 
 Constructs an instance.

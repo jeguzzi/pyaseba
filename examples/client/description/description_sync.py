@@ -1,6 +1,7 @@
 import argparse
 
 from pyaseba import Client
+from pyaseba.client import print_description
 
 
 def main(target: str) -> None:
@@ -10,8 +11,7 @@ def main(target: str) -> None:
         if conn:
             description = client.get_description(node_id)
             assert description
-            print(f"Node {node_id}: {description}")
-            print(f"Variable map: {description.variables}")
+            print_description(node_id, description)
         client.close()
 
 

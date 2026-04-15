@@ -12,13 +12,18 @@
 struct ClientNode : public Aseba::TargetDescription {
 
   using Events = std::map<std::wstring, unsigned>;
+  using LocalEvents = std::map<std::wstring, std::wstring>;
+  using Arguments =
+      std::vector<Aseba::TargetDescription::NativeFunctionParameter>;
+  using Functions = std::map<std::wstring, std::tuple<std::wstring, Arguments>>;
 
   ClientNode() = default;
   ClientNode(const Aseba::TargetDescription &targetDescription)
       : Aseba::TargetDescription(targetDescription),
         namedVariablesReceptionCounter(0), localEventsReceptionCounter(0),
         nativeFunctionReceptionCounter(0), connected(false), complete(false),
-        variables(), variables_size(0), events() {}
+        variables(), variables_size(0), event_indices(), events(),
+        local_events(), functions(), script() {}
 
   unsigned namedVariablesReceptionCounter{0};
   unsigned localEventsReceptionCounter{0};
@@ -28,7 +33,11 @@ struct ClientNode : public Aseba::TargetDescription {
   Aseba::UnifiedTime lastSeen;
   Aseba::VariablesMap variables;
   unsigned variables_size;
+  Events event_indices;
   Events events;
+  LocalEvents local_events;
+  Functions functions;
+  std::string script;
 
   bool is_complete() const {
     return (namedVariablesReceptionCounter == namedVariables.size()) &&
@@ -49,12 +58,14 @@ struct ClientNode : public Aseba::TargetDescription {
   void update(const Aseba::LocalEventDescription &msg) {
     if (localEventsReceptionCounter < localEvents.size()) {
       localEvents[localEventsReceptionCounter++] = msg;
+      local_events.emplace(msg.name, msg.description);
       complete = is_complete();
     }
   }
   void update(const Aseba::NativeFunctionDescription &msg) {
     if (nativeFunctionReceptionCounter < nativeFunctions.size()) {
       nativeFunctions[nativeFunctionReceptionCounter++] = msg;
+      functions[msg.name] = {msg.description, msg.parameters};
       complete = is_complete();
     }
   }
@@ -65,12 +76,44 @@ struct ClientNode : public Aseba::TargetDescription {
 
   void update(const std::vector<Aseba::NamedValue> &named_events) {
     unsigned i = 0;
+    event_indices.clear();
     events.clear();
     for (const auto &e : named_events) {
-      events[e.name] = i++;
+      event_indices[e.name] = i++;
+      events[e.name] = e.value;
     }
   }
 
+  std::wstring get_event_name(unsigned index) const {
+    for (const auto &[name, i] : event_indices) {
+      if (i == index)
+        return name;
+    }
+    return std::wstring();
+  }
+
+  int get_event_index(const std::wstring &name) const {
+    if (event_indices.count(name)) {
+      return event_indices.at(name);
+    }
+    return -1;
+  }
+
+  bool has_event(const std::wstring &name) const {
+    return event_indices.count(name) > 0;
+  }
+
+  const Aseba::VariablesMap &get_variables() const { return variables; }
+
+  unsigned get_variables_size() const { return variables_size; }
+
+  const Events &get_user_events() const { return events; }
+
+  const LocalEvents &get_local_events() const { return local_events; }
+
+  const Functions &get_functions() const { return functions; }
+
+#if 0
   std::vector<std::wstring> get_event_names() const {
     std::vector<std::wstring> rs(events.size() + localEvents.size());
     size_t i = 0;
@@ -82,15 +125,6 @@ struct ClientNode : public Aseba::TargetDescription {
     }
     return rs;
   }
-
-  std::wstring get_event_name(unsigned index) const {
-    for (const auto &[name, i] : events) {
-      if (i == index)
-        return name;
-    }
-    return std::wstring();
-  }
-
   std::vector<std::wstring> get_variable_names() const {
     std::vector<std::wstring> vs(variables.size());
     size_t i = 0;
@@ -100,17 +134,15 @@ struct ClientNode : public Aseba::TargetDescription {
     return vs;
   }
 
-
-  std::vector<std::wstring>
-  get_function_names() const {
+  std::vector<std::wstring> get_function_names() const {
     std::vector<std::wstring> vs(variables.size());
     size_t i = 0;
     for (const auto &[name, desc, params] : nativeFunctions) {
       vs[i++] = name;
     }
-    return vs;    
+    return vs;
   }
-
+#endif
 };
 
 template <typename T> class DescriptionManager {
@@ -185,8 +217,8 @@ public:
   }
 
   ClientNode *get_node(unsigned id, const std::set<unsigned> &include = {},
-                 const std::set<unsigned> &exclude = {},
-                 std::optional<bool> connected = true) {
+                       const std::set<unsigned> &exclude = {},
+                       std::optional<bool> connected = true) {
     Guard lock(mutex);
     ClientNode *node = nullptr;
     for (auto &[target, nodes] : target_nodes) {

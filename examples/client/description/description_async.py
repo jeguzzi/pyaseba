@@ -2,6 +2,7 @@ import argparse
 import asyncio
 
 from pyaseba import ClientAsync
+from pyaseba.client import print_description
 
 
 async def main(target: str) -> None:
@@ -11,8 +12,7 @@ async def main(target: str) -> None:
         if conn:
             description = client.get_description(node_id)
             assert description
-            print(f"Node {node_id}: {description}")
-            print(f"Variables: {description.variables}")
+            print_description(node_id, description)
         client.close()
 
 

@@ -1,3 +1,4 @@
+import re
 from collections.abc import Callable, Collection, Iterable, Sequence
 from functools import Placeholder, partial
 from typing import Any, NamedTuple, Self, TypeVar
@@ -133,13 +134,13 @@ class Node:
     """
     Local events that should be mirrored
     """
-    function_prefixes: Collection[str] = ('', )
+    function_include: Collection[str] = (r'.*', )
     """
-    Include local functions to be exposed
+    Regular expression for local functions to be exposed
     """
     function_exclude: Collection[str] = ()
     """
-    Exclude local functions from being exposed
+    Regular expression that prevent local functions from being exposed
     """
     default_target = ""
     """Default Dashel target"""
@@ -168,6 +169,7 @@ class Node:
         self.cached = cached
         self._client: Client | None = None
         self._node_id = -1
+        self._buffer_name: str = ''
         self._shared_client = False
         self._code_events: dict[str, int] = {}
         self._events: dict[str, str] = {}
@@ -178,6 +180,15 @@ class Node:
         self._event_callbacks: dict[str, EventCallback[Self]] = {}
         self._functions: dict[str, str] = {}
         self._next_variables_values: dict[str, list[int]] = {}
+
+    def __repr__(self) -> str:
+        if self.connection:
+            return f"<Node {self.node_id} on {self.target}>"
+        return "<Node unconnected>"
+
+    def _matches(self, name: str) -> bool:
+        return (any(re.match(e, name) for e in self.function_include)
+                and not any(re.match(e, name) for e in self.function_exclude))
 
     @property
     def node_id(self) -> int:
@@ -207,11 +218,32 @@ class Node:
         """
         return self._connection
 
+    @property
+    def exposed_functions(self) -> list[str]:
+        """
+        Which Aseba functions are callable through
+        :py:meth:`call`.
+        """
+        return list(self._functions)
+
+    @property
+    def mirrored_events(self) -> list[str]:
+        """
+        Which Aseba local events are await-able through
+        :py:meth:`wait`.
+        """
+        return list(self._events.values())
+
     def _init(self) -> None:
         assert (self._client)
         description = self._client.get_description(self._node_id,
                                                    include={self.connection})
         assert (description)
+        for name, (index, size) in description.variables.items():
+            if index == 2:
+                self._buffer_name = name
+                break
+        assert self._buffer_name
         self._client.add_event_callback(callback=self._event_cb)
         self._variable_values = {k: [] for k in description.variables}
         self._variable_sizes = {
@@ -220,10 +252,10 @@ class Node:
         }
         for name, spec in self.events.items():
             self._add_event(name, spec)
-        for name, _, vs in description.functions:
-            prefix = name.split('.')[0]
-            if prefix in self.function_prefixes and not any(
-                    e in name for e in self.function_exclude):
+        for name, (_, vs) in description.functions.items():
+            match = self._matches(name)
+            print(f'{name} ? {match}')
+            if match:
                 self._add_function(name, [v[1] for v in vs])
         var_def = "\n".join(f"var {v}" for v in self._counters)
         var_init = "\n".join(f"{v}=0" for v in self._counters)
@@ -298,7 +330,7 @@ class Node:
         arguments = []
         i = 0
         for size in argument_sizes:
-            arguments.append(f'event.args[{i}:{i + size - 1}]')
+            arguments.append(f'{self._buffer_name}[{i}:{i + size - 1}]')
             i += size
         self._code += f"""
 onevent {event_name}
@@ -407,7 +439,8 @@ emit {event_name} {event_variables}
             return False
         e = self._client.get_event(self._node_id,
                                    event_name,
-                                   include={self.connection})
+                                   include={self.connection},
+                                   wait_ms=wait_ms)
         return e is not None
 
     def set_callback(self, name: str,
@@ -512,7 +545,7 @@ emit {event_name} {event_variables}
         """
         assert (self._client)
         vs = self._client.get_all_variables(self._node_id,
-                                            wait_ms,
+                                            wait_ms=wait_ms,
                                             include={self.connection})
         if vs:
             self._variable_values = vs

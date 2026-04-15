@@ -19,7 +19,7 @@ node_id, connection
 
 desc = client.get_description(node_id=node_id)
 assert desc
-desc.variables
+list(desc.variables)
 
 # %%
 # We get the current value of all variables one by one
@@ -44,7 +44,8 @@ time.sleep(1)
 
 # %%
 # before checking the current values, getting them all at once.
-client.get_all_variables(node_id=node_id)
+for name, value in client.get_all_variables(node_id=node_id).items():
+    print(f"{name} = {value}")
 
 # %%
 # .. note::
