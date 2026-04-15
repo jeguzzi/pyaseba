@@ -15,6 +15,7 @@ Client
    node
    node_async
    thymio
+   helpers
    
    
 

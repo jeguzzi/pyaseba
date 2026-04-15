@@ -1,7 +1,6 @@
 from collections.abc import Callable
 
-from pyaseba.client.node import Node
-from pyaseba.client.node_async import NodeAsync
+from ..node import Node, NodeAsync
 
 
 class Thymio(Node):

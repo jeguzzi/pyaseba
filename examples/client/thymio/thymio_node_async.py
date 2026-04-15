@@ -3,7 +3,7 @@ import asyncio
 import typing
 from collections.abc import Callable
 
-from pyaseba.client.node_async import NodeAsync
+from pyaseba.client import NodeAsync
 from pyaseba.client.thymio import ThymioAsync as Thymio
 from typing import Awaitable
 
