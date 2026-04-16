@@ -317,7 +317,7 @@ public:
     const auto id = message->source;
     if (nodes.count(id) == 0) {
       if (ignored_nodes.count(id) == 0) {
-        if (dynamic_cast<const Aseba::NodePresent *>(message)) {
+        if (dynamic_cast<const Aseba::NodePresent *>(message) && query) {
           client->template send_message_of_type<Aseba::GetNodeDescription,
                                                 uint16_t>(id, {target_index});
         } else if (dynamic_cast<const Aseba::Disconnected *>(message)) {

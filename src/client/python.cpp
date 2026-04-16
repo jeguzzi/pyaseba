@@ -750,32 +750,32 @@ Stops the client.
       .def("__exit__", [](Client &client, void *exc_type, void *exc_value,
                           void *traceback) { client.stop_and_close(); })
       .def("wait_connection", &Client::wait_target_connection,
-           py::arg("index") = -1, py::arg("wait_ms") = 1000,
+           py::arg("connection") = 0, py::arg("wait_ms") = 1000,
            py::arg("callback") = nullptr, R"DOC(
-wait_connection(self, connection: int, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
+wait_connection(self, connection: int = 0, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
 
 Waits for a new connection.
 
 Args:
-  index: the index of the connection to wait. Set it to ``-1`` to wait for the any connection.
+  connection: the connection to wait. Set it to ``-1`` to wait for the any connection.
   wait_ms: the maximal time in ms to wait for a connection.
   callback: An optional callback called when a connection is established.
-            It receives the connection index as argument.
+            It receives the connection as argument.
 Returns:
   The positive index of the new connection or ``0`` in case of timeouts.
 )DOC")
       .def("wait_disconnection", &Client::wait_target_disconnection,
-           py::arg("index") = -1, py::arg("wait_ms") = 1000,
+           py::arg("connection") = 0, py::arg("wait_ms") = 1000,
            py::arg("callback") = nullptr, R"DOC(
-wait_disconnection(self, connection: int, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
+wait_disconnection(self, connection: int = 0, wait_ms: int = 1000, callback: Callable[[int], None] = None) -> tuple[int, str]
 
 Waits for a disconnection.
 
 Args:
-  index: the index of the connection to wait. Set it to ``-1`` to wait for the any disconnection.
+  connection: the connection to wait to disconnect. Set it to ``-1`` to wait for the any disconnection.
   wait_ms: the maximal time in ms to wait for a disconnection.
   callback: An optional callback called when a connection is closed. 
-            It receives the connection index as argument.
+            It receives the connection as argument.
 Returns:
   The positive index of the connection closed or ``0`` in case of timeouts.
 )DOC")
@@ -787,7 +787,7 @@ add_connection_callback(self, callback: Callable[[int, str], None]) -> None
 Adds a callback called when a connection is opened.
 
 Args:
-  callback: The callback that receives the connection index as argument.
+  callback: The callback that receives the connection as argument.
 )DOC")
       .def("add_disconnection_callback",
            &Client::add_target_disconnection_callback, py::arg("callback"),
@@ -797,7 +797,7 @@ add_disconnection_callback(self, callback: Callable[[int, str], None]) -> None
 Adds a callback called when a connection is closed.
 
 Args:
-  callback: The callback that receives the connection index as argument.
+  callback: The callback that receives the connection as argument.
 )DOC")
       .def("wait_nodes", &Client::wait_nodes,
            py::arg("node_ids") = std::set<uint16_t>(), py::arg("number") = -1,

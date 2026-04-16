@@ -2,6 +2,8 @@
 Simple Network
 """
 
+import argparse
+
 from pyaseba.network import Network, Node
 
 
@@ -60,13 +62,14 @@ class SimpleNode(Node):
     def square(self, xs: list[int]) -> None:
         print(f'Calling square({xs})')
         if xs:
-            self.value = xs[0] ** 2
+            self.value = xs[0]**2
 
 
-def main() -> None:
+def main(number: int = 1) -> None:
     network = Network()
-    node = SimpleNode(0)
-    network.add_node(node)
+    for i in range(max(1, number)):
+        node = SimpleNode(i)
+        network.add_node(node)
     try:
         network.spin(time_step=0.1, duration=-1)
     except Exception:
@@ -74,4 +77,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--number', default=1, type=int)
+    args = parser.parse_args()
+    main(args.number)

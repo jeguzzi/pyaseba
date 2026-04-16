@@ -155,7 +155,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void connectionCreated(Dashel::Stream *stream) override {
-    std::cout << "connectionCreated " << stream->getTargetName() << std::endl;
+    // std::cout << "connectionCreated " << stream->getTargetName() <<
+    // std::endl;
     add_stream(stream);
     if (stream_indices.count(stream)) {
       const auto index = stream_indices.at(stream);
@@ -169,8 +170,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void connectionClosed(Dashel::Stream *stream, bool abnormal) override {
-    std::cout << "connectionClosed " << stream->getTargetName() << "("
-              << abnormal << ")" << std::endl;
+    // std::cout << "connectionClosed " << stream->getTargetName() << "("
+    //           << abnormal << ")" << std::endl;
 #ifdef ZEROCONF
     zeroconf.dashelConnectionClosed(stream);
 #endif // ZEROCONF
@@ -222,11 +223,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   void run_zeroconf() {
     while (!stopped && zeroconf.dashelStep(1)) {
       for (auto stream : streams_to_be_closed) {
-        // std::cout << "notify closing stream\n";
         connectionClosed(stream, false);
-        // std::cout << "will close stream\n";
         closeStream(stream);
-        // std::cout << "closed stream\n";
       }
       streams_to_be_closed.clear();
     }
@@ -262,7 +260,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
   }
 
-  void stop() {
+  void stop(bool hub = true) {
     stopped = true;
     out_msgs.clear();
     out_msgs.stop();
@@ -273,7 +271,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       ping_thread->join();
       ping_thread = nullptr;
     }
-    Dashel::Hub::stop();
+    if (hub) {
+      Dashel::Hub::stop();
+    }
     if (thread) {
       thread->join();
     }
@@ -292,27 +292,28 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   bool close(unsigned index) {
-    pybind11::gil_scoped_release release;
     auto ss = stream_indices;
+    bool r = false;
     for (auto [stream, i] : ss) {
       if (i == index) {
         streams_to_be_closed.insert(stream);
-        const auto [t, _] = wait_target_disconnection(index, 200);
+        if (dataStreams.size() == 1 || !in_stream) {
+          stop(false);
+        }
+        wait_target_disconnection(index, 1000);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        return t == i;
+        r = true;
+        break;
       }
     }
-    if (!is_connected() && !in_stream) {
-      stop();
-    }
-    return false;
+    return r;
   }
 
   void add_stream(Dashel::Stream *stream) {
     if (stream_indices.count(stream) == 0) {
       unsigned index;
       const auto name = stream->getTargetName();
-      std::cout << "add_stream " << name << std::endl;
+      // std::cout << "add_stream " << name << std::endl;
       if (target_indices.count(name)) {
         index = target_indices.at(name);
       } else {
@@ -534,7 +535,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       std::cerr << e.what() << std::endl;
     }
     if (stream_indices.count(stream)) {
-      std::cout << (stream == nullptr) << std::endl;
+      // std::cout << (stream == nullptr) << std::endl;
       return {stream, stream_indices.at(stream)};
     }
     return {nullptr, 0};
@@ -809,11 +810,11 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
                                    const EventCallback &cb = nullptr,
                                    const std::set<unsigned> &include = {},
                                    const std::set<unsigned> &exclude = {}) {
-    std::cout << "get_event " << wait_ms << std::endl;
+    // std::cout << "get_event " << wait_ms << std::endl;
     const auto indices = get_stream_indices(include, exclude);
     const auto node = get_node(nodeId, indices);
     if (!node || !node->has_event(name)) {
-      std::cerr << "no node or event\n";
+      // std::cerr << "no node or event\n";
       return nullptr;
     }
     const auto type = node->get_event_index(name);
@@ -933,7 +934,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     return {0, 0};
   }
 
-  std::tuple<bool, unsigned, unsigned>
+  std::tuple<unsigned, unsigned>
   wait_node_disconnection(int nodeId = -1, unsigned wait_ms = 1000,
                           const AWaitedNode::Callback &cb = nullptr,
                           const std::set<unsigned> &include = {},
@@ -945,34 +946,38 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
           if (cb) {
             cb(k, t);
           }
-          return std::make_tuple(true, k, t);
+          return {k, t};
         }
       }
     }
     if (!wait_ms && !cb) {
-      return {false, 0, 0};
+      return {0, 0};
     }
     auto &awaited_node =
         awaited_node_disconnections.emplace_back(nodeId, indices, wait_ms, cb);
     if (!wait_ms) {
-      return {false, 0, 0};
+      return {0, 0};
     }
     auto future = awaited_node.value->get_future();
     pybind11::gil_scoped_release release;
     const auto s = future.wait_for(std::chrono::milliseconds(wait_ms));
     if (s == std::future_status::ready) {
-      return std::tuple_cat(std::tuple<bool>{true}, future.get());
+      return future.get();
     }
-    return {false, 0, 0};
+    return {0, 0};
   }
 
-  std::tuple<int, std::string>
+  std::tuple<unsigned, std::string>
   wait_target_connection(int index = -1, unsigned wait_ms = 1000,
                          const AWaitedTarget::Callback &cb = nullptr) {
-    if (is_connected_to(index)) {
+    if (index == -1) {
+      for (const auto &[s, i] : stream_indices) {
+        return {i, s->getTargetName()};
+      }
+    } else if (is_connected_to(index)) {
       return {index, get_target_name(index)};
     }
-    std::tuple<int, std::string> r{-1, ""};
+    std::tuple<int, std::string> r{0, ""};
     if (!wait_ms && !cb) {
       return r;
     }
@@ -994,11 +999,11 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     return r;
   }
 
-  std::tuple<int, std::string>
-  wait_target_disconnection(int index = -1, unsigned wait_ms = 1000,
+  std::tuple<unsigned, std::string>
+  wait_target_disconnection(int index = 0, unsigned wait_ms = 1000,
                             const AWaitedTarget::Callback &cb = nullptr) {
-    std::tuple<int, std::string> r{-1, ""};
-    if (!is_connected_to(index)) {
+    std::tuple<int, std::string> r{0, ""};
+    if (index > 0 && !is_connected_to(index)) {
       return r;
     }
     if (!wait_ms && !cb) {
@@ -1051,8 +1056,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     const auto record = make_record(nodes);
     try {
       zeroconf.advertise(name, in_stream, record);
-      std::cout << "Advertised " << name << " with" << record.record()
-                << std::endl;
+      // std::cout << "Advertised " << name << " with" << record.record()
+      //           << std::endl;
     } catch (const std::runtime_error &e) {
       std::cerr << e.what() << std::endl;
     }

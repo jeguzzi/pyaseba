@@ -1,12 +1,13 @@
 import argparse
+import sys
 import time
 from functools import partial
 
 from pyaseba import Client
 
 
-def cb(node_id: int, target: int, title: str = "") -> None:
-    print(f"{title} {node_id} {target}")
+def cb(node_id: int, connection: int, title: str = "") -> None:
+    print(f"{title} {node_id} on #{connection}")
 
 
 def main(target: str) -> None:
@@ -15,14 +16,18 @@ def main(target: str) -> None:
         print(f'Connected {target}')
         client.add_node_callback(partial(cb, title="Connected"))
         client.add_node_disconnection_callback(partial(cb, title="Disconnected"))
-        time.sleep(10)
+        time.sleep(2)
         client.close()
     else:
-        print(f"Could not connect to {target}")
+        raise RuntimeError(f"Could not connect to {target}!")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:host=127.0.0.1;port=33333")
+    parser.add_argument('--target', default="tcp:port=33333")
     args = parser.parse_args()
-    main(args.target)
+    try:
+        main(args.target)
+    except Exception as e:
+        sys.exit(f"ERROR: {e}")
+

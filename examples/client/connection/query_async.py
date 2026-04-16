@@ -2,17 +2,22 @@ import argparse
 import asyncio
 import sys
 
-from pyaseba import ClientAsync
+from pyaseba.client import ClientAsync
 
 
 async def main(target: str, number: int) -> None:
     client = ClientAsync(ping_period_ms=0, automatic_query=False)
+    print(client.ping_period_ms, client.automatic_query)
     if await client.connect(target, max_retries=1):
         nodes = await client.scan(wait_ms=1000, number=number)
         print(f"Found nodes {nodes}")
-        connections = client.connections
-        for t, ns in nodes.items():
-            print(f'Found nodes {ns} on {connections.get(t, "?")}')
+        for conn, node_ids in nodes.items():
+            for node_id in node_ids:
+                desc = await client.query_description(node_id=node_id, include={conn}, wait_ms=1000)
+                if desc:
+                    print(f"Connected node with id {node_id} and name {desc.name}")
+                else:
+                    raise RuntimeError("Could not query node {node_id}")
     else:
         raise RuntimeError(f"Could not connect to {target}!")
 

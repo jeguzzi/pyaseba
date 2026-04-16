@@ -42,6 +42,6 @@ emit proxh prox.horizontal
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:host=127.0.0.1;port=33333")
+    parser.add_argument('--target', default="tcp:port=33333")
     args = parser.parse_args()
     main(args.target)

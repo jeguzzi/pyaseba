@@ -1,18 +1,21 @@
 import argparse
 import sys
 
-from pyaseba import Client
+from pyaseba.client import Client
 
 
 def main(target: str, number: int) -> None:
     client = Client(ping_period_ms=0, automatic_query=False)
     if client.connect(target, max_retries=1):
-        print(client.node_ids)
         nodes = client.scan(wait_ms=1000, number=number)
         print(f"Found nodes {nodes}")
-        connections = client.connections
-        for t, ns in nodes.items():
-            print(f'Found nodes {ns} on {connections.get(t, "?")}')
+        for conn, node_ids in nodes.items():
+            for node_id in node_ids:
+                desc = client.query_description(node_id=node_id, wait_ms=10000, include={conn})
+                if desc:
+                    print(f"Connected node with id {node_id} and name {desc.name}")
+                else:
+                    raise RuntimeError("Could not query node {node_id}")
     else:
         raise RuntimeError(f"Could not connect to {target}!")
 

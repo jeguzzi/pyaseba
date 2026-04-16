@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from pyaseba import Client, print_description
 
@@ -31,13 +32,24 @@ def main(target: str) -> None:
             e = client.get_event(node_id, "d", wait_ms=1000)
             if e:
                 print(f"Got {e}")
-            print(f"a = {client.get_variable(node_id, 'a', wait_ms=1000)}")
-            print(f"b = {client.get_variable(node_id, 'b', wait_ms=1000)}")
+            else:
+                raise RuntimeError("Received no event!")
+            for v in ('a', 'b'):
+                value = client.get_variable(node_id, 'a', wait_ms=1000)
+                if len(value) == 1:
+                    print(f"{v} = {value}")
+                else:
+                    raise RuntimeError(f"Wrong variable size: {v} = {value}")
         client.close()
+    else:
+        raise RuntimeError(f"Could not connect to {target}!")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:host=127.0.0.1;port=33333")
+    parser.add_argument('--target', default="tcp:port=33333")
     args = parser.parse_args()
-    main(args.target)
+    try:
+        main(args.target)
+    except Exception as e:
+        sys.exit(f"ERROR: {e}")

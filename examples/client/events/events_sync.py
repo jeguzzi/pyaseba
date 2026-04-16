@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from pyaseba import Client
 
@@ -24,12 +25,22 @@ def main(target: str) -> None:
             client.cmd_run(node_id=node_id)
             client.emit_event(node_id, "send", [3, 2, 1])
             e = client.get_event(node_id, "echo", wait_ms=1000)
-            print(f"Got {e}")
+            if e:
+                print(f"Received {e}")
+            else:
+                raise RuntimeError("No event received!")
+        else:
+            raise RuntimeError("No node found!")
         client.close()
+    else:
+        raise RuntimeError(f"Could not connect to {target}!")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:host=127.0.0.1;port=33333")
+    parser.add_argument('--target', default="tcp:port=33333")
     args = parser.parse_args()
-    main(args.target)
+    try:
+        main(args.target)
+    except Exception as e:
+        sys.exit(f"ERROR: {e}")
