@@ -69,7 +69,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(DISABLE_WARNINGS "-w")
-  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wconversion -Wno-unused-parameter)
+  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wno-conversion -Wno-unused-parameter -Wno-sign-compare)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(DISABLE_WARNINGS "-Wno-everything")
   set(WARNINGS -Wall -Wextra -Wno-gnu-flexible-array-initializer -Wno-c99-extensions -Wno-unused-parameter -Wno-sign-compare) # -Wconversion 
