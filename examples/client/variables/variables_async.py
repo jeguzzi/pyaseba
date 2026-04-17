@@ -11,6 +11,9 @@ async def main(target: str) -> None:
         node_id, conn = await client.wait_node()
         if not conn:
             raise RuntimeError("No node found!")
+        print(
+            f"All variables: {await client.get_all_variables(node_id, wait_ms=2000)}"
+        )
         description = client.get_description(node_id)
         if description:
             (name, (_, size)), *_ = description.variables.items()

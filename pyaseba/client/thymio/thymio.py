@@ -26,12 +26,17 @@ class Thymio(Node):
     """
 
     events = {
+        "acc":
+        EventSpec(["acc"]),
+        "motor":
+        EventSpec(["motor.left.speed", "motor.right.speed"]),
         "prox":
         EventSpec(variables=["prox.horizontal", "prox.ground.delta"],
                   use_counter=True),
         "prox.comm":
         EventSpec(variables=["prox.comm.rx", "prox.comm.rx._intensities"],
                   use_counter=True,
+                  reset_variables=["prox.comm.rx._intensities"],
                   external_counter="event_prox"),
         "button.backward":
         EventSpec(["button.backward"]),
@@ -54,9 +59,13 @@ class Thymio(Node):
         "timer1":
         EventSpec([])
     }
-    function_include = ('leds', '_leds', 'sound', 'prox')
+    function_include = (r'leds', '_leds', 'sound', 'prox')
     function_exclude = (r"wave", )
     default_target = "ser:name=Thymio"
+    sync_include = {
+        r'leds', r'mic\.threshold', r'target', r'prox\.comm\.tx',
+        r'timer\.period'
+    }
     properties = [
         '_fwversion', '_id', '_imot', '_integrator', '_productId', '_vbat',
         'acc', 'acc._tap', 'button.backward', 'button.center',
@@ -118,29 +127,24 @@ class Thymio(Node):
 
     def _append_to_prox_comm_buffer(self, counter: int,
                                     data: tuple[int, list[int]]) -> None:
-        # print('_append_to_prox_comm_buffer', counter, data)
         counter = self._update_prox_counter(counter)
         if counter not in self._next_prox_comm_buffers:
             if counter - 1 in self._next_prox_comm_buffers:
-                # print('.', self._node_id, counter - 1)
                 self.prox_comm_buffer = self._next_prox_comm_buffers[counter -
                                                                      1]
             self._next_prox_comm_buffers = {counter: [data]}
         else:
             self._next_prox_comm_buffers[counter].append(data)
-        # print('->', self._next_prox_comm_buffers, counter)
 
     def _update_prox_comm_buffer(self, counter: int) -> None:
         counter = self._update_prox_counter(counter)
         if counter in self._next_prox_comm_buffers:
-            # print('*', self._node_id, counter)
             self.prox_comm_buffer = self._next_prox_comm_buffers[counter]
         else:
             self.prox_comm_buffer = []
         self._next_prox_comm_buffers = {}
 
     def _extra_event_cb(self, event: Event) -> None:
-        # print(event)
         if self._should_record_prox_comm:
             if event.name == "event_prox.comm":
                 rx = self._variable_values["prox.comm.rx"]

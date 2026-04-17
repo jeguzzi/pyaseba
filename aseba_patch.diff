@@ -50,3 +50,9 @@ index 9a7e5de..c040869 100644
  endif (APPLE)
  set (ASEBAVM_SRC
  	vm.c
+diff --git a/dashel b/dashel
+--- a/dashel
++++ b/dashel
+@@ -1 +1 @@
+-Subproject commit 84bc70fe14f829d813cbcbb9fd0f791a8b819c5a
++Subproject commit 84bc70fe14f829d813cbcbb9fd0f791a8b819c5a-dirty

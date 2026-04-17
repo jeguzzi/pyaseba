@@ -10,6 +10,9 @@ def main(target: str) -> None:
         node_id, conn = client.wait_node(wait_ms=5000)
         if not conn:
             raise RuntimeError("No node found!")
+        print(
+            f"All variables: {client.get_all_variables(node_id, wait_ms=2000)}"
+        )
         description = client.get_description(node_id)
         if description:
             (name, (_, size)), *_ = description.variables.items()

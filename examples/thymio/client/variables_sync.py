@@ -1,4 +1,5 @@
 import argparse
+import sys
 import time
 
 from pyaseba.client import Client
@@ -9,28 +10,31 @@ def main(target: str) -> None:
     if client.connect(target):
         node_id, conn = client.wait_node(wait_ms=5000)
         if conn:
-            print(f'node {node_id}')
             desc = client.get_description(node_id)
-            if desc:
+            if desc and desc.name == 'thymio-II':
+                print(f'Connected to Thymio {node_id}')
                 index, _ = desc.variables['motor.left.target']
                 client.set_variable_by_index(node_id, index, [100, 100])
                 client.set_variable(node_id, "leds.top", [0, 32, 0])
-                while True:
+                for _ in range(100):
                     data = client.get_variable(node_id,
                                                "prox.horizontal",
                                                wait_ms=1000)
-                    if data is not None and data[2] > 2000:
+                    if data and data[2] > 2000:
                         break
                     time.sleep(0.1)
                 client.cmd_reset(node_id)
-                time.sleep(0.2)
-        else:
-            print('no node')
-    time.sleep(0.2)
+            else:
+                raise RuntimeError(f"Node {node_id} is not a Thymio")
+    else:
+        raise RuntimeError(f"Could not connect to {target}!")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:port=33333")
+    parser.add_argument('--target', default="ser:name=Thymio")
     args = parser.parse_args()
-    main(args.target)
+    try:
+        main(args.target)
+    except Exception as e:
+        sys.exit(f"ERROR: {e}")

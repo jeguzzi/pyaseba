@@ -1,5 +1,6 @@
 import time
 import argparse
+import sys
 from pyaseba.client import Client, Event
 
 
@@ -8,7 +9,6 @@ def main(target: str) -> None:
     if client.connect(target):
         node_id, conn = client.wait_node(wait_ms=5000)
         if conn:
-            print(f'node {node_id}')
             done = False
             script = """
 motor.left.target = 100
@@ -33,14 +33,13 @@ end
             while not done:
                 time.sleep(0.1)
             client.cmd_reset(node_id)
-            time.sleep(0.2)
-        else:
-            print('no node')
-    time.sleep(0.2)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', default="tcp:port=33333")
+    parser.add_argument('--target', default="ser:name=Thymio")
     args = parser.parse_args()
-    main(args.target)
+    try:
+        main(args.target)
+    except Exception as e:
+        sys.exit(f"ERROR: {e}")

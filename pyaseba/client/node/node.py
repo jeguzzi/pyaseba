@@ -1,13 +1,23 @@
+import dataclasses as dc
 import re
+import time
+import warnings
 from collections.abc import Callable, Collection, Iterable, Sequence
 from functools import Placeholder, partial
-from typing import Any, NamedTuple, Self, TypeVar
+from itertools import chain
+from typing import Any, NotRequired, Self, TypedDict, TypeVar
 
 from .._client_impl import Client, Description, Event, complete_target
 
 T = TypeVar("T")
 
 EventCallback = Callable[[T], None]
+
+
+def int16(x: int) -> int:
+    if x > 2 ** 15:
+        x -= 2 ** 16
+    return x
 
 
 def make_property(n: str) -> property:
@@ -23,11 +33,13 @@ def make_property(n: str) -> property:
         if not isinstance(vs, Sequence):
             vs = [vs]
         self._next_variables_values[n] = vs
+        self._variable_values[n] = vs
 
     return property(fget=getter, fset=setter, doc="TODO")
 
 
-class EventSpec(NamedTuple):
+@dc.dataclass
+class EventSpec:
     """
     Describes how :py:class:`Node` should mirror local events.
     """
@@ -37,6 +49,22 @@ class EventSpec(NamedTuple):
     """Whether to append a counter to the payload"""
     external_counter: str = ''
     """If not empty, it select a variable to use as a counter"""
+    window: int = 1
+    """TODO"""
+    reset_variables: Collection[str] = ()
+    """TODO"""
+
+
+class EventSpecUpdate(TypedDict):
+    variables: NotRequired[Sequence[str]]
+    use_counter: NotRequired[bool]
+    external_counter: NotRequired[str]
+    window: NotRequired[int]
+
+
+def _matches(name: str, include: Collection[str], exclude: Collection[str]) -> bool:
+    return (any(re.findall(e, name) for e in include) and
+            not any(re.findall(e, name) for e in exclude))
 
 
 class Node:
@@ -136,11 +164,11 @@ class Node:
     """
     function_include: Collection[str] = (r'.*', )
     """
-    Regular expression for local functions to be exposed
+    Regular expressions for local functions to be exposed
     """
     function_exclude: Collection[str] = ()
     """
-    Regular expression that prevent local functions from being exposed
+    Regular expressions that prevent local functions from being exposed
     """
     default_target = ""
     """Default Dashel target"""
@@ -150,18 +178,24 @@ class Node:
     """"Which functions should be exposed as ``call_<name>`` methods"""
     control_event = ""
     """Which local event to use to trigger the control step"""
+    sync_include: Collection[str] = (r'.*', )
+    """Regular expressions for variables to be included in :py:meth:`sync`"""
+    sync_exclude: Collection[str] = ()
+    """Regular expressions for variables to be excluded from :py:meth:`sync`"""
 
     cached: bool
     """The default value of ``cached``
        used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`"""
 
-    def __init__(self, cached: bool = False) -> None:
+    def __init__(self,
+                 cached: bool = False) -> None:
         """
         Constructs a new instance.
 
         :param cached:  The default value of ``cached``
            used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`
         """
+        self.events = dict(self.events)
         self._code = ""
         self._connection = 0
         self._description: Description | None = None
@@ -169,26 +203,32 @@ class Node:
         self.cached = cached
         self._client: Client | None = None
         self._node_id = -1
+        self._node_id_int16 = -1
         self._buffer_name: str = ''
         self._shared_client = False
         self._code_events: dict[str, int] = {}
         self._events: dict[str, str] = {}
         self._events_variables: dict[str, list[str]] = {}
         self._counters: list[str] = []
+        self._windows: list[tuple[str, int]] = []
         self._variable_values: dict[str, list[int]] = {}
         self._variable_sizes: dict[str, int] = {}
         self._event_callbacks: dict[str, EventCallback[Self]] = {}
         self._functions: dict[str, str] = {}
         self._next_variables_values: dict[str, list[int]] = {}
+        self._prev_variables_values: dict[str, list[int]] = {}
+        self._sync_variables: set[str] = set()
+
+    def configure_events(self, **events: EventSpecUpdate) -> None:
+        for name, kwargs in events.items():
+            if name in self.events:
+                self.events[name] = dc.replace(self.events[name], **kwargs)
 
     def __repr__(self) -> str:
         if self.connection:
             return f"<Node {self.node_id} on {self.target}>"
         return "<Node unconnected>"
 
-    def _matches(self, name: str) -> bool:
-        return (any(re.findall(e, name) for e in self.function_include)
-                and not any(re.findall(e, name) for e in self.function_exclude))
 
     @property
     def node_id(self) -> int:
@@ -234,6 +274,13 @@ class Node:
         """
         return list(self._events.values())
 
+    @property
+    def sync_variables(self) -> set[str]:
+        """
+        Which Aseba variables are included in :py:meth:`synch`.
+        """
+        return self._sync_variables
+
     def _init(self) -> None:
         assert (self._client)
         description = self._client.get_description(self._node_id,
@@ -250,21 +297,22 @@ class Node:
             k: vs[1]
             for k, vs in description.variables.items()
         }
+        self._sync_variables = {k for k in description.variables
+                                if _matches(k, self.sync_include, self.sync_exclude)}
         for name, spec in self.events.items():
             self._add_event(name, spec)
         for name, (_, vs) in description.functions.items():
-            match = self._matches(name)
-            print(f'{name} ? {match}')
+            match = _matches(name, self.function_include, self.function_exclude)
             if match:
                 self._add_function(name, [v[1] for v in vs])
-        var_def = "\n".join(f"var {v}" for v in self._counters)
-        var_init = "\n".join(f"{v}=0" for v in self._counters)
-        self._code = f"""
-{var_def}
-{var_init}
-{self._code}
-"""
-        # print(self._code)
+        temp_defs = ("var temp", )
+        couter_defs = (f"var {v}" for v in self._counters)
+        window_defs = (f"var {v}[{s}]" for v, s in self._windows)
+        var_def = "\n".join(chain(temp_defs, couter_defs, window_defs))
+        couter_inits = (f"{v}=0" for v in self._counters)
+        window_inits = (f"call math.fill({v}, 0)" for v, s in self._windows)
+        var_init = "\n".join(chain(couter_inits, window_inits))
+        self._code = "\n".join((var_def, var_init, self._code))
 
     def setup(self) -> None:
         """
@@ -300,7 +348,7 @@ class Node:
         if client:
             self._shared_client = True
         self._client = client or Client()
-        # TODO: complete support for clients alredy connected
+        # TODO: complete support for clients already connected
         # to one or more targets
         if self._client.is_connected or self._client.connect(
                 target=target, wait_ms=wait_ms, max_retries=max_retries):
@@ -310,6 +358,7 @@ class Node:
                 self._connection = conn
                 self._target = target
                 self._node_id = node_id
+                self._node_id_int16 = int16(node_id)
                 self._init()
                 self._start()
                 self.update(wait_ms=wait_ms)
@@ -328,13 +377,15 @@ class Node:
     def _add_function(self, name: str, argument_sizes: Iterable[int]) -> None:
         event_name = f'call_{name}'
         arguments = []
-        i = 0
+        i = 1
         for size in argument_sizes:
             arguments.append(f'{self._buffer_name}[{i}:{i + size - 1}]')
             i += size
         self._code += f"""
 onevent {event_name}
+if _id == {self._buffer_name}[0] then
 call {name}({','.join(arguments)})
+end
 """
         message_size = sum(argument_sizes)
         self._functions[name] = event_name
@@ -348,7 +399,9 @@ call {name}({','.join(arguments)})
             if name not in self._variable_sizes or name not in self._variable_values:
                 continue
             size = self._variable_sizes[name]
-            self._variable_values[name] = event.data[i:i + size]
+            value = event.data[i:i + size]
+            self._variable_values[name] = value
+            self._prev_variables_values[name] = value
             i += size
 
     def _call_callbacks(self, event: Event) -> None:
@@ -368,6 +421,8 @@ call {name}({','.join(arguments)})
         self._call_callbacks(event)
 
     def _add_event(self, name: str, spec: EventSpec) -> None:
+        if spec.window <= 0:
+            return
         event_name = f'event_{name}'
         counter = ''
         variables = list(spec.variables)
@@ -381,22 +436,44 @@ call {name}({','.join(arguments)})
                 counter = event_name
                 all_variables.append(counter)
                 self._counters.append(counter)
+        counter_code = f"{counter}+=1" if counter else ""
         if variables:
             event_variables = f"[{','.join(all_variables)}]"
         else:
             event_variables = ""
-        self._code += f"""
+        reset = '\n'.join(f"call math.fill({v}, 0)" for v in spec.reset_variables)
+        if reset:
+            counter_code += '\n' + reset
+        if spec.window == 1 or not event_variables:
+            self._code += f"""
 onevent {name}
 emit {event_name} {event_variables}
+{counter_code}
 """
-        if counter:
-            self._code += f"{counter}+=1\n"
+        else:
+            self._windows.append((f"{name}_payload", message_size))
+            self._counters.append(f"{name}_window")
+            self._code += f"""
+onevent {name}
+call math.add({name}_payload, {event_variables}, {name}_payload)
+{counter_code}
+{name}_window++
+if {name}_window == {spec.window} then
+  for temp in 0:{message_size - 1} do
+      {name}_payload[temp] /= {spec.window}
+  end
+  {name}_window = 0
+  emit {event_name} {name}_payload
+  call math.fill({name}_payload, 0)
+end
+"""
         self._events[event_name] = name
         self._events_variables[event_name] = variables
         self._code_events[event_name] = message_size
 
     def _start(self) -> None:
         assert (self._client)
+        self._client.cmd_reset(self._node_id)
         self._client.load_script(node_id=self._node_id,
                                  script=self._code,
                                  events=self._code_events)
@@ -408,16 +485,22 @@ emit {event_name} {event_variables}
         assert (self._client)
         self._client.cmd_stop(self._node_id, include={self.connection})
 
+    def _reset(self) -> None:
+        assert self._client
+        self._client.cmd_reset(self._node_id, include={self.connection})
+
     def close(self, reset: bool = False) -> None:
         """
         Closes the node and the client, if it was created by the node.
 
         :param      reset:  Whether to reset the remote node.
         """
-        assert (self._client)
-        self._stop()
+        assert self._client
         if reset:
-            self._client.cmd_reset(self._node_id, include={self.connection})
+            self._reset()
+        else:
+            self._stop()
+        time.sleep(0.1)
         if not self._shared_client:
             self._client.close()
             self._client = None
@@ -488,12 +571,13 @@ emit {event_name} {event_variables}
         :param name:  The name of the local function
         :param *args:  The arguments
         """
+        # TODO: include dest!!!!
         assert (self._client)
-        # print('call', self._node_id, self._functions[name], args)
         if name in self._functions:
+            data = [self._node_id_int16] + list(args)
             self._client.emit_event(self._node_id,
                                     self._functions[name],
-                                    args,
+                                    data,
                                     include={self.connection})
 
     def set(self,
@@ -518,7 +602,6 @@ emit {event_name} {event_variables}
         else:
             value = list(value)
         if not cached:
-            # print('set_variable', self._node_id, name, value)
             self._client.set_variable(self._node_id,
                                       name,
                                       value,
@@ -527,17 +610,28 @@ emit {event_name} {event_variables}
             #     del self._next_variables_values[name]
         else:
             self._next_variables_values[name] = value
+        self._variable_values[name] = value
 
     def sync(self) -> None:
         """
         Forwards cached variables changes to the remote node.
+
+        Only variables selected by :py:attr:`sync_include`
+        and not excluded by :py:attr:`sync_exclude` are forwarded.
         """
         assert (self._client)
-        for name, value in self._next_variables_values.items():
-            self.set(name, value, cached=False)
+        for name in self._sync_variables:
+            if name in self._next_variables_values:
+                value = self._next_variables_values[name]
+                prev = self._prev_variables_values.get(name)
+                if value != prev:
+                    self.set(name, value, cached=False)
+                    self._prev_variables_values[name] = value
         self._next_variables_values.clear()
 
-    def get_all(self, wait_ms: int = 1000, cached: bool | None = None) -> dict[str, list[int]]:
+    def get_all(self,
+                wait_ms: int = 1000,
+                cached: bool | None = None) -> dict[str, list[int]]:
         """
         Gets all variable.
 
@@ -566,8 +660,9 @@ emit {event_name} {event_variables}
                                             include={self.connection})
         if vs:
             self._variable_values = vs
+            self._prev_variables_values = dict(vs)
         else:
-            print('Could not update variables')
+            warnings.warn('Could not update variables')
 
     def get(self,
             name: str,
@@ -595,7 +690,8 @@ emit {event_name} {event_variables}
                                           name,
                                           wait_ms=wait_ms,
                                           include={self.connection})
-            self._variable_values[name] = v or []
+            self._variable_values[name] = v
+            self._prev_variables_values[name] = v
         value = self._variable_values[name]
         if len(value) == 1:
             return value[0]

@@ -19,7 +19,7 @@ template <bool P, typename T> struct AWaitedCallback {
   static void apply(const type &cb, const T &arg, bool complete) {
     if constexpr (P) {
       cb(arg, complete);
-    } else {
+    } else if (complete) {
       cb(arg);
     }
   }
@@ -57,7 +57,7 @@ template <typename C, bool P, typename V, typename... T> struct AWaited {
 
   void update(T... args) {
     complete = static_cast<C *>(this)->is_complete(args...);
-    Value v;
+    Value v{};
     if (complete || P) {
       v = static_cast<C *>(this)->get(args...);
     }
