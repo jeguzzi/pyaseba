@@ -112,7 +112,6 @@ extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
   AsebaVMInit(vm);
 }
 
-// TODO: Not linked/used.
 extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
   log_info("AsebaVMResetCB");
   Node *node = Network::node_for_vm(vm);

@@ -24,7 +24,6 @@ list(desc.variables)
 # %%
 # We get the current value of all variables one by one
 
-# TODO: should set the variables to zero
 client.cmd_reset(node_id)
 
 for name in desc.variables:

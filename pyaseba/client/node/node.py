@@ -593,7 +593,6 @@ end
         :param name:  The name of the local function
         :param *args:  The arguments
         """
-        # TODO: include dest!!!!
         assert (self._client)
         if name in self._functions:
             data = [self._node_id_int16] + list(args)

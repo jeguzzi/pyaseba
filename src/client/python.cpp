@@ -1127,7 +1127,6 @@ Args:
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
 )DOC")
-      // TODO: better name
       .def("cmd_run", &Client::send_message_of_type<Aseba::Run, uint16_t>,
            py::arg("node_id"), py::arg("include") = std::set<unsigned>{},
            py::arg("exclude") = std::set<unsigned>{}, R"DOC(
@@ -1250,7 +1249,6 @@ Args:
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
 )DOC")
-      // TODO: better _by_index
       .def("set_variable_by_index", &Client::set_variable_at_index,
            py::arg("node_id"), py::arg("index"), py::arg("value"),
            py::arg("include") = std::set<unsigned>{},
@@ -1266,7 +1264,6 @@ Args:
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
 )DOC")
-      // TODO: better to use dictionaries for events and constants
       .def("load_script", &Client::load_script, py::arg("node_id"),
            py::arg("script"), py::arg("events") = std::map<std::wstring, int>(),
            py::arg("constants") = std::map<std::wstring, int>(),
