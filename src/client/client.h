@@ -752,9 +752,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     bool result =
         compiler.compile(aesl_code, bytecode, allocatedVariablesCount, error);
     if (!result) {
-      std::cerr << "Failed to compile script for node";
-      std::wcerr << error.toWString() << std::endl;
-      return;
+      throw std::runtime_error("Failed to compile script: " + narrow(error.toWString()));
     }
     node.update(*(compiler.getVariablesMap()));
     node.update(events);
