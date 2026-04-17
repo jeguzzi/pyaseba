@@ -61,7 +61,7 @@ async def call_async_partial[T](f: WaitCallablePartial[T], wait_ms: int) -> T:
             loop.call_soon_threadsafe(future.set_result, arg)
         p = arg
 
-    p = f(wait_ms=max(0, wait_ms), callback=cb)
+    p = f(wait_ms=0, callback=cb)
     try:
         return await asyncio.wait_for(future, timeout=wait_ms*1e-3)
     except TimeoutError:
