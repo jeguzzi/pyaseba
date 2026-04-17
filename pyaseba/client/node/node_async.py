@@ -53,6 +53,8 @@ class NodeAsync(Node):
         if self._client.is_connected or await self._client.connect(
                 target or self.target, wait_ms=wait_ms,
                 max_retries=max_retries):
+            if node_id >= 0:
+                self._client.cmd_reset(node_id)
             node_id, conn = await self._client.wait_node(node_id=node_id,
                                                          wait_ms=wait_ms)
             if conn:

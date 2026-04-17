@@ -36,7 +36,7 @@ class Thymio(Node):
         "prox.comm":
         EventSpec(variables=["prox.comm.rx", "prox.comm.rx._intensities"],
                   use_counter=True,
-                  reset_variables=["prox.comm.rx._intensities"],
+                  epilog="call math.fill(prox.comm.rx._intensities, 0)",
                   external_counter="event_prox"),
         "button.backward":
         EventSpec(["button.backward"]),
@@ -93,7 +93,8 @@ class Thymio(Node):
 
     def __init__(self,
                  cached: bool = False,
-                 record_prox_comm: bool = False) -> None:
+                 record_prox_comm: bool = False,
+                 enable_prox_comm: bool = False) -> None:
         """
         Constructs a new instance.
 
@@ -103,6 +104,8 @@ class Thymio(Node):
            ``prox`` events.
         """
         super().__init__(cached=cached)
+        if enable_prox_comm:
+            self.script_inits.append("call prox.comm.enable(1)")
         self._should_record_prox_comm = record_prox_comm
         self.prox_comm_buffer: list[tuple[int, list[int]]] = []
         self._next_prox_comm_buffers: dict[int, list[tuple[int,
@@ -181,5 +184,9 @@ class ThymioAsync(NodeAsync, Thymio):
 
     def __init__(self,
                  cached: bool = False,
-                 record_prox_comm: bool = False) -> None:
-        Thymio.__init__(self, cached=cached, record_prox_comm=record_prox_comm)
+                 record_prox_comm: bool = False,
+                 enable_prox_comm: bool = False) -> None:
+        Thymio.__init__(self,
+                        cached=cached,
+                        record_prox_comm=record_prox_comm,
+                        enable_prox_comm=enable_prox_comm)

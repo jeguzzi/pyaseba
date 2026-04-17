@@ -6,6 +6,7 @@ from collections.abc import Callable, Collection, Iterable, Sequence
 from functools import Placeholder, partial
 from itertools import chain
 from typing import Any, NotRequired, Self, TypedDict, TypeVar
+import sys
 
 from .._client_impl import Client, Description, Event, complete_target
 
@@ -15,8 +16,8 @@ EventCallback = Callable[[T], None]
 
 
 def int16(x: int) -> int:
-    if x > 2 ** 15:
-        x -= 2 ** 16
+    if x > 2**15:
+        x -= 2**16
     return x
 
 
@@ -51,7 +52,9 @@ class EventSpec:
     """If not empty, it select a variable to use as a counter"""
     window: int = 1
     """TODO"""
-    reset_variables: Collection[str] = ()
+    preamble: str = ''
+    """TODO"""
+    epilog: str = ''
     """TODO"""
 
 
@@ -62,9 +65,10 @@ class EventSpecUpdate(TypedDict):
     window: NotRequired[int]
 
 
-def _matches(name: str, include: Collection[str], exclude: Collection[str]) -> bool:
-    return (any(re.findall(e, name) for e in include) and
-            not any(re.findall(e, name) for e in exclude))
+def _matches(name: str, include: Collection[str],
+             exclude: Collection[str]) -> bool:
+    return (any(re.findall(e, name) for e in include)
+            and not any(re.findall(e, name) for e in exclude))
 
 
 class Node:
@@ -182,19 +186,21 @@ class Node:
     """Regular expressions for variables to be included in :py:meth:`sync`"""
     sync_exclude: Collection[str] = ()
     """Regular expressions for variables to be excluded from :py:meth:`sync`"""
+    script_inits: Sequence[str] = ()
+    """TODO"""
 
     cached: bool
     """The default value of ``cached``
        used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`"""
 
-    def __init__(self,
-                 cached: bool = False) -> None:
+    def __init__(self, cached: bool = False) -> None:
         """
         Constructs a new instance.
 
         :param cached:  The default value of ``cached``
            used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`
         """
+        self.script_inits = list(self.script_inits)
         self.events = dict(self.events)
         self._code = ""
         self._connection = 0
@@ -228,7 +234,6 @@ class Node:
         if self.connection:
             return f"<Node {self.node_id} on {self.target}>"
         return "<Node unconnected>"
-
 
     @property
     def node_id(self) -> int:
@@ -297,22 +302,26 @@ class Node:
             k: vs[1]
             for k, vs in description.variables.items()
         }
-        self._sync_variables = {k for k in description.variables
-                                if _matches(k, self.sync_include, self.sync_exclude)}
+        self._sync_variables = {
+            k
+            for k in description.variables
+            if _matches(k, self.sync_include, self.sync_exclude)
+        }
         for name, spec in self.events.items():
             self._add_event(name, spec)
         for name, (_, vs) in description.functions.items():
-            match = _matches(name, self.function_include, self.function_exclude)
+            match = _matches(name, self.function_include,
+                             self.function_exclude)
             if match:
                 self._add_function(name, [v[1] for v in vs])
         temp_defs = ("var temp", )
         couter_defs = (f"var {v}" for v in self._counters)
         window_defs = (f"var {v}[{s}]" for v, s in self._windows)
-        var_def = "\n".join(chain(temp_defs, couter_defs, window_defs))
         couter_inits = (f"{v}=0" for v in self._counters)
         window_inits = (f"call math.fill({v}, 0)" for v, s in self._windows)
-        var_init = "\n".join(chain(couter_inits, window_inits))
-        self._code = "\n".join((var_def, var_init, self._code))
+        parts = chain(temp_defs, couter_defs, window_defs, couter_inits,
+                      window_inits, self.script_inits, [self._code])
+        self._code = "\n".join(x for x in parts if x)
 
     def setup(self) -> None:
         """
@@ -352,6 +361,8 @@ class Node:
         # to one or more targets
         if self._client.is_connected or self._client.connect(
                 target=target, wait_ms=wait_ms, max_retries=max_retries):
+            if node_id >= 0:
+                self._client.cmd_reset(node_id)
             node_id, conn = self._client.wait_node(wait_ms=wait_ms,
                                                    node_id=node_id)
             if conn:
@@ -441,20 +452,20 @@ end
             event_variables = f"[{','.join(all_variables)}]"
         else:
             event_variables = ""
-        reset = '\n'.join(f"call math.fill({v}, 0)" for v in spec.reset_variables)
-        if reset:
-            counter_code += '\n' + reset
         if spec.window == 1 or not event_variables:
-            self._code += f"""
+            code = f"""
 onevent {name}
+{spec.preamble}
 emit {event_name} {event_variables}
 {counter_code}
+{spec.epilog}
 """
         else:
             self._windows.append((f"{name}_payload", message_size))
             self._counters.append(f"{name}_window")
-            self._code += f"""
+            code = f"""
 onevent {name}
+{spec.preamble}
 call math.add({name}_payload, {event_variables}, {name}_payload)
 {counter_code}
 {name}_window++
@@ -466,17 +477,28 @@ if {name}_window == {spec.window} then
   emit {event_name} {name}_payload
   call math.fill({name}_payload, 0)
 end
+{spec.epilog}
 """
+        code = "\n".join(s for s in code.splitlines() if s.strip())
+        if code:
+            self._code += "\n\n" + code
         self._events[event_name] = name
         self._events_variables[event_name] = variables
         self._code_events[event_name] = message_size
 
     def _start(self) -> None:
         assert (self._client)
-        self._client.cmd_reset(self._node_id)
-        self._client.load_script(node_id=self._node_id,
-                                 script=self._code,
-                                 events=self._code_events)
+        try:
+            self._client.load_script(node_id=self._node_id,
+                                     script=self._code,
+                                     events=self._code_events)
+        except Exception as e:
+            m = re.search(r"Error at Line: (\d*)", str(e))
+            if m:
+                ln = int(m.group(1))
+                line = self._code.splitlines()[ln]
+                print(line, file=sys.stderr)
+            raise e
         self._client.cmd_run(self._node_id)
         self._description = self._client.get_description(
             self._node_id, include={self.connection})
