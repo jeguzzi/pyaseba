@@ -1280,6 +1280,9 @@ Args:
   constants: A dictionary of {name -> value} defining each constant in the script.
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
+
+Raises:
+  RuntimeError: when it fails to compile the script.
 )DOC")
 
       .def("advertise", &Client::advertise_nodes, py::arg("name") = "pyaseba",
