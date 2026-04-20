@@ -280,11 +280,11 @@ Local functions can be called through an Aseba script running on the node.
         return py::str("Description(name='") + py::cast(d.get_name()) +
                py::str("', protocol_version=") +
                py::str(py::cast(d.get_protocol_version())) +
-               py::str(", variables=") + py::str(py::cast(d.get_variables_map())) +
+               py::str(", variables=") +
+               py::str(py::cast(d.get_variables_map())) +
                py::str(", local_events=") +
-               py::str(py::cast(d.get_events_map())) +
-               py::str(", functions=") + py::str(py::cast(d.get_functions_map())) +
-               py::str(")");
+               py::str(py::cast(d.get_events_map())) + py::str(", functions=") +
+               py::str(py::cast(d.get_functions_map())) + py::str(")");
       });
 
   options.disable_function_signatures();
@@ -310,6 +310,28 @@ Arguments:
   time_step: the period in seconds between calling :py:meth:`pyaseba.network.Node.tick`
   duration: the duration in seconds. If negative, it will keep spinning indefinitely.
 )doc")
+      .def(
+          "spin_async",
+          [](py::object network, double time_step, double duration) {
+            const auto to_thread =
+                py::module_::import("asyncio").attr("to_thread");
+            return to_thread(network.attr("_spin_no_gil"), py::cast(time_step), py::cast(duration));
+          },
+          py::arg("time_step"), py::arg("duration") = -1, R"doc(
+spin_async(self, time_step: float, duration: float = -1) -> Awaitable[None]
+
+Spins the network for some time in a background thread.
+During spinning, it dispatches messages to nodes, 
+it runs the nodes Aseba virtual machine, and
+it regularly call :py:meth:`pyaseba.network.Node.tick`.
+
+Arguments:
+  time_step: the period in seconds between calling :py:meth:`pyaseba.network.Node.tick`
+  duration: the duration in seconds. If negative, it will keep spinning indefinitely.
+)doc")
+      .def(
+          "_spin_no_gil", &Network::spin,
+          py::arg("time_step"), py::arg("duration") = -1, py::call_guard<py::gil_scoped_release>())
       .def("start", &Network::start, py::arg("time_step"),
            py::arg("duration") = -1, R"doc(
 start(self, time_step: float, duration: float = -1) -> None
