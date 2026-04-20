@@ -261,6 +261,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void stop(bool hub = true) {
+    pybind11::gil_scoped_release release;
     stopped = true;
     out_msgs.clear();
     out_msgs.stop();
