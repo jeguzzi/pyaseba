@@ -93,7 +93,7 @@ template <> struct type_caster<Aseba::NamedValue> {
 
 // PYBIND11_MAKE_OPAQUE(std::vector<Client::MessageCallback>)
 
-#define ASEBA_MAX_TARGET_PROTOCOL_VERSION 9  // ASEBA_PROTOCOL_VERSION
+#define ASEBA_MAX_TARGET_PROTOCOL_VERSION 9 // ASEBA_PROTOCOL_VERSION
 
 PYBIND11_MODULE(_client_impl, m) {
 
@@ -226,6 +226,8 @@ The payload of the event.
              >(msgs, "NamedVariableDescription", R"doc(
 )doc")
       .def(py::init<>())
+      .def_readonly("name", &Aseba::NamedVariableDescription::name)
+      .def_readonly("size", &Aseba::NamedVariableDescription::size)
       .def("__repr__", [](const Aseba::NamedVariableDescription &msg) {
         return py::str("NamedVariableDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
@@ -239,6 +241,8 @@ The payload of the event.
                R"doc(
 )doc")
       .def(py::init<>())
+      .def_readonly("name", &Aseba::LocalEventDescription::name)
+      .def_readonly("description", &Aseba::LocalEventDescription::description)
       .def("__repr__", [](const Aseba::LocalEventDescription &msg) {
         return py::str("LocalEventDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
@@ -251,6 +255,9 @@ The payload of the event.
              >(msgs, "NativeFunctionDescription", R"doc(
 )doc")
       .def(py::init<>())
+      .def_readonly("name", &Aseba::NativeFunctionDescription::name)
+      .def_readonly("description", &Aseba::NativeFunctionDescription::description)
+      .def_readonly("parameters", &Aseba::NativeFunctionDescription::parameters)
       .def("__repr__", [](const Aseba::NativeFunctionDescription &msg) {
         auto s = py::str("NativeFunctionDescription(source=") +
                  py::str(py::cast(msg.source)) + py::str(", name='") +
@@ -589,20 +596,18 @@ Local functions can be called through an Aseba script running on the node.
       // .def_property("variable_names", &ClientNode::get_variable_names,
       // nullptr) .def_property("function_names",
       // &ClientNode::get_function_names, nullptr)
-      .def("__repr__",
-           [](const ClientNode &d) {
-             return py::str("Description(name='") + py::cast(d.name) +
-                    py::str("', protocol_version=") +
-                    py::str(py::cast(d.protocolVersion)) +
-                    py::str(", variables=") +
-                    py::str(py::cast(d.get_variables())) +
-                    py::str(", local_events=") +
-                    py::str(py::cast(d.get_local_events())) +
-                    py::str(", user_events=") +
-                    py::str(py::cast(d.get_user_events())) +
-                    py::str(", functions=") +
-                    py::str(py::cast(d.get_functions())) + py::str(")");
-           });
+      .def("__repr__", [](const ClientNode &d) {
+        return py::str("Description(name='") + py::cast(d.name) +
+               py::str("', protocol_version=") +
+               py::str(py::cast(d.protocolVersion)) + py::str(", variables=") +
+               py::str(py::cast(d.get_variables())) +
+               py::str(", local_events=") +
+               py::str(py::cast(d.get_local_events())) +
+               py::str(", user_events=") +
+               py::str(py::cast(d.get_user_events())) +
+               py::str(", functions=") + py::str(py::cast(d.get_functions())) +
+               py::str(")");
+      });
 #if 0
       .def_property(
           "_variables_map",
@@ -685,7 +690,8 @@ Examples:
            py::arg("port") = -1, py::arg("ping_period_ms") = 1000,
            py::arg("automatic_query") = true,
            py::arg("min_protocol_version") = ASEBA_MIN_TARGET_PROTOCOL_VERSION,
-           py::arg("max_protocol_version") = ASEBA_MAX_TARGET_PROTOCOL_VERSION, R"doc(
+           py::arg("max_protocol_version") = ASEBA_MAX_TARGET_PROTOCOL_VERSION,
+           R"doc(
 __init__(self, port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...) -> None
 
 Constructs an instance.
@@ -1025,12 +1031,13 @@ clear_incoming_messages(self) -> None
 Deletes all incoming messages. 
 
 )DOC")
-      .def("get_message", &Client::get_message, py::arg("node_id") = -1,
-           py::arg("type") = -1, py::arg("wait_ms") = 1000,
-           py::arg("callback") = nullptr,
+      .def("get_message", &Client::get_message,
+           py::arg("node_id") = -1, py::arg("type") = -1,
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
            py::arg("include") = std::set<unsigned>{},
-           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
-get_message(self, node_id: int = -1, type: int = -1, wait_ms: int = 1000, callback: Callable[[Message, int], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> tuple[Message | None, int]
+           py::arg("exclude") = std::set<unsigned>{}, py::arg("pause") = false,
+           R"DOC(
+get_message(self, node_id: int = -1, type: int = -1, wait_ms: int = 1000, callback: Callable[[Message, int], None]| None = None, include: set[int] = set(), exclude: set[int] = set(), pause: bool = false) -> tuple[Message | None, int]
 
 Wait until a message is received.
 
@@ -1040,6 +1047,7 @@ Args:
   callback: An optional callback called after the message is received.  
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
+  pause: Whether to stop processing once a message is received.
 Returns:
   A message or ``None`` if not received in time.
 )DOC")
@@ -1284,7 +1292,6 @@ Args:
 Raises:
   RuntimeError: when it fails to compile the script.
 )DOC")
-
       .def("advertise", &Client::advertise_nodes, py::arg("name") = "pyaseba",
            py::arg("specs") =
                std::map<std::string, std::tuple<std::string, unsigned>>(
@@ -1377,6 +1384,14 @@ A dictionary with all discovered node ids indexed by connection.
 Readonly
 
 A dictionary with all discovered node descriptions indexed by connection.
+)DOC")
+      .def_property("pause_processing", &Client::get_processing_paused,
+                    &Client::set_processing_paused, R"DOC(
+Whether incoming messages are processed or kept in the queue.
+)DOC")
+      .def_property("pause_sending", &Client::get_sending_paused,
+                    &Client::set_sending_paused, R"DOC(
+Whether outgoing messages are processed or kept in the queue.
 )DOC")
       .def_property(
           "_is_running", [](const Client &m) { return !m.stopped; }, nullptr);

@@ -36,6 +36,12 @@ inline std::shared_ptr<Aseba::Message> copy_message(const Aseba::Message &msg) {
   return message;
 }
 
+inline std::shared_ptr<Aseba::Message> move_message(Aseba::Message *msg) {
+  std::shared_ptr<Aseba::Message> message;
+  message.reset(msg);
+  return message;
+}
+
 struct Event {
   unsigned source;
   std::wstring name;
@@ -137,19 +143,21 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     Aseba::Message *message = nullptr;
     try {
       message = Aseba::Message::receive(stream);
-    } catch (Dashel::DashelException &) {
-      return;
-    } catch (std::runtime_error &) {
-      return;
+    } catch (const Dashel::DashelException &e) {
+      std::cerr << e.what() << std::endl;
+    } catch (const std::runtime_error &e) {
+      std::cerr << e.what() << std::endl;
     }
-    if (message && !stopped) {
-      if (!stream_indices.count(stream)) {
-        std::cerr << "Unindexed stream " << stream->getTargetName()
-                  << std::endl;
-        return;
+    if (message) {
+      if (!stopped) {
+        if (stream_indices.count(stream)) {
+          in_msgs.put({move_message(message), stream_indices.at(stream)});
+          return;
+        } else {
+          std::cerr << "Unindexed stream " << stream->getTargetName()
+                    << std::endl;
+        }
       }
-      // TODO: do I really need to copy?
-      in_msgs.put({copy_message(*message), stream_indices.at(stream)});
       delete message;
     }
   }
@@ -248,6 +256,14 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
           std::bind(&Client::process_out_message, this, std::placeholders::_1));
     }
   }
+
+  bool get_processing_paused() const { return in_msgs.get_paused(); }
+
+  void set_processing_paused(bool value) { return in_msgs.set_paused(value); }
+
+  bool get_sending_paused() const { return out_msgs.get_paused(); }
+
+  void set_sending_paused(bool value) { return out_msgs.set_paused(value); }
 
   unsigned get_ping_period_ms() const { return ping_ms; }
 
@@ -753,7 +769,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     bool result =
         compiler.compile(aesl_code, bytecode, allocatedVariablesCount, error);
     if (!result) {
-      throw std::runtime_error("Failed to compile script: " + narrow(error.toWString()));
+      throw std::runtime_error("Failed to compile script: " +
+                               narrow(error.toWString()));
     }
     node.update(*(compiler.getVariablesMap()));
     node.update(events);
@@ -839,13 +856,19 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   get_message(int nodeId = -1, int type = -1, int wait_ms = 0,
               const AWaitedMessage::Callback &cb = nullptr,
               const std::set<unsigned> &include = {},
-              const std::set<unsigned> &exclude = {}) {
+              const std::set<unsigned> &exclude = {}, bool pause = false) {
     if (!wait_ms && !cb) {
+      if (pause) {
+        in_msgs.next();
+      }
       return {nullptr, 0};
     }
     const auto indices = get_stream_indices(include, exclude);
     auto &awaited_msg =
         awaited_messages.emplace_back(nodeId, type, indices, wait_ms, cb);
+    if (pause) {
+      in_msgs.next();
+    }
     if (!wait_ms) {
       return {nullptr, 0};
     }

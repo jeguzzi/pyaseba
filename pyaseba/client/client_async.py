@@ -125,11 +125,12 @@ class ClientAsync(Client):
                           type: int = -1,
                           wait_ms: int = 0,
                           include: set[int] = set(),
-                          exclude: set[int] = set()) -> tuple[Message | None, int]:
+                          exclude: set[int] = set(),
+                          pause: bool = False) -> tuple[Message | None, int]:
         """
         Asynchronous version of :py:meth:`pyaseba.client.Client.get_message`
         """
-        f = partial(super().get_message, node_id=node_id, type=type, include=include, exclude=exclude)
+        f = partial(super().get_message, node_id=node_id, type=type, include=include, exclude=exclude, pause=pause)
         return await call_async_tuple(f, wait_ms=wait_ms)
 
     async def get_event(self, #type: ignore[override]
