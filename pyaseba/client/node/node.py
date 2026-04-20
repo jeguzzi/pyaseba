@@ -211,6 +211,7 @@ class Node:
         self._node_id = -1
         self._node_id_int16 = -1
         self._buffer_name: str = ''
+        self._id_name: str = ''
         self._shared_client = False
         self._code_events: dict[str, int] = {}
         self._events: dict[str, str] = {}
@@ -292,9 +293,10 @@ class Node:
                                                    include={self.connection})
         assert (description)
         for name, (index, size) in description.variables.items():
+            if index == 0:
+                self._id_name = name
             if index == 2:
                 self._buffer_name = name
-                break
         assert self._buffer_name
         self._client.add_event_callback(callback=self._event_cb)
         self._variable_values = {k: [] for k in description.variables}
@@ -394,7 +396,7 @@ class Node:
             i += size
         self._code += f"""
 onevent {event_name}
-if _id == {self._buffer_name}[0] then
+if {self._id_name} == {self._buffer_name}[0] then
 call {name}({','.join(arguments)})
 end
 """
