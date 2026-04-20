@@ -23,7 +23,9 @@ struct ClientNode : public Aseba::TargetDescription {
         namedVariablesReceptionCounter(0), localEventsReceptionCounter(0),
         nativeFunctionReceptionCounter(0), connected(false), complete(false),
         variables(), variables_size(0), event_indices(), events(),
-        local_events(), functions(), script() {}
+        local_events(), functions(), script() {
+    complete = is_complete();
+  }
 
   unsigned namedVariablesReceptionCounter{0};
   unsigned localEventsReceptionCounter{0};
@@ -337,7 +339,6 @@ public:
         return;
       }
       nodes.emplace(id, ClientNode(*description));
-      // TODO: check complete?
     }
     if (!nodes.count(id))
       return;

@@ -36,7 +36,7 @@ def make_property(n: str) -> property:
         self._next_variables_values[n] = vs
         self._variable_values[n] = vs
 
-    return property(fget=getter, fset=setter, doc="TODO")
+    return property(fget=getter, fset=setter, doc=f"Aseba variable {n}")
 
 
 @dc.dataclass
@@ -51,11 +51,12 @@ class EventSpec:
     external_counter: str = ''
     """If not empty, it select a variable to use as a counter"""
     window: int = 1
-    """TODO"""
+    """The length of the window over which to average variables. If less or equal 0,
+    it will ignore the event"""
     preamble: str = ''
-    """TODO"""
+    """Aseba code to prepend to the event code"""
     epilog: str = ''
-    """TODO"""
+    """Aseba code to append to the event code"""
 
 
 class EventSpecUpdate(TypedDict):
@@ -187,7 +188,7 @@ class Node:
     sync_exclude: Collection[str] = ()
     """Regular expressions for variables to be excluded from :py:meth:`sync`"""
     script_inits: Sequence[str] = ()
-    """TODO"""
+    """Aseba code to add to the preamble (should not define variables)"""
 
     cached: bool
     """The default value of ``cached``

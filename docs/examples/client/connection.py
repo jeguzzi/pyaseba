@@ -34,14 +34,14 @@ client.connections
 # 4. Clean up
 # -----------
 #
-# Once done, either close the connections one by one
-# TODO: problems with stdout
-# client.close_connection(connection)
-client.connections
-# %%
+# Once done, either close the connections one by one::
+#
+#   client.close_connection(connection)
+#
 # or close the client directly, which in turn closes all connections.
 
 client.close()
+client.connections
 
 # %%
 #

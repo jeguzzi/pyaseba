@@ -161,7 +161,6 @@ class Thymio(Node):
 
     def _stop(self) -> None:
         super()._stop()
-        # TODO: Not really needed if we reset
         self.set("motor.left.target", 0, cached=False)
         self.set("motor.right.target", 0, cached=False)
 

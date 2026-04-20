@@ -127,7 +127,7 @@ The payload of the event.
                py::str(py::cast(e.data)) + py::str(")");
       });
 
-  auto msgs = m.def_submodule("msgs", "TODO");
+  auto msgs = m.def_submodule("msgs", "Aseba messages");
   py::classh<Aseba::Message>(m, "Message", R"doc(
 )doc")
       .def_readwrite("source", &Aseba::Message::source)
