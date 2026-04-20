@@ -1,9 +1,31 @@
 import asyncio
 from collections.abc import Callable
 from functools import partial
-from typing import Any, Protocol, Unpack, cast
+from typing import Any, Protocol, Unpack, Awaitable, cast
 
 from ._client_impl import Client, Description, Event, Message, complete_target
+
+
+type Callback[*Ts] = Callable[[*Ts], None]
+type AsyncCallback[*Ts] = Callable[[*Ts], Awaitable[None]]
+type MaybeAsyncCallback[*Ts] = Callback[*Ts] | AsyncCallback[*Ts]
+
+
+def wrap_callback[*Ts](callback: MaybeAsyncCallback[*Ts] | None) -> Callback[*Ts]:
+    """
+    If callback is a coroutine, it returns a new callback
+    that schedules the original callback,
+    else it returns the orginal callback.
+
+    :param callback: The callback to be possibly wrapped
+    :returns: The wrapped callback.
+    """
+    if asyncio.iscoroutinefunction(callback):
+        loop = asyncio.get_running_loop()
+        def cb(*args: *Ts) -> None:
+            loop.call_soon_threadsafe(loop.create_task, callback(*args))
+        return cb
+    return cast('Callback[*Ts]', callback)
 
 
 class WaitCallable[T, R](Protocol):

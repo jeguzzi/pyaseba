@@ -1,14 +1,10 @@
 import asyncio
-from collections.abc import Callable
-from typing import Awaitable, Self, TypeVar, cast
+from typing import Self, TypeVar, cast
 
-from ..client_async import ClientAsync
+from ..client_async import ClientAsync, MaybeAsyncCallback, wrap_callback
 from .node import Node, int16
 
 T = TypeVar("T")
-
-EventCallback = Callable[[T], None]
-MaybeAsyncEventCallback = EventCallback[T] | Callable[[T], Awaitable[None]]
 
 
 class NodeAsync(Node):
@@ -146,20 +142,10 @@ class NodeAsync(Node):
         return value
 
     def set_callback(self, name: str,
-                     callback: MaybeAsyncEventCallback[Self] | None) -> None:
+                     callback: MaybeAsyncCallback[Self] | None) -> None:
         """
         Version of :py:meth:`pyaseba.client.Node.set_callback` that accept
         coroutines as callbacks too.
         """
-        scb: EventCallback[Self] | None
-        if callback is not None:
-            if asyncio.iscoroutinefunction(callback):
-                loop = asyncio.get_running_loop()
-
-                def scb(node: Self) -> None:
-                    loop.call_soon_threadsafe(loop.create_task, callback(node))
-            else:
-                scb = cast('EventCallback[Self]', callback)
-        else:
-            scb = None
+        scb = wrap_callback(callback) if callback else None
         super().set_callback(name, scb)
