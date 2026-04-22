@@ -561,7 +561,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
                                     unsigned wait_ms, int max_retries,
                                     const pybind11::kwargs &kwargs) {
     const auto target = complete_target(partial, kwargs);
-    // std::cout << "target -> " << target << std::endl;
+    pybind11::gil_scoped_release release;
     return connect_and_start(target, wait_ms, max_retries);
   }
 
@@ -591,7 +591,6 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
 
   void run_ping() {
     while (ping_ms > 0) {
-      // std::cout << "ping " << ping_ms << std::endl;
       ping_network();
       std::this_thread::sleep_for(std::chrono::milliseconds(ping_ms));
     }
@@ -601,20 +600,20 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   try_to_connect(const std::string &target) {
     Dashel::Stream *stream;
     try {
+      LOG_INFO("Trying to connect to {0}", target);
       stream = connect(target);
       add_stream(stream);
     } catch (const Dashel::DashelException &e) {
       LOG_ERROR("Error while connecting to {0}: {1}", target, e.what());
-      // std::cerr << e.what() << std::endl;
     }
     if (stream_indices.count(stream)) {
-      // std::cout << (stream == nullptr) << std::endl;
       return {stream, stream_indices.at(stream)};
     }
     return {nullptr, 0};
   }
 
   unsigned try_to_connect_(const std::string &target) {
+    pybind11::gil_scoped_release release;
     return std::get<1>(try_to_connect(target));
   }
 
