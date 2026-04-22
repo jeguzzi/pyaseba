@@ -152,7 +152,8 @@ public:
     Aseba::Zeroconf::TxtRecord txt{protocolVersion, name, false, ids, pids};
     try {
       zeroconf.advertise(advertise_name, listenStream, txt);
-      LOG_INFO("Advertised {0} with {1}", advertise_name, txt.record());
+      LOG_INFO("Advertised {0}", advertise_name);
+      // LOG_INFO("Advertised {0} with {1}", advertise_name, txt.record());
     } catch (const std::runtime_error &e) {
       LOG_WARN("Could not advertise: {0}", e.what());
     }
@@ -181,7 +182,7 @@ public:
 
   virtual void connectionCreated(Dashel::Stream *stream) {
     std::string targetName = stream->getTargetName();
-    LOG_INFO("Incoming Dashel connection from {0}", targetName);
+    LOG_INFO("New connection from {0}", targetName);
     if (targetName.substr(0, targetName.find_first_of(':')) == "tcp") {
       // schedule current stream for disconnection
       if (!this->stream) {
@@ -203,7 +204,7 @@ public:
   }
 
   virtual void connectionClosed(Dashel::Stream *stream, bool abnormal) {
-    LOG_INFO("Dashel connection closed");
+    LOG_INFO("Connection to {0} closed ({1})", stream->getTargetName(), abnormal);
 #ifdef ZEROCONF
     zeroconf.dashelConnectionClosed(stream);
 #endif // ZEROCONF
@@ -305,7 +306,7 @@ public:
     // lock();
     for (auto &stream : toDisconnect) {
       closeStream(stream);
-      LOG_INFO("Stream {0} closed in spin", stream->getTargetName());
+      LOG_INFO("Connection {0} closed", stream->getTargetName());
     }
     toDisconnect.clear();
     // unlock();

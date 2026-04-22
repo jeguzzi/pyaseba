@@ -260,7 +260,7 @@ public:
 
 protected:
   void send_uuid(const std::array<uint8_t, 16> &uuid) {
-    LOG_INFO("Send device uuid {}", spdlog::to_hex(uuid));
+    LOG_INFO("Sending device uuid {}", spdlog::to_hex(uuid));
     uint8_t size = static_cast<uint8_t>(uuid.size());
     std::vector<uint8_t> payload = {DEVICE_INFO_UUID, size};
     std::copy(uuid.begin(), uuid.end(), std::back_inserter(payload));
@@ -269,7 +269,7 @@ protected:
   }
 
   void send_friendly_name(const std::string &name) {
-    LOG_INFO("Send device name {0}", name);
+    LOG_INFO("Sending device name {0}", name);
     uint8_t size = static_cast<uint8_t>(name.length()) + 1;
     std::vector<uint8_t> payload = {DEVICE_INFO_NAME, size};
     std::copy(name.c_str(), name.c_str() + name.length() + 1,

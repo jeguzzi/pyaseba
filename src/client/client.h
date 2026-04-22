@@ -137,7 +137,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   // +++++++++++++++ Dashel::Hub specialization +++++++++++++++
 
   void incomingData(Dashel::Stream *stream) override {
-    LOG_INFO("Incoming data from {0}", stream->getTargetName());
+    LOG_DEBUG("Incoming data from {0}", stream->getTargetName());
 #ifdef ZEROCONF
     if (zeroconf.isStreamHandled(stream)) {
       try {
@@ -877,7 +877,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   void description_received(unsigned nodeId, unsigned target) {}
 
   void node_connected(unsigned nodeId, unsigned target) {
-    LOG_INFO("Connected node {0} to {1}", nodeId, target);
+    LOG_INFO("Connected node {0} on {1}", nodeId, target);
     for (const auto &cb : node_connection_callbacks) {
       pybind11::gil_scoped_acquire acquire;
       cb(nodeId, target);
@@ -886,7 +886,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void node_disconnected(unsigned nodeId, unsigned target) {
-    LOG_INFO("Disconnected node {0} from {1}", nodeId, target);
+    LOG_INFO("Disconnected node {0} on {1}", nodeId, target);
     for (const auto &cb : node_disconnection_callbacks) {
       pybind11::gil_scoped_acquire acquire;
       cb(nodeId, target);
@@ -1171,7 +1171,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     const auto record = make_record(nodes, true, protocol_version);
     try {
       zeroconf.advertise(record_name, in_stream, record);
-      LOG_INFO("Advertised {0} with {1}", record_name, record.record());
+      LOG_INFO("Advertised {}", record_name);
+      // LOG_INFO("Advertised {0} with {1}", record_name, record.record());
     } catch (const std::runtime_error &e) {
       LOG_ERROR("Error while advertising {0} with {1}: {2}", name,
                     record.record(), e.what());

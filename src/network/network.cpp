@@ -9,7 +9,7 @@ extern "C" int AsebaHandleDeviceInfoMessages(AsebaVMState*, uint16_t, uint16_t*,
 }
 
 extern "C" void AsebaPutVmToSleep(AsebaVMState *) {
-  LOG_INFO("Received request to go into sleep");
+  LOG_DEBUG("Received request to go into sleep");
 }
 
 extern "C" void AsebaSendBuffer(AsebaVMState *vm, const uint8_t *data,
@@ -63,11 +63,11 @@ extern "C" void AsebaNativeFunction(AsebaVMState *vm, uint16_t id) {
 }
 
 extern "C" void AsebaWriteBytecode(AsebaVMState *) {
-  LOG_INFO("Received request to write bytecode into flash");
+  LOG_DEBUG("Received request to write bytecode into flash");
 }
 
 extern "C" void AsebaResetIntoBootloader(AsebaVMState *) {
-  LOG_INFO("Received request to reset into bootloader");
+  LOG_DEBUG("Received request to reset into bootloader");
 }
 
 extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
@@ -106,12 +106,11 @@ extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
   }
   LOG_ERROR("Fatal error; exception: {0}; pc = {1}, sp = {2}", e, vm->pc, vm->sp);
   abort();
-  LOG_INFO("Resetting VM");
-  AsebaVMInit(vm);
+  // AsebaVMInit(vm);
 }
 
 extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
-  LOG_INFO("AsebaVMResetCB");
+  LOG_DEBUG("AsebaVMResetCB");
   Node *node = Network::node_for_vm(vm);
   if (node) {
     node->reset();
@@ -119,7 +118,7 @@ extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
 }
 
 extern "C" void AsebaVMRunCB(AsebaVMState *) {
-  LOG_INFO("AsebaVMRunCB");
+  LOG_DEBUG("AsebaVMRunCB");
 }
 extern "C" void AsebaVMErrorCB(AsebaVMState *, const char *message) {
   LOG_ERROR("AsebaVMErrorCB: {0}", message);

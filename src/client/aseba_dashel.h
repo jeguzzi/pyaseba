@@ -15,8 +15,8 @@ Aseba::Message *receive(Dashel::Stream *stream) {
   Aseba::swapEndian(source);
   stream->read(&type, 2);
   Aseba::swapEndian(type);
-  LOG_INFO("Receive message of length {0} and type 0x{1:X} from {2}", len, type,
-           source);
+  LOG_DEBUG("Receiving Aseba message of length {0} and type 0x{1:X} from {2}",
+            len, type, source);
   // read content
   if (len > ASEBA_MAX_EVENT_ARG_SIZE) {
     LOG_ERROR("Message size {0} too large: ignore", len);

@@ -286,21 +286,11 @@ The payload of the event.
                      &Aseba::NativeFunctionDescription::description)
       .def_readonly("parameters", &Aseba::NativeFunctionDescription::parameters)
       .def("__repr__", [](const Aseba::NativeFunctionDescription &msg) {
-        auto s = py::str("NativeFunctionDescription(source=") +
-                 py::str(py::cast(msg.source)) + py::str(", name='") +
-                 py::cast(msg.name) + py::str("', description='") +
-                 py::cast(msg.description) + py::str("', parameters=[");
-        bool first = true;
-        for (const auto &p : msg.parameters) {
-          if (!first) {
-            s += py::str(", ");
-          }
-          s += py::cast(p.name) + py::str("(") + py::str(py::cast(p.size)) +
-               py::str(")");
-          first = false;
-        }
-        s += py::str("])");
-        return s;
+        return py::str("NativeFunctionDescription(source=") +
+               py::str(py::cast(msg.source)) + py::str(", name='") +
+               py::cast(msg.name) + py::str("', description='") +
+               py::cast(msg.description) + py::str("', parameters=") +
+               py::str(py::cast(msg.parameters)) + py::str(")");
       });
 
   py::classh<Aseba::Disconnected, Aseba::Message>(msgs, "Disconnected", R"doc(
@@ -1518,9 +1508,18 @@ Whether incoming messages are processed or kept in the queue.
       .def_property(
           "_is_running", [](const Client &m) { return !m.stopped; }, nullptr);
 
-  m.def("init_logger", [](const std::string &logger_name) {
-    pybind11_log::init_mt(logger_name);
-  });
+  m.def(
+      "init_logger",
+      [](const std::string &logger_name = "pyaseba") {
+#ifdef ENABLE_LOGGING
+        spdlog::set_level(spdlog::level::debug);
+        pybind11_log::init_mt(logger_name);
+        std::cout << "Initialized logger " << logger_name << std::endl;
+#else
+        std::cerr << "pyaseba was built without logging support" << std::endl;
+#endif
+      },
+      py::arg("name") = "pyaseba");
 
   // .def("get_user_events", &Client::get_event_names, py::arg("node_id"),
   //      py::arg("include") = std::set<unsigned>{},

@@ -1,7 +1,10 @@
-from ._client_impl import (Client, Description, Event, Message,
-                           scan_serial_ports, complete_target)
+from ._client_impl import Client, Description, Event, Message, complete_target
+from ._client_impl import init_logger as _init_logger
+from ._client_impl import scan_serial_ports
 from .client_async import ClientAsync, wrap_callback
-from .node import Node, NodeAsync, EventSpec
+from .node import EventSpec, Node, NodeAsync
+
+_init_logger()
 
 
 def find_serial_targets(name: str) -> list[str]:

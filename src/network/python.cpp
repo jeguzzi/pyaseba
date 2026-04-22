@@ -319,7 +319,8 @@ Arguments:
           [](py::object network, double time_step, double duration) {
             const auto to_thread =
                 py::module_::import("asyncio").attr("to_thread");
-            return to_thread(network.attr("_spin_no_gil"), py::cast(time_step), py::cast(duration));
+            return to_thread(network.attr("_spin_no_gil"), py::cast(time_step),
+                             py::cast(duration));
           },
           py::arg("time_step"), py::arg("duration") = -1, R"doc(
 spin_async(self, time_step: float, duration: float = -1) -> Awaitable[None]
@@ -333,9 +334,8 @@ Arguments:
   time_step: the period in seconds between calling :py:meth:`pyaseba.network.Node.tick`
   duration: the duration in seconds. If negative, it will keep spinning indefinitely.
 )doc")
-      .def(
-          "_spin_no_gil", &Network::spin,
-          py::arg("time_step"), py::arg("duration") = -1, py::call_guard<py::gil_scoped_release>())
+      .def("_spin_no_gil", &Network::spin, py::arg("time_step"),
+           py::arg("duration") = -1, py::call_guard<py::gil_scoped_release>())
       .def("start", &Network::start, py::arg("time_step"),
            py::arg("duration") = -1, R"doc(
 start(self, time_step: float, duration: float = -1) -> None
@@ -413,4 +413,16 @@ Arguments:
 Returns:
   the variable value.
 )doc");
+
+  m.def(
+      "init_logger",
+      [](const std::string &logger_name = "pyaseba-network") {
+#ifdef ENABLE_LOGGING
+        pybind11_log::init_mt(logger_name);
+        std::cout << "Initialized logger " << logger_name << std::endl;
+#else
+        std::cerr << "pyaseba was built without logging support" << std::endl;
+#endif
+      },
+      py::arg("name") = "pyaseba-network");
 }
