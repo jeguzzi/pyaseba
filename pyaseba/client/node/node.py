@@ -3,7 +3,7 @@ import re
 import time
 import warnings
 from collections.abc import Callable, Collection, Iterable, Sequence
-from functools import Placeholder, partial
+# from functools import Placeholder, partial
 from itertools import chain
 from typing import Any, NotRequired, Self, TypedDict, TypeVar
 import sys
@@ -726,6 +726,10 @@ end
         for v in cls.properties:
             n = v.replace('.', '_')
             setattr(cls, n, make_property(v))
+        if sys.version_info >= (3, 14):
+            from functools import Placeholder, partial
+        else:
+            return
         for f in cls.functions:
             n = f"call_{f.replace('.', '_')}"
             setattr(
