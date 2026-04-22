@@ -38,6 +38,7 @@ class Node {
 
 protected:
   int16_t variables[VARIABLES_TOTAL_SIZE];
+  int16_t variablesOld[VARIABLES_TOTAL_SIZE];
   std::array<uint8_t, 16> uuid;
   std::string friendly_name;
   std::set<void *> sent_device_info;
@@ -80,6 +81,9 @@ public:
     vm.stack = &stack[0];
     vm.stackSize = static_cast<uint16_t>(stack.size());
     vm.variables = reinterpret_cast<int16_t *>(&variables);
+#if USE_MOBSYA_ASEBA
+    vm.variablesOld = reinterpret_cast<int16_t *>(&variablesOld);
+#endif
     vm.variablesSize = sizeof(variables) / sizeof(int16_t);
     AsebaVMInit(&vm);
     vm.flags = ASEBA_VM_STEP_BY_STEP_MASK;
