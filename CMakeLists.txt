@@ -65,6 +65,15 @@ endif()
 if(LOGGING)
 
   FetchContent_Declare(
+    fmt
+    EXCLUDE_FROM_ALL
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 12.1.0
+    GIT_SHALLOW TRUE
+    OVERRIDE_FIND_PACKAGE)
+  FetchContent_MakeAvailable(fmt)
+
+  FetchContent_Declare(
     spdlog
     EXCLUDE_FROM_ALL
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
