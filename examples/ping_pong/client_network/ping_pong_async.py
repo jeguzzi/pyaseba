@@ -18,7 +18,7 @@ async def cb(event: Event,
 
 async def run_client(script: str, sleep: float) -> None:
     client = ClientAsync()
-    if await client.connect("tcp:port=33333", max_retries=1):
+    if await client.connect("tcp:port=33333;host=localhost", max_retries=1):
         node_id, conn = await client.wait_node(wait_ms=1000)
         if conn:
             client.load_script(node_id=node_id,
@@ -42,7 +42,7 @@ async def run_client(script: str, sleep: float) -> None:
 
 
 async def run_network(node_cls: type[Node]) -> None:
-    network = Network()
+    network = Network(address="localhost")
     node = node_cls(0, "Node", default_functions=False)
     network.add_node(node)
     return await network.spin_async(time_step=0.1, duration=1)

@@ -15,7 +15,7 @@ def cb(event: Event, client: Client, node_id: int, sleep: float = 0.1) -> None:
 
 def run_client(script: str, sleep: float) -> None:
     client = Client()
-    if client.connect("tcp:port=33333", max_retries=0):
+    if client.connect("tcp:port=33333;host=localhost", max_retries=0):
         node_id, conn = client.wait_node(wait_ms=1000)
         if conn:
             client.load_script(node_id=node_id,
@@ -34,7 +34,7 @@ def run_client(script: str, sleep: float) -> None:
 
 
 def make_network(node_cls: type[Node] = Node) -> Network:
-    network = Network()
+    network = Network(address="localhost")
     node = node_cls(0, "Node", default_functions=False)
     network.add_node(node)
     return network
