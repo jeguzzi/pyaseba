@@ -1,4 +1,3 @@
-import sys
 import time
 from functools import partial
 
@@ -43,6 +42,6 @@ def make_network(node_cls: type[Node] = Node) -> Network:
 
 def main(node_cls: type[Node], script: str, sleep: float) -> None:
     network = make_network(node_cls)
-    network.start(time_step=0.1, duration=-1)
+    network.start(time_step=0.1, duration=1)
     run_client(script, sleep)
     network.stop()
