@@ -4,6 +4,10 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#ifdef ENABLE_LOGGING
+#include "pybind11_log.h"
+#endif
+
 namespace py = pybind11;
 
 namespace pybind11 {
@@ -89,12 +93,24 @@ template <> struct type_caster<Aseba::NamedValue> {
     return true;
   }
 };
+
+#ifdef USE_MOBSYA_ASEBA
+template <> struct type_caster<Aseba::ChangedVariables::area> {
+
+  PYBIND11_TYPE_CASTER(Aseba::NamedValue, io_name("tuple[int, list[int]]",
+                                                  "tuple[int, list[int]]"));
+
+  static handle cast(const Aseba::ChangedVariables::area &value,
+                     return_value_policy /*policy*/, handle /*parent*/) {
+    return py::make_tuple(value.start, value.variables).release();
+  }
+};
+#endif
+
 } // namespace detail
 } // namespace pybind11
 
 // PYBIND11_MAKE_OPAQUE(std::vector<Client::MessageCallback>)
-
-#define ASEBA_MAX_TARGET_PROTOCOL_VERSION 9 // ASEBA_PROTOCOL_VERSION
 
 PYBIND11_MODULE(_client_impl, m) {
 
@@ -103,6 +119,12 @@ PYBIND11_MODULE(_client_impl, m) {
 
   // py::bind_vector<std::vector<Client::MessageCallback>>(m,
   // "CallbackList");
+
+#ifdef USE_MOBSYA_ASEBA
+  py::enum_<DeviceInfoType>(m, "DeviceInfoType")
+      .value("uuid", DeviceInfoType::DEVICE_INFO_UUID)
+      .value("name", DeviceInfoType::DEVICE_INFO_NAME);
+#endif
 
   py::classh<Event>(m, "Event", R"doc(
 A named Aseba event
@@ -562,6 +584,69 @@ The payload of the event.
                py::str(", dest=") + py::str(py::cast(msg.dest)) + py::str(")");
       });
 
+#ifdef USE_MOBSYA_ASEBA
+  py::classh<Aseba::GetNodeDescriptionFragment, Aseba::CmdMessage,
+             Aseba::Message>(msgs, "GetNodeDescriptionFragment",
+                             R"doc(
+)doc")
+      .def(py::init<int16_t, uint16_t>(), py::arg("fragment") = -1,
+           py::arg("dest") = static_cast<uint16_t>(ASEBA_DEST_INVALID))
+      .def("__repr__", [](const Aseba::GetNodeDescriptionFragment &msg) {
+        return py::str("GetNodeDescriptionFragment(source=") +
+               py::str(py::cast(msg.source)) + py::str(", dest=") +
+               py::str(py::cast(msg.dest)) + py::str(", fragment=") +
+               py::str(py::cast(msg.m_fragment)) + py::str(")");
+      });
+
+  py::classh<Aseba::GetChangedVariables, Aseba::CmdMessage, Aseba::Message>(
+      msgs, "GetChangedVariables",
+      R"doc(
+)doc")
+      .def(py::init<uint16_t>(),
+           py::arg("dest") = static_cast<uint16_t>(ASEBA_DEST_INVALID))
+      .def("__repr__", [](const Aseba::GetNodeDescriptionFragment &msg) {
+        return py::str("GetChangedVariables(source=") +
+               py::str(py::cast(msg.source)) + py::str(", dest=") +
+               py::str(py::cast(msg.dest)) + py::str(")");
+      });
+
+  py::classh<Aseba::GetDeviceInfo, Aseba::CmdMessage, Aseba::Message>(
+      msgs, "GetDeviceInfo",
+      R"doc(
+)doc")
+      .def(py::init<uint16_t, DeviceInfoType>(),
+           py::arg("dest") = static_cast<uint16_t>(ASEBA_DEST_INVALID),
+           py::arg("info") = DEVICE_INFO_UUID)
+      .def("__repr__", [](const Aseba::GetDeviceInfo &msg) {
+        return py::str("GetDeviceInfo(source=") +
+               py::str(py::cast(msg.source)) + py::str(", dest=") +
+               py::str(py::cast(msg.dest)) + py::str(", info=") +
+               py::str(py::cast(msg.info)) + py::str(")");
+      });
+
+  py::classh<Aseba::DeviceInfo, Aseba::Message>(msgs, "DeviceInfo",
+                                                R"doc(
+)doc")
+      .def(py::init<DeviceInfoType, std::vector<uint8_t>>(), py::arg("info"),
+           py::arg("data"))
+      .def("__repr__", [](const Aseba::DeviceInfo &msg) {
+        return py::str("GetDeviceInfo(source=") +
+               py::str(py::cast(msg.source)) + py::str(", info=") +
+               py::str(py::cast(msg.info)) + py::str(", data=") +
+               py::str(py::cast(msg.data)) + py::str(")");
+      });
+
+  py::classh<Aseba::ChangedVariables, Aseba::Message>(msgs, "ChangedVariables",
+                                                      R"doc(
+)doc")
+      .def(py::init<>())
+      .def("__repr__", [](const Aseba::ChangedVariables &msg) {
+        return py::str("ChangedVariables(source=") +
+               py::str(py::cast(msg.source)) + py::str(", variables=") +
+               py::str(py::cast(msg.variables)) + py::str(")");
+      });
+#endif
+
   py::classh<ClientNode>(m, "Description", R"doc(
 The description of an Aseba node.
 )doc")
@@ -696,7 +781,8 @@ Examples:
 
 )doc");
   client
-      .def(py::init<int, const std::string &, unsigned, bool, unsigned, unsigned, unsigned>(),
+      .def(py::init<int, const std::string &, unsigned, bool, unsigned,
+                    unsigned, unsigned>(),
            py::kw_only(), py::arg("port") = -1, py::arg("address") = "0.0.0.0",
            py::arg("ping_period_ms") = 1000, py::arg("automatic_query") = true,
            py::arg("node_disconnection_timeout_ms") = 3000,

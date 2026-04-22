@@ -6,10 +6,16 @@ endif()
 if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
+if(POLICY CMP0097)
+  cmake_policy(SET CMP0097 NEW)
+endif()
+
 
 project(pyaseba)
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS
+    OFF
+    CACHE BOOL "" FORCE)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.15)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -21,59 +27,49 @@ else()
   add_compile_options(-fPIC)
 endif()
 
-if(NOT DEFINED aseba_patched)
-  set(patchCommand PATCH_COMMAND git apply
-                   "${CMAKE_CURRENT_LIST_DIR}/aseba_patch.diff")
+option(LOGGING "Whether to enable spdlog-based logging" ON)
+option(MOBSYA "Whether to use the mobsya-fork of aseba" ON)
+
+include(FetchContent)
+
+if(MOBSYA)
+  include(${CMAKE_CURRENT_LIST_DIR}/cmake/mobsya_aseba.cmake)
+else()
+  include(${CMAKE_CURRENT_LIST_DIR}/cmake/aseba.cmake)
 endif()
 
-if(NOT aseba_FOUND)
-  set(aseba_patched
-      ON
-      CACHE BOOL "" FORCE)
-  include(FetchContent)
-  FetchContent_Declare(
-    aseba
-    EXCLUDE_FROM_ALL
-    GIT_REPOSITORY https://github.com/aseba-community/aseba.git
-    GIT_TAG master
-    GIT_SHALLOW TRUE
-    ${patchCommand} OVERRIDE_FIND_PACKAGE)
-  FetchContent_MakeAvailable(aseba)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
 if(TARGET zeroconf)
   message("With Zeroconf support")
-  add_compile_definitions(ZEROCONF=1)
-  set(EXTRA_LIBS asebazeroconf)
 else()
   message("Without Zeroconf support")
 endif()
 
+if(LOGGING)
 
-include(FetchContent)
-FetchContent_Declare(
-  pybind11_log
-  EXCLUDE_FROM_ALL
-  GIT_REPOSITORY https://github.com/tanghaibao/pybind11_log
-  GIT_TAG main
-  GIT_SHALLOW TRUE
-  OVERRIDE_FIND_PACKAGE)
-FetchContent_MakeAvailable(pybind11_log)
+  FetchContent_Declare(
+    pybind11_log
+    EXCLUDE_FROM_ALL
+    GIT_REPOSITORY https://github.com/tanghaibao/pybind11_log
+    GIT_TAG main
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(pybind11_log)
 
-add_library(pybind11_log INTERFACE)
-target_include_directories(pybind11_log INTERFACE ${pybind11_log_SOURCE_DIR}/include)
+  # add_library(pybind11_log INTERFACE)
+  # target_include_directories(pybind11_log
+  #                            INTERFACE ${pybind11_log_SOURCE_DIR}/include)
+  FetchContent_Declare(
+    spdlog
+    EXCLUDE_FROM_ALL
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.17.0
+    GIT_SHALLOW TRUE
+    OVERRIDE_FIND_PACKAGE)
+  FetchContent_MakeAvailable(spdlog)
 
-FetchContent_Declare(
-  spdlog
-  EXCLUDE_FROM_ALL
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG v1.17.0
-  GIT_SHALLOW TRUE
-  OVERRIDE_FIND_PACKAGE)
-FetchContent_MakeAvailable(spdlog)
-
-find_package(spdlog REQUIRED)
-
+  find_package(spdlog REQUIRED)
+endif()
 
 set(Python3_FIND_STRATEGY LOCATION)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -94,10 +90,13 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(DISABLE_WARNINGS "-w")
-  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wno-conversion -Wno-unused-parameter -Wno-sign-compare)
+  set(WARNINGS -Wall -Wextra -Wno-pedantic -Wno-conversion
+               -Wno-unused-parameter -Wno-sign-compare)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(DISABLE_WARNINGS "-Wno-everything")
-  set(WARNINGS -Wall -Wextra -Wno-gnu-flexible-array-initializer -Wno-c99-extensions -Wno-unused-parameter -Wno-sign-compare) # -Wconversion 
+  set(WARNINGS -Wall -Wextra -Wno-gnu-flexible-array-initializer
+               -Wno-c99-extensions -Wno-unused-parameter -Wno-sign-compare
+  )# -Wconversion
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(WARNINGS "/W3")
   set(DISABLE_WARNINGS "/w")
@@ -105,5 +104,3 @@ endif()
 
 add_subdirectory(src/client)
 add_subdirectory(src/network)
-
-

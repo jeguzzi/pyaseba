@@ -4,6 +4,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#ifdef ENABLE_LOGGING
+#include "pybind11_log.h"
+#endif
+
 namespace py = pybind11;
 
 struct PyNode : public Node, public py::trampoline_self_life_support {

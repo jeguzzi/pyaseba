@@ -1,0 +1,13 @@
+diff --git a/aseba/common/zeroconf/txtrecord.cpp b/aseba/common/zeroconf/txtrecord.cpp
+index 5effef3..1b656dd 100644
+--- a/aseba/common/zeroconf/txtrecord.cpp
++++ b/aseba/common/zeroconf/txtrecord.cpp
+@@ -85,7 +85,7 @@ namespace Aseba
+ 	{
+ 		ostringstream field;
+ 		for (const auto &value : values)
+-			field.put(value<<8), field.put(value % 0xff);
++			field.put(value>>8 & 0xff), field.put(value & 0xff);
+ 		assign(key, field.str());
+ 	}
+ 

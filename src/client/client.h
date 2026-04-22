@@ -1,19 +1,18 @@
 #ifndef CLIENT_H_GUARD
 #define CLIENT_H_GUARD
 
-#include "pybind11_log.h"
-#include <spdlog/spdlog.h>
-
 #include "aseba/common/msg/msg.h"
 #include "aseba/compiler/compiler.h"
-#include "aseba/transport/dashel_plugins/dashel-plugins.h"
+// #include "aseba/transport/dashel_plugins/dashel-plugins.h"
 #ifdef ZEROCONF
 #include "advertise.h"
-#include "aseba/common/zeroconf/zeroconf-dashelhub.h"
+#include "zeroconf/zeroconf-dashelhub.h"
+// #include "aseba/common/zeroconf/zeroconf-dashelhub.h"
 #endif
 #include "aseba/common/productids.h"
 #include "dashel/dashel.h"
 
+#include "aseba_dashel.h"
 #include "awaited.h"
 #include "description_manager.h"
 #include "queue.h"
@@ -124,7 +123,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
         zeroconf(dynamic_cast<Dashel::Hub &>(*this))
 #endif
   {
-    Dashel::initPlugins();
+    // Dashel::initPlugins();
     if (port > 0 && address.size()) {
       in_stream =
           connect("tcpin:port=" + std::to_string(port) + ";address=" + address);
@@ -138,7 +137,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   // +++++++++++++++ Dashel::Hub specialization +++++++++++++++
 
   void incomingData(Dashel::Stream *stream) override {
-    spdlog::debug("Incoming data from {0}", stream->getTargetName());
+    LOG_INFO("Incoming data from {0}", stream->getTargetName());
 #ifdef ZEROCONF
     if (zeroconf.isStreamHandled(stream)) {
       try {
@@ -150,18 +149,19 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
 #endif // ZEROCONF
     Aseba::Message *message = nullptr;
     try {
-      message = Aseba::Message::receive(stream);
+      message = receive(stream);
+      // message = Aseba::Message::receive(stream);
     } catch (const Dashel::DashelException &e) {
       // std::cerr << e.what() << std::endl;
-      spdlog::error("DashelException {0}", e.what());
+      LOG_ERROR("DashelException {0}", e.what());
       stream->flush();
     } catch (const std::runtime_error &e) {
       // std::cerr << e.what() << std::endl;
-      spdlog::error("runtime_error {0}", e.what());
+      LOG_ERROR("runtime_error {0}", e.what());
       stream->flush();
     } catch (const std::exception &e) {
       // std::cerr << e.what() << std::endl;
-      spdlog::error("exception {0}", e.what());
+      LOG_ERROR("exception {0}", e.what());
       stream->flush();
     }
     if (message) {
@@ -170,7 +170,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
           in_msgs.put({move_message(message), stream_indices.at(stream)});
           return;
         } else {
-          spdlog::warn("Unindexed stream {0}", stream->getTargetName());
+          LOG_WARN("Unindexed stream {0}", stream->getTargetName());
           // std::cerr << "Unindexed stream " << stream->getTargetName()
           //           << std::endl;
         }
@@ -180,7 +180,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void connectionCreated(Dashel::Stream *stream) override {
-    spdlog::info("Created connection {0}", stream->getTargetName());
+    LOG_INFO("Created connection {0}", stream->getTargetName());
     // const auto protocol = stream->getProtocolName();
     // if (protocol.find("tcppoll") != std::string::npos) {
     //   return;
@@ -198,7 +198,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void connectionClosed(Dashel::Stream *stream, bool abnormal) override {
-    spdlog::info("Closed connection {0} ({1})", stream->getTargetName(),
+    LOG_INFO("Closed connection {0} ({1})", stream->getTargetName(),
                  abnormal);
 #ifdef ZEROCONF
     zeroconf.dashelConnectionClosed(stream);
@@ -242,11 +242,13 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (!message)
       return;
     // lock();
+    Aseba::Message::SerializationBuffer buffer;
+    message->serializeSpecific(buffer);
     for (auto stream : out_streams) {
       if (!dataStreams.count(stream)) {
         continue;
       }
-      message->serialize(stream);
+      serialize(*message, buffer, stream);
       stream->flush();
     }
     // unlock();
@@ -602,7 +604,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       stream = connect(target);
       add_stream(stream);
     } catch (const Dashel::DashelException &e) {
-      spdlog::error("Error while connecting to {0}: {1}", target, e.what());
+      LOG_ERROR("Error while connecting to {0}: {1}", target, e.what());
       // std::cerr << e.what() << std::endl;
     }
     if (stream_indices.count(stream)) {
@@ -784,11 +786,12 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (s == std::future_status::ready) {
       return future.get();
     }
+    const auto nodes = awaited.nodes;
     if (!awaited.complete) {
       awaited.complete = true;
       purge(scans);
     }
-    return awaited.nodes;
+    return nodes;
   }
 
   const ClientNode *
@@ -874,7 +877,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   void description_received(unsigned nodeId, unsigned target) {}
 
   void node_connected(unsigned nodeId, unsigned target) {
-    spdlog::info("Connected node {0} to {1}", nodeId, target);
+    LOG_INFO("Connected node {0} to {1}", nodeId, target);
     for (const auto &cb : node_connection_callbacks) {
       pybind11::gil_scoped_acquire acquire;
       cb(nodeId, target);
@@ -883,7 +886,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   void node_disconnected(unsigned nodeId, unsigned target) {
-    spdlog::info("Disconnected node {0} from {1}", nodeId, target);
+    LOG_INFO("Disconnected node {0} from {1}", nodeId, target);
     for (const auto &cb : node_disconnection_callbacks) {
       pybind11::gil_scoped_acquire acquire;
       cb(nodeId, target);
@@ -994,11 +997,12 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (s == std::future_status::ready) {
       return future.get();
     }
+    const auto nodes = awaited.nodes;
     if (!awaited.complete) {
       awaited.complete = true;
       purge(awaited_nodes);
     }
-    return awaited.nodes;
+    return nodes;
   }
 
   std::tuple<unsigned, unsigned>
@@ -1151,9 +1155,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
 #ifdef ZEROCONF
     const auto record_name = make_record_name(name);
     zeroconf.forget(record_name, in_stream);
-    spdlog::info("De-advertised {0}", record_name);
+    LOG_INFO("De-advertised {0}", record_name);
 #else
-    spdlog::error("Zeroconf not supported");
+    LOG_ERROR("Zeroconf not supported");
 #endif
   }
 
@@ -1167,13 +1171,13 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     const auto record = make_record(nodes, true, protocol_version);
     try {
       zeroconf.advertise(record_name, in_stream, record);
-      spdlog::info("Advertised {0} with {1}", record_name, record.record());
+      LOG_INFO("Advertised {0} with {1}", record_name, record.record());
     } catch (const std::runtime_error &e) {
-      spdlog::error("Error while advertising {0} with {1}: {2}", name,
+      LOG_ERROR("Error while advertising {0} with {1}: {2}", name,
                     record.record(), e.what());
     }
 #else
-    spdlog::error("Zeroconf not supported");
+    LOG_ERROR("Zeroconf not supported");
 #endif
   }
 

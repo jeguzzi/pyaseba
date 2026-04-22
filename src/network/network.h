@@ -9,7 +9,7 @@
 #include "dashel/dashel.h"
 
 #ifdef ZEROCONF
-#include "aseba/common/zeroconf/zeroconf-dashelhub.h"
+#include "zeroconf/zeroconf-dashelhub.h"
 #endif
 
 #include "node.h"
@@ -87,17 +87,16 @@ public:
 #endif
   {
     if (listen())
-      log_info("Created Aseba network listening on tcp:port=%s",
-               listenStream->getTargetParameter("port").c_str());
+      LOG_INFO("Created Aseba network listening on tcp:port={0}",
+               listenStream->getTargetParameter("port"));
   }
 
   ~Network() {
-    log_info("Deleted network on tcp:port=%d", port);
+    LOG_INFO("Deleted network on tcp:port={0}", port);
     stop();
   }
 
   void add_node(const std::shared_ptr<Node> &node) {
-    // log_info("Add node");
     node->init();
     endpoints[&(node->vm)] = std::make_pair(this, node.get());
     nodes[node->vm.nodeId] = node;
@@ -107,7 +106,6 @@ public:
   }
 
   void remove_node(const std::shared_ptr<Node> &node) {
-    // log_info("Remove node");
     endpoints.erase(&(node->vm));
     nodes.erase(node->vm.nodeId);
 #ifdef ZEROCONF
@@ -129,8 +127,8 @@ public:
     std::vector<unsigned int> ids;
     std::vector<unsigned int> pids;
     std::string name = "";
-    // unsigned protocolVersion{ASEBA_PROTOCOL_VERSION};
-    unsigned protocolVersion{9};
+    unsigned protocolVersion{ASEBA_PROTOCOL_VERSION};
+    // unsigned protocolVersion{9};
     for (auto const &[id, node] : nodes) {
       std::string n_name = node->get_advertized_name();
       if (name.empty()) {
@@ -154,17 +152,16 @@ public:
     Aseba::Zeroconf::TxtRecord txt{protocolVersion, name, false, ids, pids};
     try {
       zeroconf.advertise(advertise_name, listenStream, txt);
-      log_debug("Advertised %s with %s", advertise_name.c_str(),
-                txt.record().c_str());
+      LOG_INFO("Advertised {0} with {1}", advertise_name, txt.record());
     } catch (const std::runtime_error &e) {
-      log_warn("Could not advertise: %s", e.what());
+      LOG_WARN("Could not advertise: {0}", e.what());
     }
   }
 
   void deadvertise() {
     if (!listenStream)
       return;
-    log_debug("Deadvertise Aseba Network");
+    LOG_DEBUG("Deadvertise Aseba Network");
     zeroconf.forget(advertise_name, listenStream);
   }
 #endif
@@ -176,7 +173,7 @@ public:
       oss << "tcpin:port=" << port << ";address=" << address;
       listenStream = Dashel::Hub::connect(oss.str());
     } catch (Dashel::DashelException e) {
-      log_warn("Cannot create listening port %d: %s", port, e.what());
+      LOG_WARN("Cannot create listening port {0}: {1}", port, e.what());
       listenStream = nullptr;
     }
     return listenStream;
@@ -184,14 +181,14 @@ public:
 
   virtual void connectionCreated(Dashel::Stream *stream) {
     std::string targetName = stream->getTargetName();
-    log_info("Incoming Dashel connection from %s", targetName.c_str());
+    LOG_INFO("Incoming Dashel connection from {0}", targetName);
     if (targetName.substr(0, targetName.find_first_of(':')) == "tcp") {
       // schedule current stream for disconnection
       if (!this->stream) {
         this->stream = stream;
-        log_info("Connection accepted");
+        LOG_INFO("Connection accepted");
       } else {
-        log_info(
+        LOG_INFO(
             "Connection refused: we are already connected to a client stream");
         // ??? Dashel say not to call closeStream in connectionCreated ???
         // closeStream(stream);
@@ -206,7 +203,7 @@ public:
   }
 
   virtual void connectionClosed(Dashel::Stream *stream, bool abnormal) {
-    log_info("Dashel connection closed");
+    LOG_INFO("Dashel connection closed");
 #ifdef ZEROCONF
     zeroconf.dashelConnectionClosed(stream);
 #endif // ZEROCONF
@@ -219,7 +216,7 @@ public:
     }
     toDisconnect.erase(stream);
     if (abnormal)
-      log_warn("Client has disconnected unexpectedly.");
+      LOG_WARN("Client has disconnected unexpectedly.");
     // else
     // printf("Client has disconnected properly.\n");
   }
@@ -227,11 +224,11 @@ public:
   virtual void incomingData(Dashel::Stream *stream) {
 #ifdef ZEROCONF
     if (zeroconf.isStreamHandled(stream)) {
-      log_debug("Incoming data for zeroconf");
+      LOG_DEBUG("Incoming data for zeroconf");
       try {
         zeroconf.dashelIncomingData(stream);
       } catch (const std::exception &e) {
-        log_error("Advertise: %s", e.what());
+        LOG_ERROR("Advertise: {0}", e.what());
       }
       return;
     }
@@ -261,11 +258,8 @@ public:
     type = bswap16(type);
     // std::cout << " => " << std::hex << type << std::dec << std::endl;
     // memcpy(data, &node->lastMessageData[0], node->lastMessageData.size());
-
-    log_debug("[DASHEL] incomingData %d %d => %d\n", lastMessageData[0],
-              lastMessageData[1], type);
-    log_debug("Incoming data (%d bytes) of type 0x%X %d from %d", len,
-              (unsigned)type, type, lastMessageSource);
+    LOG_DEBUG("Incoming data ({0} bytes) of type 0x{1:X} from {2}", len, type,
+              lastMessageSource);
     // std::vector<std::shared_ptr<Node>> dest_nodes;
     /* from IDE to a specific node */
     if (type >= ASEBA_MESSAGE_SET_BYTECODE &&
@@ -273,7 +267,7 @@ public:
       uint16_t dest;
       memcpy(&dest, &lastMessageData[2], 2);
       dest = bswap16(dest);
-      log_debug("Got cmd message of type %d from IDE (%d) for node %d\n", type,
+      LOG_DEBUG("Got cmd message of type type 0x{0:X} from IDE ({1}) for node {2}", type,
                 lastMessageSource, dest);
       if (nodes.count(dest)) {
         auto node = nodes.at(dest);
@@ -288,7 +282,7 @@ public:
       }
       return;
     }
-    log_debug("Got cmd message of type %d from node %d\n", type,
+    LOG_DEBUG("Got cmd message of type 0x{0:X} from node {1}", type,
               lastMessageSource);
     for (auto &[id, node] : nodes) {
       node->lastMessageSource = lastMessageSource;
@@ -311,7 +305,7 @@ public:
     // lock();
     for (auto &stream : toDisconnect) {
       closeStream(stream);
-      log_info("Stream %s closed in spin", stream->getTargetName().c_str());
+      LOG_INFO("Stream {0} closed in spin", stream->getTargetName());
     }
     toDisconnect.clear();
     // unlock();

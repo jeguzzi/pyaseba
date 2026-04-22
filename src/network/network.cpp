@@ -4,14 +4,18 @@ namespace Aseba {
 
 // -------------- Implementation of aseba glue code
 
+extern "C" int AsebaHandleDeviceInfoMessages(AsebaVMState*, uint16_t, uint16_t*, uint16_t) {
+    return 1;
+}
+
 extern "C" void AsebaPutVmToSleep(AsebaVMState *) {
-  log_info("Received request to go into sleep");
+  LOG_INFO("Received request to go into sleep");
 }
 
 extern "C" void AsebaSendBuffer(AsebaVMState *vm, const uint8_t *data,
                                 uint16_t length) {
   Dashel::Stream *stream = Network::network_for_vm(vm)->stream;
-  log_debug("AsebaSendBuffer: %u", length);
+  LOG_DEBUG("AsebaSendBuffer: {0}", length);
   if (stream) {
     try {
       uint16_t temp;
@@ -22,7 +26,7 @@ extern "C" void AsebaSendBuffer(AsebaVMState *vm, const uint8_t *data,
       stream->write(data, length);
       stream->flush();
     } catch (Dashel::DashelException e) {
-      log_warn("Cannot write to socket: %s", stream->getFailReason().c_str());
+      LOG_WARN("Cannot write to socket: {0}", stream->getFailReason());
     }
   }
 }
@@ -38,26 +42,20 @@ extern "C" uint16_t AsebaGetBuffer(AsebaVMState *vm, uint8_t *data, uint16_t,
 }
 
 extern "C" const AsebaVMDescription *AsebaGetVMDescription(AsebaVMState *vm) {
-  // printf("Got Node description name: %s\n",
-  // node_with_vm[vm]->node_description->name);
-  // return Network::node_for_vm(vm)->variables_description;
   return Network::node_for_vm(vm)->description.get_description();
 }
 
 extern "C" const AsebaNativeFunctionDescription *const *
 AsebaGetNativeFunctionsDescriptions(AsebaVMState *vm) {
   return Network::node_for_vm(vm)->description.get_functions();
-  // return Network::node_for_vm(vm)->functions_description;
 }
 
 extern "C" const AsebaLocalEventDescription *
 AsebaGetLocalEventsDescriptions(AsebaVMState *vm) {
   return Network::node_for_vm(vm)->description.get_events();
-  // return Network::node_for_vm(vm)->events_description;
 }
 
 extern "C" void AsebaNativeFunction(AsebaVMState *vm, uint16_t id) {
-  // printf("AsebaNativeFunction %d\n", id);
   Node *node = Network::node_for_vm(vm);
   if (!node)
     return;
@@ -65,11 +63,11 @@ extern "C" void AsebaNativeFunction(AsebaVMState *vm, uint16_t id) {
 }
 
 extern "C" void AsebaWriteBytecode(AsebaVMState *) {
-  log_info("Received request to write bytecode into flash");
+  LOG_INFO("Received request to write bytecode into flash");
 }
 
 extern "C" void AsebaResetIntoBootloader(AsebaVMState *) {
-  log_info("Received request to reset into bootloader");
+  LOG_INFO("Received request to reset into bootloader");
 }
 
 extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
@@ -106,14 +104,14 @@ extern "C" void AsebaAssert(AsebaVMState *vm, AsebaAssertReason reason) {
     e = "unknown exception";
     break;
   }
-  log_error("Fatal error; exception: %s; pc = %d, sp = %d", e, vm->pc, vm->sp);
+  LOG_ERROR("Fatal error; exception: {0}; pc = {1}, sp = {2}", e, vm->pc, vm->sp);
   abort();
-  log_info("Resetting VM");
+  LOG_INFO("Resetting VM");
   AsebaVMInit(vm);
 }
 
 extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
-  log_info("AsebaVMResetCB");
+  LOG_INFO("AsebaVMResetCB");
   Node *node = Network::node_for_vm(vm);
   if (node) {
     node->reset();
@@ -121,11 +119,10 @@ extern "C" void AsebaVMResetCB(AsebaVMState *vm) {
 }
 
 extern "C" void AsebaVMRunCB(AsebaVMState *) {
-  log_info("AsebaVMRunCB");
+  LOG_INFO("AsebaVMRunCB");
 }
 extern "C" void AsebaVMErrorCB(AsebaVMState *, const char *message) {
-  log_info("AsebaVMErrorCB");
-  log_error("%s", message);
+  LOG_ERROR("AsebaVMErrorCB: {0}", message);
 }
 
 } // namespace Aseba

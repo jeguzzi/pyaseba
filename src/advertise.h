@@ -1,7 +1,7 @@
 #ifndef ADVERTISE_H
 #define ADVERTISE_H
 
-#include "aseba/common/zeroconf/zeroconf.h"
+#include "zeroconf/zeroconf.h"
 
 // <id, pid, name>
 using AdvertisedNode = std::tuple<unsigned, unsigned, std::string>;

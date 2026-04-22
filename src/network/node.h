@@ -13,6 +13,10 @@
 #include <valarray>
 #include <vector>
 
+#ifdef ENABLE_LOGGING
+#include "spdlog/fmt/bin_to_hex.h"
+#endif
+
 #include "aseba/common/consts.h"
 #include "aseba/common/msg/TargetDescription.h"
 #include "aseba/common/productids.h"
@@ -95,7 +99,7 @@ public:
     for (const auto &[size, n] : description.get_variables()) {
       named_variable.emplace(n, std::make_pair(next_variable, size));
       next_variable += size;
-      log_debug("Added variable %s", n.c_str());
+      LOG_DEBUG("Added variable {0}", n);
     }
   }
 
@@ -107,21 +111,20 @@ public:
   }
 
   void add_variable(const std::string &name, unsigned int size) {
-    log_debug("Try to add variable %s of size %d", name.c_str(), size);
+    LOG_DEBUG("Try to add variable {0} of size {1}", name, size);
     if (named_variable.count(name)) {
-      log_warn("Variable %s cannot be added: already defined", name.c_str());
+      LOG_WARN("Variable {0} cannot be added: already defined", name);
       return;
     }
-    const auto number = named_variable.size();
+    // const auto number = named_variable.size();
     if (next_variable + size > variables + VARIABLES_TOTAL_SIZE) {
-      log_warn("Variable %s cannot be added: not enough free space",
-               name.c_str());
+      LOG_WARN("Variable {0} cannot be added: not enough free space", name);
       return;
     }
     named_variable.emplace(name, std::make_pair(next_variable, size));
     next_variable += size;
     description.add_variable(name, size);
-    log_debug("Added variable");
+    LOG_DEBUG("Added variable");
   }
 
   std::map<std::string, std::vector<int>> get_variables() const {
@@ -156,11 +159,10 @@ public:
 
   void add_event(const std::string &name, const std::string &desc = "") {
     if (named_event.count(name)) {
-      log_warn("Event %s cannot be added: already defined", name.c_str());
+      LOG_WARN("Event {0} cannot be added: already defined", name);
       return;
     }
-    const auto &[it, _] =
-        named_event.emplace(name, static_cast<uint16_t>(named_event.size()));
+    named_event.emplace(name, static_cast<uint16_t>(named_event.size()));
     description.add_event(name, desc);
   }
 
@@ -187,10 +189,10 @@ public:
 
   void add_function(const std::string &name, const Description::Function &fun,
                     size_t input_size) {
-    log_debug("Try to add function %s", name.c_str());
+    LOG_DEBUG("Try to add function {0}", name);
     for (const auto &[fname, a, i] : functions) {
       if (fname == name) {
-        log_warn("Function %s cannot be added: already defined", name.c_str());
+        LOG_WARN("Function {0} cannot be added: already defined", name);
         return;
       }
     }
@@ -201,7 +203,7 @@ public:
     }
     description.add_function(name, fun);
     functions.emplace_back(name, sizes, input_size);
-    log_debug("Added function");
+    LOG_DEBUG("Added function");
   }
 
   void set_uuid(const std::array<uint8_t, 16> &uuid_) {
@@ -254,7 +256,7 @@ public:
 
 protected:
   void send_uuid(const std::array<uint8_t, 16> &uuid) {
-    log_info("Send device uuid");
+    LOG_INFO("Send device uuid {}", spdlog::to_hex(uuid));
     uint8_t size = static_cast<uint8_t>(uuid.size());
     std::vector<uint8_t> payload = {DEVICE_INFO_UUID, size};
     std::copy(uuid.begin(), uuid.end(), std::back_inserter(payload));
@@ -263,7 +265,7 @@ protected:
   }
 
   void send_friendly_name(const std::string &name) {
-    log_info("Send device name %s", name.c_str());
+    LOG_INFO("Send device name {0}", name);
     uint8_t size = static_cast<uint8_t>(name.length()) + 1;
     std::vector<uint8_t> payload = {DEVICE_INFO_NAME, size};
     std::copy(name.c_str(), name.c_str() + name.length() + 1,

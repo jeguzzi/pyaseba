@@ -1,8 +1,8 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
-#include <string>
 #include <cstring>
+#include <string>
 #include <vector>
 
 #define VARIABLES_TOTAL_SIZE 1024
@@ -11,38 +11,38 @@
 #define BYTECODE_SIZE 1534
 #define STACK_SIZE 32
 
-#ifndef ASEBA_MESSAGE_DEVICE_INFO
+#ifndef USE_MOBSYA_ASEBA
 #define ASEBA_MESSAGE_DEVICE_INFO 0x900D
 #define DEVICE_INFO_UUID 1
 #define DEVICE_INFO_NAME 2
+#define ASEBA_MAX_TARGET_PROTOCOL_VERSION 9 // ASEBA_PROTOCOL_VERSION
 #endif
 
-#if 0
-#define log_debug(...)                                                         \
+#ifdef ENABLE_LOGGING
+
+#include <spdlog/spdlog.h>
+
+#define LOG_DEBUG(...)                                                         \
   {                                                                            \
-    printf(__VA_ARGS__);                                                       \
-    printf("\n");                                                              \
+    spdlog::debug(__VA_ARGS__);                                                \
   }
-#define log_info(...)                                                          \
+#define LOG_INFO(...)                                                          \
   {                                                                            \
-    printf(__VA_ARGS__);                                                       \
-    printf("\n");                                                              \
+    spdlog::info(__VA_ARGS__);                                                 \
   }
-#define log_warn(...)                                                          \
+#define LOG_WARN(...)                                                          \
   {                                                                            \
-    printf(__VA_ARGS__);                                                       \
-    printf("\n");                                                              \
+    spdlog::warn(__VA_ARGS__);                                                 \
   }
-#define log_error(...)                                                         \
+#define LOG_ERROR(...)                                                         \
   {                                                                            \
-    printf(__VA_ARGS__);                                                       \
-    printf("\n");                                                              \
+    spdlog::error(__VA_ARGS__);                                                \
   }
 #else
-#define log_debug(...)
-#define log_info(...)
-#define log_warn(...)
-#define log_error(...)
+#define LOG_DEBUG(...)
+#define LOG_INFO(...)
+#define LOG_WARN(...)
+#define LOG_ERROR(...)
 #endif
 
 // UTF8 to wstring
@@ -63,8 +63,8 @@ inline std::string narrow(const wchar_t *src) {
   return std::string(buffer.begin(), buffer.end() - 1);
 }
 
-inline std::string narrow(const std::wstring &src) { return narrow(src.c_str()); }
-
-
+inline std::string narrow(const std::wstring &src) {
+  return narrow(src.c_str());
+}
 
 #endif // UTILS_H_INCLUDED

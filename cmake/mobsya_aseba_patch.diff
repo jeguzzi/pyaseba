@@ -1,0 +1,50 @@
+diff --git a/aseba/common/msg/msg.cpp b/aseba/common/msg/msg.cpp
+index 32f23ec..53eb883 100644
+--- a/aseba/common/msg/msg.cpp
++++ b/aseba/common/msg/msg.cpp
+@@ -85,6 +85,9 @@ public:
+         registerMessageType<WriteBytecode>(ASEBA_MESSAGE_WRITE_BYTECODE);
+         registerMessageType<Reboot>(ASEBA_MESSAGE_REBOOT);
+         registerMessageType<Sleep>(ASEBA_MESSAGE_SUSPEND_TO_RAM);
++    
++        registerMessageType<GetNodeDescriptionFragment>(ASEBA_MESSAGE_GET_NODE_DESCRIPTION_FRAGMENT);
++        registerMessageType<GetDeviceInfo>(ASEBA_MESSAGE_GET_DEVICE_INFO);
+     }
+ 
+     //! Register a message type by storing a pointer to its constructor
+diff --git a/aseba/common/msg/msg.h b/aseba/common/msg/msg.h
+index d1c6eb8..2b465cc 100644
+--- a/aseba/common/msg/msg.h
++++ b/aseba/common/msg/msg.h
+@@ -295,7 +295,7 @@ public:
+     uint16_t version = ASEBA_PROTOCOL_VERSION;
+ 
+ public:
+-    GetNodeDescriptionFragment(int16_t fragment, uint16_t dest = ASEBA_DEST_INVALID)
++    GetNodeDescriptionFragment(int16_t fragment=-1, uint16_t dest = ASEBA_DEST_INVALID)
+         : CmdMessage(ASEBA_MESSAGE_GET_NODE_DESCRIPTION_FRAGMENT, dest), m_fragment(fragment) {}
+ 
+ protected:
+@@ -306,7 +306,7 @@ protected:
+         return "get node description fragment";
+     }
+ 
+-private:
++public:
+     int16_t m_fragment;
+ };
+ 
+@@ -667,11 +667,11 @@ protected:
+ 
+ //! Get persistent device info from thymio
+ class GetDeviceInfo : public CmdMessage {
+-private:
++public:
+     DeviceInfoType info;
+ 
+ public:
+-    GetDeviceInfo(uint16_t dest, DeviceInfoType info) : CmdMessage(ASEBA_MESSAGE_GET_DEVICE_INFO, dest), info(info) {}
++    GetDeviceInfo(uint16_t dest = ASEBA_DEST_INVALID, DeviceInfoType info = DEVICE_INFO_UUID) : CmdMessage(ASEBA_MESSAGE_GET_DEVICE_INFO, dest), info(info) {}
+ 
+ protected:
+     void serializeSpecific(SerializationBuffer& buffer) const override;
