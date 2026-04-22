@@ -27,7 +27,7 @@ async def main() -> None:
         tasks.append(task)
         clients.append(client)
     for client, port in zip(clients, ports[::-1]):
-        r = await client.connect(f"tcp:port={port};host=localhost", ping=False)
+        r = await client.connect(f"tcp:port={port};host=localhost")
         assert r
     clients[0].send_user_message(type=clients[0].port % 10)
     try:
