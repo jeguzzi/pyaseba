@@ -1508,18 +1508,25 @@ Whether incoming messages are processed or kept in the queue.
       .def_property(
           "_is_running", [](const Client &m) { return !m.stopped; }, nullptr);
 
-  m.def(
-      "init_logger",
-      [](const std::string &logger_name = "pyaseba") {
+  m.def("_init_logger", []() {
 #ifdef ENABLE_LOGGING
-        spdlog::set_level(spdlog::level::debug);
-        pybind11_log::init_mt(logger_name);
-        std::cout << "Initialized logger " << logger_name << std::endl;
+    spdlog::set_level(spdlog::level::debug);
+    pybind11_log::init_mt("pyaseba");
+#else
+        std::cerr << "pyaseba was built without logging support" << std::endl;
+#endif
+  });
+
+  m.def(
+      "_set_logger_level",
+      [](const std::string &level) {
+#ifdef ENABLE_LOGGING
+        spdlog::set_level(spdlog::level::from_str(level));
 #else
         std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
       },
-      py::arg("name") = "pyaseba");
+      py::arg("level"));
 
   // .def("get_user_events", &Client::get_event_names, py::arg("node_id"),
   //      py::arg("include") = std::set<unsigned>{},

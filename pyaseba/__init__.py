@@ -1,8 +1,48 @@
-from .client import Client, ClientAsync
-from .network import Network, Node
+import logging
 
+from .client import Client, ClientAsync
 from .client import Description as ClientDescription
+from .client._client_impl import _set_logger_level as _set_client_logger_level
 from .network import Description as NetworkDescription
+from .network import Network, Node
+from .network._network_impl import \
+    _set_logger_level as _set_network_logger_level
+
+
+def get_logger() -> logging.Logger:
+    """
+    Gets the pyaseba logger.
+
+    :returns:   The logger.
+    """
+    return logging.getLogger("pyaseba")
+
+
+def set_logger_level(level: int | str):
+    """
+    Sets the log level. If negative, it disables logging.
+
+    :param      level:  The level, like :py:attr:`logging.INFO`
+    """
+    if isinstance(level, str):
+        level = logging.getLevelNamesMapping().get(level.upper(), -1)
+    if level < 0:
+        name = "off"
+    if level < logging.DEBUG:
+        name = "trace"
+    elif level < logging.INFO:
+        name = "debug"
+    elif level < logging.WARN:
+        name = "info"
+    elif level < logging.ERROR:
+        name = "warning"
+    elif level < logging.CRITICAL:
+        name = "error"
+    else:
+        name = "critical"
+    _set_network_logger_level(name)
+    _set_client_logger_level(name)
+    get_logger().setLevel(level)
 
 
 def print_description(

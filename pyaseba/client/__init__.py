@@ -1,5 +1,5 @@
 from ._client_impl import Client, Description, Event, Message, complete_target
-from ._client_impl import init_logger as _init_logger
+from ._client_impl import _init_logger
 from ._client_impl import scan_serial_ports
 from .client_async import ClientAsync, wrap_callback
 from .node import EventSpec, Node, NodeAsync

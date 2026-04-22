@@ -414,15 +414,23 @@ Returns:
   the variable value.
 )doc");
 
-  m.def(
-      "init_logger",
-      [](const std::string &logger_name = "pyaseba-network") {
+  m.def("_init_logger", []() {
 #ifdef ENABLE_LOGGING
-        pybind11_log::init_mt(logger_name);
-        std::cout << "Initialized logger " << logger_name << std::endl;
+    spdlog::set_level(spdlog::level::debug);
+    pybind11_log::init_mt("pyaseba");
+#else
+        std::cerr << "pyaseba was built without logging support" << std::endl;
+#endif
+  });
+
+  m.def(
+      "_set_logger_level",
+      [](const std::string &level) {
+#ifdef ENABLE_LOGGING
+        spdlog::set_level(spdlog::level::from_str(level));
 #else
         std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
       },
-      py::arg("name") = "pyaseba-network");
+      py::arg("level"));
 }
