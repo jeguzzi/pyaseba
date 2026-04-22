@@ -65,16 +65,6 @@ endif()
 if(LOGGING)
 
   FetchContent_Declare(
-    pybind11_log
-    EXCLUDE_FROM_ALL
-    GIT_REPOSITORY https://github.com/tanghaibao/pybind11_log
-    GIT_TAG main
-    GIT_SHALLOW TRUE)
-  FetchContent_MakeAvailable(pybind11_log)
-
-  # add_library(pybind11_log INTERFACE) target_include_directories(pybind11_log
-  # INTERFACE ${pybind11_log_SOURCE_DIR}/include)
-  FetchContent_Declare(
     spdlog
     EXCLUDE_FROM_ALL
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -84,6 +74,15 @@ if(LOGGING)
   FetchContent_MakeAvailable(spdlog)
 
   find_package(spdlog REQUIRED)
+
+  FetchContent_Declare(
+    pybind11_log
+    EXCLUDE_FROM_ALL
+    GIT_REPOSITORY https://github.com/tanghaibao/pybind11_log
+    GIT_TAG main
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(pybind11_log)
+
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
