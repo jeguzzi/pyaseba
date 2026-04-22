@@ -18,7 +18,7 @@ def get_logger() -> logging.Logger:
     return logging.getLogger("pyaseba")
 
 
-def set_logger_level(level: int | str):
+def set_logger_level(level: int | str) -> None:
     """
     Sets the log level. If negative, it disables logging.
 
