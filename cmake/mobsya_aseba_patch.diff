@@ -1,3 +1,15 @@
+diff --git a/aseba/common/msg/TargetDescription.h b/aseba/common/msg/TargetDescription.h
+index b742171..7f992b5 100644
+--- a/aseba/common/msg/TargetDescription.h
++++ b/aseba/common/msg/TargetDescription.h
+@@ -23,6 +23,7 @@
+ #include <map>
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ namespace Aseba {
+ /** \addtogroup msg */
 diff --git a/aseba/common/msg/msg.cpp b/aseba/common/msg/msg.cpp
 index 32f23ec..53eb883 100644
 --- a/aseba/common/msg/msg.cpp

@@ -11,6 +11,18 @@ index 43ccec6..71e6c93 100644
  		target_link_libraries(libavahi PUBLIC ${AVAHI_CLIENT_LIBRARIES} ${AVAHI_COMMON_LIBRARIES})
  		target_compile_definitions(libavahi PUBLIC -DDNSSD_AVAHI)
  		set(HAS_AVAHI_SUPPORT ON)
+diff --git a/aseba/common/msg/TargetDescription.h b/aseba/common/msg/TargetDescription.h
+index 8f4d89c..5294766 100644
+--- a/aseba/common/msg/TargetDescription.h
++++ b/aseba/common/msg/TargetDescription.h
+@@ -23,6 +23,7 @@
+ #include <map>
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ namespace Aseba
+ {
 diff --git a/aseba/common/zeroconf/txtrecord.cpp b/aseba/common/zeroconf/txtrecord.cpp
 index 5effef3..1b656dd 100644
 --- a/aseba/common/zeroconf/txtrecord.cpp

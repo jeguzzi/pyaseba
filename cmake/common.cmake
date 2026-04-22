@@ -1,12 +1,24 @@
 include(FetchContent)
 include(FeatureSummary)
 
+if(NOT DEFINED dashel_patched)
+  set(patchCommand PATCH_COMMAND git apply
+                   "${CMAKE_CURRENT_LIST_DIR}/dashel_patch.diff")
+else()
+  unset(patchCommand)
+endif()
+
+set(dashel_patched
+    ON
+    CACHE BOOL "" FORCE)
+
 FetchContent_Declare(
   dashel
   EXCLUDE_FROM_ALL
   GIT_REPOSITORY https://github.com/aseba-community/dashel.git
   GIT_TAG master
-  GIT_SHALLOW TRUE)
+  GIT_SHALLOW TRUE
+  ${patchCommand})
 FetchContent_MakeAvailable(dashel)
 
 if(NOT DEFINED aseba_patched)
@@ -27,8 +39,7 @@ FetchContent_Declare(
   GIT_TAG master
   GIT_SHALLOW TRUE
   SOURCE_SUBDIR non-existant
-  GIT_SUBMODULES ""
-  ${patchCommand})
+  GIT_SUBMODULES "" ${patchCommand})
 FetchContent_MakeAvailable(aseba)
 
 set(ASEBA_VERSION_MAJOR 3)
