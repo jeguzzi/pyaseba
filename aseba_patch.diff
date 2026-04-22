@@ -39,6 +39,19 @@ index 8f4d89c..078637a 100644
  #include <map>
  #include <string>
  #include <vector>
+diff --git a/aseba/common/zeroconf/txtrecord.cpp b/aseba/common/zeroconf/txtrecord.cpp
+index 5effef3..23b12ad 100644
+--- a/aseba/common/zeroconf/txtrecord.cpp
++++ b/aseba/common/zeroconf/txtrecord.cpp
+@@ -85,7 +85,7 @@ namespace Aseba
+ 	{
+ 		ostringstream field;
+ 		for (const auto &value : values)
+-			field.put(value<<8), field.put(value % 0xff);
++			field.put((value>>8) & 0xff), field.put(value & 0xff);
+ 		assign(key, field.str());
+ 	}
+ 
 diff --git a/aseba/vm/CMakeLists.txt b/aseba/vm/CMakeLists.txt
 index 9a7e5de..c040869 100644
 --- a/aseba/vm/CMakeLists.txt
