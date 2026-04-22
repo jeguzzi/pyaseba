@@ -28,11 +28,11 @@ include(${mobsya_aseba_SOURCE_DIR}/CMakeModules/cpp_features.cmake)
 include(${mobsya_aseba_SOURCE_DIR}/CMakeModules/aseba_conf.cmake)
 
 set(ANDROID TRUE)
-add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/common)
+add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/common aseba/common)
 unset(ANDROID)
-add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/compiler)
-add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/transport)
-add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/vm)
+add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/compiler aseba/compiler)
+add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/transport aseba/transport)
+add_subdirectory(${mobsya_aseba_SOURCE_DIR}/aseba/vm aseba/vm)
 
 target_include_directories(asebacommon PUBLIC ${mobsya_aseba_SOURCE_DIR}/aseba)
 target_include_directories(asebacompiler
