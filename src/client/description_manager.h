@@ -157,14 +157,18 @@ protected:
   std::recursive_mutex mutex;
   TargetNodes target_nodes;
   std::map<unsigned, std::set<unsigned>> ignored_target_nodes;
+  Aseba::UnifiedTime delay_to_disconnect;
+  bool check_disconnection_timeout;
 
   explicit DescriptionManager(
-      bool query = true,
+      bool query = true, unsigned disconnection_timeout_ms = 3000,
       unsigned min_protocol_version = ASEBA_MIN_TARGET_PROTOCOL_VERSION,
       unsigned max_protocol_version = ASEBA_PROTOCOL_VERSION)
       : target_nodes(), ignored_target_nodes(), query(query),
         min_protocol_version(min_protocol_version),
-        max_protocol_version(max_protocol_version) {}
+        max_protocol_version(max_protocol_version) {
+          set_disconnection_timeout_ms(disconnection_timeout_ms);
+        }
 
 public:
   bool query;
@@ -283,6 +287,15 @@ public:
   //   return empty_variable_map;
   // }
 
+  void set_disconnection_timeout_ms(unsigned value_ms) {
+    delay_to_disconnect = Aseba::UnifiedTime(value_ms);
+    check_disconnection_timeout = value_ms > 0;
+  }
+
+  unsigned get_disconnection_timeout_ms() const {
+    return delay_to_disconnect.value;
+  }
+
   void ping_network() {
     auto client = static_cast<T *>(this);
     client->template send_message_of_type<Aseba::ListNodes>();
@@ -294,9 +307,11 @@ public:
       Guard lock(mutex);
       for (auto &[target, nodes] : target_nodes) {
         for (auto &[id, node] : nodes) {
+          if (!node.connected)
+            continue;
           // if node supports listing,
-          if (node.protocolVersion >= 5 &&
-              (now - node.lastSeen) > delayToDisconnect && node.connected) {
+          if (check_disconnection_timeout && node.protocolVersion >= 5 &&
+              (now - node.lastSeen) > delay_to_disconnect) {
             node.connected = false;
             client->node_disconnected(id, target);
           }

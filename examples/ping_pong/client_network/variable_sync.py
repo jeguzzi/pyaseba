@@ -15,7 +15,7 @@ class RespondingNode(Node):
     variables = {'recevied_pong': 1}
     events = {'response': 'emitted when responding'}
 
-    def tick(self, time_step: float):
+    def tick(self, time_step: float) -> None:
         if any(self.get("recevied_pong")):
             self.set("recevied_pong", [0])
             print("ping")

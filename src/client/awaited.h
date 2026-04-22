@@ -56,6 +56,8 @@ template <typename C, bool P, typename V, typename... T> struct AWaited {
   }
 
   void update(T... args) {
+    if (complete)
+      return;
     complete = static_cast<C *>(this)->is_complete(args...);
     Value v{};
     if (complete || P) {
@@ -70,15 +72,38 @@ template <typename C, bool P, typename V, typename... T> struct AWaited {
     }
   }
 
-  static void check(T... args, std::vector<C> &queue) {
-    for (auto &awaited : queue) {
-      awaited.update(args...);
-    }
+  static void purge(std::vector<C> &queue) {
     queue.erase(std::remove_if(queue.begin(), queue.end(),
                                [](const auto &a) { return a.complete; }),
                 queue.end());
   }
+
+  static void check(T... args, std::vector<C> &queue) {
+    for (auto &awaited : queue) {
+      awaited.update(args...);
+    }
+    purge(queue);
+  }
+
+  static void cancel(std::vector<C> &queue) {
+    for (auto &awaited : queue) {
+      if (!awaited.complete && awaited.value) {
+        awaited.value->set_value({});
+        awaited.complete = true;
+      }
+    }
+    purge(queue);
+  }
 };
+
+template <typename C, typename... T>
+void check(T... args, std::vector<C> &queue) {
+  C::check(args..., queue);
+}
+
+template <typename C> void cancel(std::vector<C> &queue) { C::cancel(queue); }
+
+template <typename C> void purge(std::vector<C> &queue) { C::purge(queue); }
 
 struct AWaitedNode : AWaited<AWaitedNode, false, std::tuple<uint16_t, uint16_t>,
                              uint16_t, uint16_t> {

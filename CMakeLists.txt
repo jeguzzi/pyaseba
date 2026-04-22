@@ -50,6 +50,31 @@ else()
 endif()
 
 
+include(FetchContent)
+FetchContent_Declare(
+  pybind11_log
+  EXCLUDE_FROM_ALL
+  GIT_REPOSITORY https://github.com/tanghaibao/pybind11_log
+  GIT_TAG main
+  GIT_SHALLOW TRUE
+  OVERRIDE_FIND_PACKAGE)
+FetchContent_MakeAvailable(pybind11_log)
+
+add_library(pybind11_log INTERFACE)
+target_include_directories(pybind11_log INTERFACE ${pybind11_log_SOURCE_DIR}/include)
+
+FetchContent_Declare(
+  spdlog
+  EXCLUDE_FROM_ALL
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.17.0
+  GIT_SHALLOW TRUE
+  OVERRIDE_FIND_PACKAGE)
+FetchContent_MakeAvailable(spdlog)
+
+find_package(spdlog REQUIRED)
+
+
 set(Python3_FIND_STRATEGY LOCATION)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(pybind11 3 QUIET)

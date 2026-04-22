@@ -58,6 +58,16 @@ public:
     return std::nullopt;
   }
 
+  std::optional<T> get_nowait() {
+    std::unique_lock<std::mutex> lck(mutex);
+    if (!queue.empty()) {
+      auto value = queue.front();
+      queue.pop();
+      return value;
+    }
+    return std::nullopt;
+  }
+
   void put(const T &item) {
     std::unique_lock<std::mutex> lck(mutex);
     if (queue.size() >= _max_size)

@@ -1,4 +1,5 @@
 #include "client.h"
+#include "pybind11_log.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -204,6 +205,9 @@ The payload of the event.
       .def(py::init<>())
       .def_readwrite("name", &Aseba::Description::name)
       .def_readwrite("protocol_version", &Aseba::Description::protocolVersion)
+      .def_readonly("variables", &Aseba::Description::namedVariables)
+      .def_readonly("events", &Aseba::Description::localEvents)
+      .def_readonly("functions", &Aseba::Description::nativeFunctions)
       .def("__repr__", [](const Aseba::Description &msg) {
         // return py::str("Description(source=") + py::str(py::cast(msg.source))
         // +
@@ -226,8 +230,8 @@ The payload of the event.
              >(msgs, "NamedVariableDescription", R"doc(
 )doc")
       .def(py::init<>())
-      .def_readonly("name", &Aseba::NamedVariableDescription::name)
-      .def_readonly("size", &Aseba::NamedVariableDescription::size)
+      .def_readwrite("name", &Aseba::NamedVariableDescription::name)
+      .def_readwrite("size", &Aseba::NamedVariableDescription::size)
       .def("__repr__", [](const Aseba::NamedVariableDescription &msg) {
         return py::str("NamedVariableDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
@@ -241,8 +245,8 @@ The payload of the event.
                R"doc(
 )doc")
       .def(py::init<>())
-      .def_readonly("name", &Aseba::LocalEventDescription::name)
-      .def_readonly("description", &Aseba::LocalEventDescription::description)
+      .def_readwrite("name", &Aseba::LocalEventDescription::name)
+      .def_readwrite("description", &Aseba::LocalEventDescription::description)
       .def("__repr__", [](const Aseba::LocalEventDescription &msg) {
         return py::str("LocalEventDescription(source=") +
                py::str(py::cast(msg.source)) + py::str(", name='") +
@@ -255,8 +259,9 @@ The payload of the event.
              >(msgs, "NativeFunctionDescription", R"doc(
 )doc")
       .def(py::init<>())
-      .def_readonly("name", &Aseba::NativeFunctionDescription::name)
-      .def_readonly("description", &Aseba::NativeFunctionDescription::description)
+      .def_readwrite("name", &Aseba::NativeFunctionDescription::name)
+      .def_readwrite("description",
+                     &Aseba::NativeFunctionDescription::description)
       .def_readonly("parameters", &Aseba::NativeFunctionDescription::parameters)
       .def("__repr__", [](const Aseba::NativeFunctionDescription &msg) {
         auto s = py::str("NativeFunctionDescription(source=") +
@@ -644,16 +649,21 @@ Local functions can be called through an Aseba script running on the node.
 #endif
   options.disable_function_signatures();
   auto client = py::classh<Client>(m, "Client", R"doc(
-Client(port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...)
+Client(port: int = -1, address: str = "0.0.0.0", ping_period_ms: int = 1000, automatic_query: bool = True, node_disconnection_timeout_ms: int = 3000, min_protocol_version: int = ..., max_protocol_version: int = ...)
 
+
+If port if positive and address is a valid IP4 address, it will listen for incoming connections. Other clients
+will be able to connect the target at "tcp:host=<address>;port=<port>".
+ 
 Args:
-  port: If positive, it will listen for connection on that port. Other clients
-        will be able to connect the target at "tcp:host=<ip address>;port=<port>".
+  port: The port. Pass a negative number to disable listening for incoming connections.
+  address: If a valid IP address. Pass an empty to disable listening for incoming connections.
   ping_period_ms: The period in milliseconds to broadcast node discovery messages (:py:class:`pyaseba.client.msgs.ListNodes`).
         Set it to zero to disable node discovery.
   automatic_query: Whether to automatically query discovered nodes for their description.
         If selected, it will effectively call :py:meth:`query_description` 
         when a presence message from a new node is received. 
+  node_disconnection_timeout_ms: The maximal interval to consider a node as disconnected. Only relevant when pinging the network.
   min_protocol_version: minimal Aseba protocol version that nodes must satisfy to interact with them.
   max_protocol_version: maximal Aseba protocol version that nodes must satisfy to interact with them.
 
@@ -686,13 +696,14 @@ Examples:
 
 )doc");
   client
-      .def(py::init<int, unsigned, bool, unsigned, unsigned>(), py::kw_only(),
-           py::arg("port") = -1, py::arg("ping_period_ms") = 1000,
-           py::arg("automatic_query") = true,
+      .def(py::init<int, const std::string &, unsigned, bool, unsigned, unsigned, unsigned>(),
+           py::kw_only(), py::arg("port") = -1, py::arg("address") = "0.0.0.0",
+           py::arg("ping_period_ms") = 1000, py::arg("automatic_query") = true,
+           py::arg("node_disconnection_timeout_ms") = 3000,
            py::arg("min_protocol_version") = ASEBA_MIN_TARGET_PROTOCOL_VERSION,
            py::arg("max_protocol_version") = ASEBA_MAX_TARGET_PROTOCOL_VERSION,
            R"doc(
-__init__(self, port: int = -1, ping_period_ms: int = 1000, automatic_query: bool = True, min_protocol_version: int = ..., max_protocol_version: int = ...) -> None
+__init__(self, port: int = -1, address: str = "0.0.0.0", ping_period_ms: int = 1000, automatic_query: bool = True, node_disconnection_timeout_ms: int = 3000, min_protocol_version: int = ..., max_protocol_version: int = ...) -> None
 
 Constructs an instance.
 )doc")
@@ -955,10 +966,16 @@ Args:
 Returns:
   A dictionary of node ids indexed by connection.
 )DOC")
-      .def("ping", &Client::send_message_of_type<Aseba::ListNodes>, R"DOC(
+      .def("ping", &Client::send_message_of_type<Aseba::ListNodes>,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
 ping(self) -> None
 
 Broadcast a :py:class:`pyaseba.client.msgs.ListNodes` message on all connected networks.
+
+Args:
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
 )DOC")
       .def("query_description", &Client::query_description, py::arg("node_id"),
            py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
@@ -1031,9 +1048,9 @@ clear_incoming_messages(self) -> None
 Deletes all incoming messages. 
 
 )DOC")
-      .def("get_message", &Client::get_message,
-           py::arg("node_id") = -1, py::arg("type") = -1,
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+      .def("get_message", &Client::get_message, py::arg("node_id") = -1,
+           py::arg("type") = -1, py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
            py::arg("include") = std::set<unsigned>{},
            py::arg("exclude") = std::set<unsigned>{}, py::arg("pause") = false,
            R"DOC(
@@ -1292,29 +1309,43 @@ Args:
 Raises:
   RuntimeError: when it fails to compile the script.
 )DOC")
-      .def("advertise", &Client::advertise_nodes, py::arg("name") = "pyaseba",
+      .def("advertise", &Client::advertise, py::arg("name") = "",
+           py::arg("nodes") = std::vector<AdvertisedNode>(),
+           py::arg("protocol_version") = ASEBA_PROTOCOL_VERSION, R"DOC(
+advertise(self, name: str = "", nodes: Sequence[tuple[int, int, str]] = (), protocol_version: int = ...) -> None
+
+Advertise with zeroconf.
+
+Args:
+  name: The name of the zeroconf record. If empty, it defaults to `"pyaseba <port>"`
+  nodes: A list of `(id, pid, name)` node tuples.
+  protocol_version: The Aseba protocol version.
+)DOC")
+      .def("advertise_nodes", &Client::advertise_nodes, py::arg("name") = "",
            py::arg("specs") =
                std::map<std::string, std::tuple<std::string, unsigned>>(
                    {{"thymio-II", {"Thymio II", 8}}}),
-           py::arg("query_product_id") = false, R"DOC(
-advertise(self, name: str = "pyaseba", specs: dict[str, tuple[str, int]] = {"thymio-II: ("Thymio II", 8)}, query_product_id: bool = false) -> None
+           py::arg("query_product_id") = false,
+           py::arg("protocol_version") = ASEBA_PROTOCOL_VERSION, R"DOC(
+advertise(self, name: str = "", specs: dict[str, tuple[str, int]] = {"thymio-II: ("Thymio II", 8)}, query_product_id: bool = false) -> None
 
 Advertise all nodes with zeroconf.
 
 Args:
-  name: The name of the zeroconf record.
+  name: The name of the zeroconf record. If empty, it defaults to `"pyaseba <port>"`
   specs: An optional mapping between node description names and a tuple with name and product id.
   query_product_id: Whether to query the product id. If not set and no key is provided in ``specs``, 
                     the product id will default to ``0``.
+  protocol_version: The Aseba protocol version.
 )DOC")
-      .def("deadvertise", &Client::deadvertise_nodes,
-           py::arg("name") = "pyaseba", R"DOC(
-deadvertise(self, name: str) -> None
+      .def("deadvertise", &Client::deadvertise, py::arg("name") = "",
+           R"DOC(
+deadvertise(self, name: str = "") -> None
 
-De-advertise all nodes with zeroconf.
+De-advertise with zeroconf.
 
 Args:
-  name: The name of the zeroconf record.
+  name: The name of the zeroconf record. If empty, it defaults to `"pyaseba <port>"`
 )DOC");
   m.def("scan_serial_ports", &Dashel::SerialPortEnumerator::getPorts, R"DOC(
 scan_serial_ports() -> dict[int, tuple[str, str]]
@@ -1348,6 +1379,11 @@ Readonly
 Whether to automatically query discovered nodes for their description.
 If set, it will effectively call :py:meth:`query_description` 
 when a presence message from a new node is received. 
+)DOC")
+      .def_property("node_disconnection_timeout_ms",
+                    &Client::get_disconnection_timeout_ms,
+                    &Client::set_disconnection_timeout_ms, R"DOC(
+The maximal interval to consider a node as disconnected. Only relevant when pinging the network.
 )DOC")
       .def_property("is_connected", &Client::is_connected, nullptr, R"DOC(
 Readonly
@@ -1389,12 +1425,16 @@ A dictionary with all discovered node descriptions indexed by connection.
                     &Client::set_processing_paused, R"DOC(
 Whether incoming messages are processed or kept in the queue.
 )DOC")
-      .def_property("pause_sending", &Client::get_sending_paused,
-                    &Client::set_sending_paused, R"DOC(
-Whether outgoing messages are processed or kept in the queue.
-)DOC")
+      //       .def_property("pause_sending", &Client::get_sending_paused,
+      //                     &Client::set_sending_paused, R"DOC(
+      // Whether outgoing messages are processed or kept in the queue.
+      // )DOC")
       .def_property(
           "_is_running", [](const Client &m) { return !m.stopped; }, nullptr);
+
+  m.def("init_logger", [](const std::string &logger_name) {
+    pybind11_log::init_mt(logger_name);
+  });
 
   // .def("get_user_events", &Client::get_event_names, py::arg("node_id"),
   //      py::arg("include") = std::set<unsigned>{},

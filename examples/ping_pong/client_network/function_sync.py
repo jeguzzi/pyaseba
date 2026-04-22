@@ -15,7 +15,7 @@ class RespondingNode(Node):
     functions = {'respond': ('', [])}
     events = {'response': 'emitted by respond'}
 
-    def respond(self):
+    def respond(self) -> None:
         print("ping")
         self.emit("response")
 

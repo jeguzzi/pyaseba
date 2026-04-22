@@ -1,6 +1,7 @@
 pybind11_add_module(_client_impl python.cpp)
 target_link_libraries(_client_impl PRIVATE dashel asebacommon asebacompiler
-                                           asebadashelplugins ${EXTRA_LIBS})
+                                           asebadashelplugins ${EXTRA_LIBS} spdlog::spdlog_header_only
+                                           pybind11_log)
 target_include_directories(_client_impl PRIVATE ${aseba_SOURCE_DIR}
                                                 ${dashel_SOURCE_DIR}
                                                 ${CMAKE_SOURCE_DIR}/src)
