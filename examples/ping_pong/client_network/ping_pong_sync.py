@@ -14,7 +14,7 @@ def cb(event: Event, client: Client, node_id: int, sleep: float = 0.1) -> None:
 
 
 def run_client(script: str, sleep: float) -> None:
-    client = Client()
+    client = Client(address="localhost")
     if client.connect("tcp:port=33333;host=localhost", max_retries=0):
         node_id, conn = client.wait_node(wait_ms=1000)
         if conn:

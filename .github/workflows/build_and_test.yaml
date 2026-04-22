@@ -49,6 +49,12 @@ jobs:
       - name: test create network
         run: |
           python -c "from pyaseba import Network; Network().spin(0.1, 1)"
-      - name: test ping pong
+      - name: test ping pong client-client
+        run: |
+          python src/pyaseba/examples/ping_pong/client_client/client_client_async.py
+      - name: test ping pong client-network sync
+        run: |
+          python src/pyaseba/examples/ping_pong/client_network/function_sync.py
+      - name: test ping pong client-network async
         run: |
           python src/pyaseba/examples/ping_pong/client_network/function_async.py

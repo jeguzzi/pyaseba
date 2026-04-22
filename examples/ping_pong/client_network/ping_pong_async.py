@@ -17,7 +17,7 @@ async def cb(event: Event,
 
 
 async def run_client(script: str, sleep: float) -> None:
-    client = ClientAsync()
+    client = ClientAsync(address="localhost")
     if await client.connect("tcp:port=33333;host=localhost", max_retries=1):
         node_id, conn = await client.wait_node(wait_ms=1000)
         if conn:

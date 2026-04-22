@@ -22,16 +22,16 @@ async def main() -> None:
     tasks: list[asyncio.Task[None]] = []
     clients: list[ClientAsync] = []
     for port in ports:
-        client = ClientAsync(port=port)
+        client = ClientAsync(port=port, address="localhost")
         task = asyncio.create_task(run(client))
         tasks.append(task)
         clients.append(client)
     for client, port in zip(clients, ports[::-1]):
-        r = await client.connect(f"tcp:port={port}", ping=False)
+        r = await client.connect(f"tcp:port={port};host=localhost", ping=False)
         assert r
     clients[0].send_user_message(type=clients[0].port % 10)
     try:
-        done, pending = await asyncio.wait(tasks)
+        done, pending = await asyncio.wait(tasks, timeout=3)
         if pending:
             print(f'ERROR: {len(pending)} still pending')
     except Exception:
