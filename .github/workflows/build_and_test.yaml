@@ -3,7 +3,15 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04-arm
+          - macos-latest
+        python-version:
+          - "3.14"
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -15,13 +23,19 @@ jobs:
           sudo apt-get install libavahi-compat-libdnssd-dev
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: ${{ matrix.python-version }}
       - name: install deps
         run: pip install build
       - name: build wheel
         run: |
           cd src/pyaseba
           python -m build -w
+      - name: archive wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}
+          path: src/pyaseba/dist/*
+          if-no-files-found: error
       - name: install wheel
         run: |
           wheels=( src/pyaseba/dist/*.whl )
@@ -29,6 +43,12 @@ jobs:
       - name: test import
         run: |
           python -c "import pyaseba"
+      - name: test create client
+        run: |
+          python -c "from pyaseba import Client; Client()"
+      - name: test create network
+        run: |
+          python -c "from pyaseba import Network; Network().spin(0.1, 1)"
       - name: test ping pong
         run: |
           python src/pyaseba/examples/ping_pong/client_network/function_async.py
