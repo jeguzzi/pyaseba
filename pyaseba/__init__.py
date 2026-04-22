@@ -42,7 +42,11 @@ def set_logger_level(level: int | str) -> None:
         name = "critical"
     _set_network_logger_level(name)
     _set_client_logger_level(name)
-    get_logger().setLevel(level)
+    if level < 0:
+        get_logger().disabled = True
+    else:
+        get_logger().disabled = False
+        get_logger().setLevel(level)
 
 
 def print_description(
