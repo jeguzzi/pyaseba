@@ -1,14 +1,15 @@
 import dataclasses as dc
 import re
+import sys
 import time
 import warnings
 from collections.abc import Callable, Collection, Iterable, Sequence
 # from functools import Placeholder, partial
 from itertools import chain
 from typing import Any, NotRequired, Self, TypedDict, TypeVar
-import sys
 
 from .._client_impl import Client, Description, Event, complete_target
+from ..targets import are_targets_compatible
 
 T = TypeVar("T")
 
@@ -167,7 +168,7 @@ class Node:
     """
     Local events that should be mirrored
     """
-    function_include: Collection[str] = (r'.*', )
+    function_include: Collection[str] = ()
     """
     Regular expressions for local functions to be exposed
     """
@@ -299,7 +300,6 @@ class Node:
             if index == 2:
                 self._buffer_name = name
         assert self._buffer_name
-        self._client.add_event_callback(callback=self._event_cb)
         self._variable_values = {k: [] for k in description.variables}
         self._variable_sizes = {
             k: vs[1]
@@ -310,10 +310,19 @@ class Node:
             for k in description.variables
             if _matches(k, self.sync_include, self.sync_exclude)
         }
+
+        self._code_events.clear()
+        self._events.clear()
+        self._events_variables.clear()
+        self._counters.clear()
+        self._windows.clear()
+        self._functions.clear()
+        self._code = ""
         for name, spec in self.events.items():
             self._add_event(name, spec)
         for name, (_, vs) in description.functions.items():
-            match = _matches(name, self.function_include,
+            function_include = list(self.function_include) + list(self.functions)
+            match = _matches(name, function_include,
                              self.function_exclude)
             if match:
                 self._add_function(name, [v[1] for v in vs])
@@ -359,15 +368,19 @@ class Node:
         target = complete_target(target or self.default_target, **kwargs)
         if client:
             self._shared_client = True
-        self._client = client or Client()
-        # TODO: complete support for clients already connected
-        # to one or more targets
-        if self._client.is_connected or self._client.connect(
+        if not self._client:
+            self._client = client or Client()
+            self._client.add_event_callback(callback=self._event_cb)
+
+        connections = set(conn for conn, t in self._client.connections.items()
+                          if are_targets_compatible(target, t))
+        if connections or self._client.connect(
                 target=target, wait_ms=wait_ms, max_retries=max_retries):
             if node_id >= 0:
                 self._client.cmd_reset(node_id)
             node_id, conn = self._client.wait_node(wait_ms=wait_ms,
-                                                   node_id=node_id)
+                                                   node_id=node_id,
+                                                   include=connections)
             if conn:
                 self._connection = conn
                 self._target = target
@@ -497,10 +510,14 @@ end
                                      events=self._code_events)
         except Exception as e:
             m = re.search(r"Error at Line: (\d*)", str(e))
+            print(m)
             if m:
                 ln = int(m.group(1))
-                line = self._code.splitlines()[ln]
+                print('ln', ln)
+                line = self._code.splitlines()[ln - 1:ln + 1]
+                print('line', line)
                 print(line, file=sys.stderr)
+                print(self._code)
             raise e
         self._client.cmd_run(self._node_id)
         self._description = self._client.get_description(

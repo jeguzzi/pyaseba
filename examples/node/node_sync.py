@@ -6,6 +6,7 @@ from pyaseba.client import Node, EventSpec
 
 class SimpleNode(Node):
     events = {"event": EventSpec(variables=["counter"])}
+    function_include = [r'.*', ]
     properties = ['value', 'counter']
     counter: int
     value: int

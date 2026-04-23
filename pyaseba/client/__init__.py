@@ -5,6 +5,7 @@ try:
     from ._client_impl import DeviceInfoType  # noqa: F401
 except ImportError:
     pass
+
 from .client_async import ClientAsync, wrap_callback
 from .node import EventSpec, Node, NodeAsync
 
