@@ -5,15 +5,22 @@
 #include "utils.h"
 #include "utils_client.h"
 
-#include <future>
+#include <chrono>
+#include <condition_variable>
+#include <list>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <thread>
 #include <tuple>
+#include <vector>
 
-template <bool P, typename T> struct AWaitedCallback {
+#ifdef ENABLE_LOGGING
+#include <fmt/chrono.h>
+#endif
+
+template <bool P, typename T> struct AwaitedCallback {
   using type = typename std::conditional<P, std::function<void(T, bool)>,
                                          std::function<void(T)>>::type;
   static void apply(const type &cb, const T &arg, bool complete) {
@@ -25,7 +32,7 @@ template <bool P, typename T> struct AWaitedCallback {
   }
 };
 
-template <bool P, typename... T> struct AWaitedCallback<P, std::tuple<T...>> {
+template <bool P, typename... T> struct AwaitedCallback<P, std::tuple<T...>> {
   using type = typename std::conditional<P, std::function<void(T..., bool)>,
                                          std::function<void(T...)>>::type;
   static void apply(const type &cb, const std::tuple<T...> &arg,
@@ -38,119 +45,173 @@ template <bool P, typename... T> struct AWaitedCallback<P, std::tuple<T...>> {
   }
 };
 
-template <typename C, bool P, typename V, typename... T> struct AWaited {
+template <typename C, bool P, typename V, typename... T> struct Awaited {
   using Value = V;
-  using Promise = std::promise<Value>;
-  using TValue = Value;
-  using AC = AWaitedCallback<P, V>;
+  using AC = AwaitedCallback<P, V>;
   using Callback = typename AC::type;
+  using Guard = std::lock_guard<std::mutex>;
+  using Lock = std::unique_lock<std::mutex>;
+  using Clock = std::chrono::steady_clock;
+  using TimePoint = std::chrono::time_point<Clock>;
 
+  std::mutex mutex;
+  std::condition_variable cv;
   Callback cb;
-  std::unique_ptr<Promise> value;
   bool complete;
-  explicit AWaited(bool awaited, const Callback &cb = nullptr)
-      : cb(cb), value(nullptr), complete(false) {
-    if (awaited) {
-      value = std::make_unique<Promise>();
+  Value value;
+  std::optional<TimePoint> tp;
+
+  explicit Awaited(unsigned wait_ms, const Callback &cb,
+                   const Value &v = Value{})
+      : cb(cb), complete(false), value(v), tp(std::nullopt) {
+    if (wait_ms) {
+      tp = Clock::now() + std::chrono::milliseconds(wait_ms);
     }
   }
 
-  void update(T... args) {
+  ~Awaited() { 
+    cancel();
+  }
+
+  void check(T... args) {
+    if (complete) {
+      return;
+    }
+    {
+      Guard lck(mutex);
+      complete = static_cast<C *>(this)->update(args...);
+      if (cb && (complete || P)) {
+        if (tp && Clock::now() > *tp) {
+          LOG_WARN("Timed out");
+        } else {
+          pybind11::gil_scoped_acquire acquire;
+          AC::apply(cb, value, complete);
+        }
+      }
+      if (!complete)
+        return;
+    }
+    cv.notify_one();
+  }
+
+  void cancel() {
     if (complete)
       return;
-    complete = static_cast<C *>(this)->is_complete(args...);
-    Value v{};
-    if (complete || P) {
-      v = static_cast<C *>(this)->get(args...);
+    {
+      Guard lck(mutex);
+      complete = true;
+      tp = std::nullopt;
     }
-    if (complete && value) {
-      value->set_value(v);
-    }
-    if (cb) {
-      pybind11::gil_scoped_acquire acquire;
-      AC::apply(cb, v, complete);
-    }
+    cv.notify_one();
   }
 
-  static void purge(std::vector<C> &queue) {
-    queue.erase(std::remove_if(queue.begin(), queue.end(),
-                               [](const auto &a) { return a.complete; }),
-                queue.end());
-  }
-
-  static void check(T... args, std::vector<C> &queue) {
-    for (auto &awaited : queue) {
-      awaited.update(args...);
+  bool wait() {
+    if (complete) {
+      return complete;
     }
-    purge(queue);
-  }
-
-  static void cancel(std::vector<C> &queue) {
-    for (auto &awaited : queue) {
-      if (!awaited.complete && awaited.value) {
-        awaited.value->set_value({});
-        awaited.complete = true;
-      }
-    }
-    purge(queue);
+    Lock lck(mutex);
+    LOG_INFO("Begin waiting");
+    const bool r = cv.wait_until(lck, *tp, [this]() { return complete; });
+    LOG_INFO("Waited: complete={}", r);
+    complete = true;
+    return r;
   }
 };
 
-template <typename C, typename... T>
-void check(T... args, std::vector<C> &queue) {
-  C::check(args..., queue);
-}
+template <typename C> struct AwaitedCollection {
+  using Guard = std::lock_guard<std::mutex>;
+  using Type = C;
+  std::mutex mutex;
+  std::list<C> items;
 
-template <typename C> void cancel(std::vector<C> &queue) { C::cancel(queue); }
+  explicit AwaitedCollection() : mutex(), items() {}
 
-template <typename C> void purge(std::vector<C> &queue) { C::purge(queue); }
+  ~AwaitedCollection() { cancel(); }
 
-struct AWaitedNode : AWaited<AWaitedNode, false, std::tuple<uint16_t, uint16_t>,
+  template <typename... T> void check(T... args) {
+    Guard lck(mutex);
+    for (auto &item : items) {
+      item.check(args...);
+    }
+  }
+
+  void cancel() {
+    Guard lck(mutex);
+    for (auto &item : items) {
+      item.cancel();
+    }
+    items.clear();
+  }
+
+  template <typename... T>
+  typename C::Value wait(unsigned wait_ms, const typename C::Callback &cb,
+                         const typename C::Value &value, T... args) {
+    if (!wait_ms && !cb) {
+      return value;
+    }
+    pybind11::gil_scoped_release release;
+    mutex.lock();
+    items.remove_if([](const auto &i) { return i.complete; });
+    auto &item = items.emplace_back(wait_ms, cb, value, args...);
+    mutex.unlock();
+    if (wait_ms) {
+      item.wait();
+    }
+    return item.value;
+  }
+};
+
+struct AwaitedNode : Awaited<AwaitedNode, false, std::tuple<uint16_t, uint16_t>,
                              uint16_t, uint16_t> {
   int target;
   std::set<unsigned> targets;
-  using A = AWaited<AWaitedNode, false, std::tuple<uint16_t, uint16_t>,
+  using A = Awaited<AwaitedNode, false, std::tuple<uint16_t, uint16_t>,
                     uint16_t, uint16_t>;
   using A::Callback;
   using A::Value;
 
-  explicit AWaitedNode(int node, const std::set<unsigned> &targets,
-                       bool awaited, const Callback &cb = nullptr)
-      : A(awaited, cb), target(node), targets(targets) {}
+  explicit AwaitedNode(unsigned wait_ms, const Callback &cb, const Value &v,
+                       int node, const std::set<unsigned> &targets)
+      : A(wait_ms, cb, v), target(node), targets(targets) {}
 
-  bool is_complete(uint16_t node, uint16_t t) {
-    return (targets.size() == 0 || targets.count(t)) &&
-           (target < 0 || node == target);
+  bool update(uint16_t node, uint16_t t) {
+    const bool r = (targets.size() == 0 || targets.count(t)) &&
+                   (target < 0 || node == target);
+    if (r) {
+      value = {node, t};
+    }
+    return r;
   }
-
-  Value get(uint16_t node, uint16_t t) { return {node, t}; }
 };
 
-struct AWaitedTarget
-    : AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>, unsigned,
+struct AwaitedTarget
+    : Awaited<AwaitedTarget, false, std::tuple<unsigned, std::string>, unsigned,
               std::string> {
-  std::set<unsigned> targets;
-  using A = AWaited<AWaitedTarget, false, std::tuple<unsigned, std::string>,
+  using A = Awaited<AwaitedTarget, false, std::tuple<unsigned, std::string>,
                     unsigned, std::string>;
   using A::Callback;
   using A::Value;
 
-  AWaitedTarget(const std::set<unsigned> targets, bool awaited,
-                const Callback &cb = nullptr)
-      : A(awaited, cb), targets(targets) {}
+  std::set<unsigned> targets;
 
-  bool is_complete(unsigned index, const std::string &name) {
-    return (targets.size() == 0 || targets.count(index));
+  AwaitedTarget(unsigned wait_ms, const Callback &cb, const Value &v,
+                const std::set<unsigned> &ts)
+      : A(wait_ms, cb, v), targets(ts) {}
+
+  bool update(unsigned index, const std::string &name) {
+    const bool r = (targets.size() == 0 || targets.count(index));
+    if (r) {
+      value = {index, name};
+    }
+    return r;
   }
-
-  Value get(unsigned index, const std::string &name) { return {index, name}; }
 };
 
-struct AWaitedMessage
-    : AWaited<AWaitedMessage, false,
+struct AwaitedMessage
+    : Awaited<AwaitedMessage, false,
               std::tuple<std::shared_ptr<Aseba::Message>, unsigned>,
               const std::shared_ptr<Aseba::Message> &, unsigned> {
-  using A = AWaited<AWaitedMessage, false,
+  using A = Awaited<AwaitedMessage, false,
                     std::tuple<std::shared_ptr<Aseba::Message>, unsigned>,
                     const std::shared_ptr<Aseba::Message> &, unsigned>;
   using A::Callback;
@@ -160,66 +221,63 @@ struct AWaitedMessage
   int target_type;
   std::set<unsigned> targets;
 
-  AWaitedMessage(int source, int type, const std::set<unsigned> &targets,
-                 bool awaited, const Callback &cb = nullptr)
-      : A(awaited, cb), target_source(source), target_type(type),
+  AwaitedMessage(unsigned wait_ms, const Callback &cb, const Value &v,
+                 int source, int type, const std::set<unsigned> &targets)
+      : A(wait_ms, cb, v), target_source(source), target_type(type),
         targets(targets) {}
 
-  bool is_complete(const std::shared_ptr<Aseba::Message> &msg,
-                   unsigned target_index) {
-    return (targets.size() == 0 || targets.count(target_index) > 0) &&
-           (target_source < 0 || target_source == msg->source) &&
-           (target_type < 0 || target_type == msg->type);
-  }
-
-  Value get(const std::shared_ptr<Aseba::Message> &msg, unsigned target_index) {
-    return {msg, target_index};
+  bool update(const std::shared_ptr<Aseba::Message> &msg,
+              unsigned target_index) {
+    const bool r = (targets.size() == 0 || targets.count(target_index) > 0) &&
+                   (target_source < 0 || target_source == msg->source) &&
+                   (target_type < 0 || target_type == msg->type);
+    if (r) {
+      value = {msg, target_index};
+    }
+    return r;
   }
 };
 
-struct AWaitedNodes
-    : AWaited<AWaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
+struct AwaitedNodes
+    : Awaited<AwaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
               unsigned, unsigned> {
 
-  using A = AWaited<AWaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
+  using A = Awaited<AwaitedNodes, true, std::map<unsigned, std::set<unsigned>>,
                     unsigned, unsigned>;
   using A::Callback;
   using A::Value;
 
-  Value nodes;
   std::set<unsigned> candidates;
   std::set<unsigned> targets;
   int number;
 
-  AWaitedNodes(Value nodes, const std::set<unsigned> &candidates,
-               const std::set<unsigned> &targets, int number, bool awaited,
-               const Callback &cb = nullptr)
-      : A(awaited, cb), nodes(nodes), candidates(candidates), targets(targets),
+  AwaitedNodes(unsigned wait_ms, const Callback &cb, const Value &v,
+               const std::set<unsigned> &candidates,
+               const std::set<unsigned> &targets, int number)
+      : A(wait_ms, cb, v), candidates(candidates), targets(targets),
         number(number) {}
 
-  bool is_complete(unsigned n, unsigned t) {
+  bool update(unsigned n, unsigned t) {
     if (candidates.size() && !candidates.count(n))
       return false;
     if (targets.size() && !targets.count(t))
       return false;
-    nodes[t].insert(n);
+    value[t].insert(n);
     unsigned num = 0;
-    for (const auto &[_, ns] : nodes) {
+    for (const auto &[_, ns] : value) {
       num += ns.size();
     }
     return (number >= 0 && num >= number);
   }
-
-  Value get(unsigned n, unsigned t) { return nodes; }
 };
 
 using VariablesMap = std::map<std::wstring, Aseba::VariablesDataVector>;
 
-struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
+struct AwaitedVariables : public Awaited<AwaitedVariables, false, VariablesMap,
                                          const Aseba::Variables *> {
 
   using A =
-      AWaited<AWaitedVariables, false, VariablesMap, const Aseba::Variables *>;
+      Awaited<AwaitedVariables, false, VariablesMap, const Aseba::Variables *>;
   using A::Callback;
   using A::Value;
 
@@ -228,12 +286,12 @@ struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
   Aseba::VariablesDataVector vs;
   int target_node;
 
-  AWaitedVariables(int node, const Aseba::VariablesMap &d, bool awaited,
-                   const Callback &cb = nullptr)
-      : A(awaited, cb), d(d), rs(compute_variables_size(d), false),
+  AwaitedVariables(unsigned wait_ms, const Callback &cb, const Value &v,
+                   int node, const Aseba::VariablesMap &d)
+      : A(wait_ms, cb, v), d(d), rs(compute_variables_size(d), false),
         vs(rs.size()), target_node(node) {}
 
-  bool is_complete(const Aseba::Variables *msg) {
+  bool update(const Aseba::Variables *msg) {
     if (target_node >= 0 && target_node != msg->source)
       return false;
     const auto start = msg->start;
@@ -242,17 +300,15 @@ struct AWaitedVariables : public AWaited<AWaitedVariables, false, VariablesMap,
     for (size_t i = start; i < start + values.size(); i++) {
       rs[i] = true;
     }
-    return (std::find(rs.begin(), rs.end(), false) == rs.end());
-  }
-
-  Value get(const Aseba::Variables *msg) {
-    VariablesMap m;
-    for (const auto &[k, v] : d) {
-      const auto [index, size] = v;
-      m[k] = Aseba::VariablesDataVector(vs.begin() + index,
-                                        vs.begin() + index + size);
+    const bool r = (std::find(rs.begin(), rs.end(), false) == rs.end());
+    if (r) {
+      for (const auto &[k, v] : d) {
+        const auto [index, size] = v;
+        value[k] = Aseba::VariablesDataVector(vs.begin() + index,
+                                              vs.begin() + index + size);
+      }
     }
-    return m;
+    return r;
   }
 };
 

@@ -175,4 +175,5 @@ class ClientShell(cmd.Cmd):
         self.client.close()
 
 
-ClientShell().cmdloop()
+if __name__ == '__main__':
+    ClientShell().cmdloop()

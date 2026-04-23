@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import sys
 
 from pyaseba.network import Node
@@ -10,4 +11,5 @@ if __name__ == '__main__':
     try:
         asyncio.run(main(node_cls=Node, script=script, sleep=0.1))
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)

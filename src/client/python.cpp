@@ -1,4 +1,5 @@
 #include "client.h"
+#include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -120,9 +121,10 @@ PYBIND11_MODULE(_client_impl, m) {
   // "CallbackList");
 
 #ifdef USE_MOBSYA_ASEBA
-  py::enum_<DeviceInfoType>(m, "DeviceInfoType")
-      .value("uuid", DeviceInfoType::DEVICE_INFO_UUID)
-      .value("name", DeviceInfoType::DEVICE_INFO_NAME);
+  py::native_enum<DeviceInfoType>(m, "DeviceInfoType", "enum.IntEnum")
+      .value("UUID", DeviceInfoType::DEVICE_INFO_UUID)
+      .value("NAME", DeviceInfoType::DEVICE_INFO_NAME)
+      .finalize();
 #endif
 
   py::classh<Event>(m, "Event", R"doc(
@@ -799,13 +801,15 @@ Args:
 Returns:
   The positive index of the connected network in case of success, or ``0`` in case of failure.
 )DOC")
-      .def("close_connection", &Client::close, py::arg("connection"), R"DOC(
-close_connection(self, connection: int) -> bool
+      .def("close_connection", &Client::close, py::arg("connection"),
+           py::arg("wait_ms") = 1000, R"DOC(
+close_connection(self, connection: int, wait_ms: int = 1000) -> bool
 
 Closes a connection.
 
 Args:
   connection: a connection
+  wait_ms: time to wait for the connection to close.
 Returns:
   Whether the connection has been closed.
 )DOC")
@@ -839,8 +843,8 @@ Stops the client.
       // .def_readwrite("message_callbacks", &Client::message_callbacks,
       // py::return_value_policy::reference)
       .def("__enter__", [](Client &client) { return &client; })
-      .def("__exit__", [](Client &client, void *exc_type, void *exc_value,
-                          void *traceback) { client.stop_and_close(); })
+      .def("__exit__",
+           [](Client &client, py::args args) { client.stop_and_close(); })
       .def("wait_connection", &Client::wait_target_connection,
            py::arg("connection") = 0, py::arg("wait_ms") = 1000,
            py::arg("callback") = nullptr, R"DOC(
@@ -1460,7 +1464,9 @@ when a presence message from a new node is received.
                     &Client::set_disconnection_timeout_ms, R"DOC(
 The maximal interval to consider a node as disconnected. Only relevant when pinging the network.
 )DOC")
-      .def_property("is_connected", &Client::is_connected, nullptr, R"DOC(
+      .def_property(
+          "is_connected", [](Client &c) { return c.streams.is_connected(); },
+          nullptr, R"DOC(
 Readonly
 
 Whether at least the client has at least one open connection.
@@ -1470,8 +1476,11 @@ Readonly
 
 Whether at least the client has at least one open connection.
 )DOC")
-      .def_property("connections", &Client::get_connected_targets, nullptr,
-                    R"DOC(
+      .def_property(
+          "connections",
+          [](Client &client) { return client.streams.get_target_names(); },
+          nullptr,
+          R"DOC(
 Readonly
 
 A dictionary of connected dashel target indexed by connection.

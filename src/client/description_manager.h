@@ -303,6 +303,7 @@ public:
     const Aseba::UnifiedTime now;
     const Aseba::UnifiedTime delayToDisconnect(3000);
     bool isAnyConnected(false);
+    std::vector<std::tuple<unsigned, unsigned>> disconnected;
     {
       Guard lock(mutex);
       for (auto &[target, nodes] : target_nodes) {
@@ -313,11 +314,14 @@ public:
           if (check_disconnection_timeout && node.protocolVersion >= 5 &&
               (now - node.lastSeen) > delay_to_disconnect) {
             node.connected = false;
-            client->node_disconnected(id, target);
+            disconnected.emplace_back(id, target);
           }
           isAnyConnected = isAnyConnected || node.connected;
         }
       }
+    }
+    for (auto [id, target] : disconnected) {
+      client->node_disconnected(id, target);
     }
     // if no node is connected, broadcast get description as well, for old
     // targets (protocol 4)
@@ -327,7 +331,7 @@ public:
   }
 
   void process_message(const Aseba::Message *message, unsigned target_index) {
-    Guard lock(mutex);
+    std::unique_lock lock(mutex);
     auto client = static_cast<T *>(this);
     auto &nodes = target_nodes[target_index];
     auto &ignored_nodes = ignored_target_nodes[target_index];
@@ -366,6 +370,7 @@ public:
     if (node.complete) {
       if (!node.connected) {
         node.connected = true;
+        lock.unlock();
         client->node_connected(id, target_index);
       }
       return;
@@ -384,6 +389,7 @@ public:
     }
     if (node.complete) {
       node.connected = true;
+      lock.unlock();
       client->description_received(id, target_index);
       client->node_connected(id, target_index);
     }

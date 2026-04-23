@@ -1,6 +1,8 @@
 import types
 from typing import Any, Self
 from collections.abc import Callable, Sequence
+import enum
+
 
 class Client:
     automatic_query: bool
@@ -70,6 +72,10 @@ class Client:
     @property
     def node_ids(self) -> dict[int, set[int]]: ...
 
+class DeviceInfoType(enum.IntEnum):
+    UUID = 1
+    NAME = 2
+
 class Description:
     @property
     def functions(self) -> dict[str, tuple[str, list[tuple[str, int]]]]: ...
@@ -96,7 +102,8 @@ class Message:
     source: int
     type: int
 
-def scan_serial_ports() -> dict[int, tuple[str, str]]: ...
-def complete_target(target: str, **kwargs: Any) -> str: ...
 def _init_logger() -> None: ...
-def _set_logger_level(name: str) -> None: ...
+def _set_logger_level(level: str) -> None: ...
+def complete_target(target: str, **kwargs: Any) -> str: ...
+def scan_serial_ports() -> dict[int, tuple[str, str]]: ...
+

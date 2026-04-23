@@ -71,11 +71,8 @@ class NodeShell(cmd.Cmd):
 
     def complete_call(self, text: str, line: str, begidx: int,
                       endidx: int) -> list[str]:
-        desc = self.node.description
-        if desc:
-            options = list(desc.functions)
-            return [i for i in options if text in i]
-        return []
+        options = list(self.node.exposed_functions)
+        return [i for i in options if text in i]
 
     def do_call(self, arg: str) -> None:
         'Call a function: call NAME ARG_1 ARG_2 ...'
@@ -92,11 +89,8 @@ class NodeShell(cmd.Cmd):
 
     def complete_wait(self, text: str, line: str, begidx: int,
                       endidx: int) -> list[str]:
-        desc = self.node.description
-        if desc:
-            options = list(desc.local_events)
-            return [i for i in options if text in i]
-        return []
+        options = list(self.node.mirrored_events)
+        return [i for i in options if text in i]
 
     def do_wait(self, arg: str) -> None:
         'Wait for an event: wait NAME'

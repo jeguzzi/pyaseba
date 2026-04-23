@@ -1,11 +1,13 @@
 # skip
 
 import argparse
+import logging
 import sys
-from functools import partial
 import time
+from functools import partial
 
 from pyaseba.client import Client, Message
+from pyaseba.examples.utils import setup_logging
 
 
 def forward(msg: Message, conn: int, bridge: Client) -> None:
@@ -13,7 +15,7 @@ def forward(msg: Message, conn: int, bridge: Client) -> None:
 
 
 def cb(conn: int, name: str, title: str = "") -> None:
-    print(f"{title} connection #{conn} to {name}")
+    logging.info(f"{title} connection #{conn} to {name}")
 
 
 def main(target: str) -> None:
@@ -35,7 +37,9 @@ def main(target: str) -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', default="tcp:port=33333")
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         main(args.target)
     except Exception as e:

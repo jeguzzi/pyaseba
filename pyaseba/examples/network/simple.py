@@ -18,8 +18,8 @@ class SimpleNode(Node):
         "square": ("set value to the square of the input", [("input", 1)])
     }
 
-    def __init__(self, node_id: int) -> None:
-        super().__init__(node_id, name="SimpleNode", default_functions=False)
+    def __init__(self, node_id: int, name: str) -> None:
+        super().__init__(node_id, name=name, default_functions=False)
 
     def init(self) -> None:
         self.counter = 0
@@ -65,10 +65,10 @@ class SimpleNode(Node):
             self.value = xs[0]**2
 
 
-def main(number: int = 1) -> None:
-    network = Network()
+def main(number: int = 1, advertise: str = "pyaseba", name: str = "SimpleNode") -> None:
+    network = Network(advertised_name=advertise)
     for i in range(max(1, number)):
-        node = SimpleNode(i)
+        node = SimpleNode(i, name=name)
         network.add_node(node)
     try:
         network.spin(time_step=0.1, duration=-1)
@@ -79,5 +79,7 @@ def main(number: int = 1) -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--number', default=1, type=int)
+    parser.add_argument('--advertise', default="pyaseba")
+    parser.add_argument('--name', default="SimpleNode")
     args = parser.parse_args()
-    main(args.number)
+    main(args.number, args.advertise, args.name)

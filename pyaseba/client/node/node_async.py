@@ -1,5 +1,5 @@
 import asyncio
-from typing import Self, TypeVar, cast
+from typing import Self, TypeVar
 
 from ..client_async import ClientAsync, MaybeAsyncCallback, wrap_callback
 from .node import Node, int16

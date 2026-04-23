@@ -1,8 +1,10 @@
 import argparse
-import time
+import logging
 import sys
+import time
 
 from pyaseba.client.thymio import Thymio
+from pyaseba.examples.utils import setup_logging
 
 done = False
 
@@ -29,15 +31,18 @@ def main(target: str) -> None:
         except KeyboardInterrupt:
             pass
     else:
-        raise RuntimeError(f'Could not find a Thymio on {target}')
+        logging.error(f'Could not find a Thymio on {target}')
     thymio.close(reset=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', default="ser:name=Thymio")
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         main(args.target)
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)

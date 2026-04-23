@@ -1,8 +1,10 @@
 import argparse
 import asyncio
+import logging
 import sys
 
 from pyaseba.client.thymio import ThymioAsync
+from pyaseba.examples.utils import setup_logging
 
 
 async def main(target: str) -> None:
@@ -17,15 +19,18 @@ async def main(target: str) -> None:
             if thymio.prox_horizontal[2] > 2000:
                 break
     else:
-        raise RuntimeError(f'Could not find a Thymio on {target}')
+        logging.error(f'Could not find a Thymio on {target}')
     await thymio.close(reset=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', default="ser:name=Thymio")
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         asyncio.run(main(args.target))
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)

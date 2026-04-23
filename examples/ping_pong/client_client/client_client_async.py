@@ -1,7 +1,10 @@
+import argparse
 import asyncio
+import logging
 import sys
 
 from pyaseba import ClientAsync
+from pyaseba.examples.utils import setup_logging
 
 
 async def run(client: ClientAsync) -> None:
@@ -10,7 +13,7 @@ async def run(client: ClientAsync) -> None:
         msg, target = await client.get_message()
         if msg:
             if msg.type in (0, 1):
-                print(f'Client on port {client.port} received {msg}')
+                logging.info(f'Client on port {client.port} received {msg}')
                 await asyncio.sleep(0.1)
                 client.send_user_message(type=client.port % 10,
                                          payload=[count])
@@ -33,7 +36,7 @@ async def main() -> None:
     try:
         done, pending = await asyncio.wait(tasks, timeout=3)
         if pending:
-            print(f'ERROR: {len(pending)} still pending')
+            logging.warning(f'{len(pending)} tasks still pending')
     except Exception:
         pass
     finally:
@@ -42,7 +45,12 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--log_level', default="INFO")
+    args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         asyncio.run(main())
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)

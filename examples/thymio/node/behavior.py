@@ -1,4 +1,5 @@
 import argparse
+import logging
 import sys
 import time
 from collections.abc import Callable
@@ -6,6 +7,7 @@ from collections.abc import Callable
 import thymio_behaviors
 from pyaseba.client.node import EventSpecUpdate
 from pyaseba.client.thymio import Thymio
+from pyaseba.examples.utils import setup_logging
 
 
 def main(target: str, names: str) -> None:
@@ -44,7 +46,7 @@ def main(target: str, names: str) -> None:
     if events:
         thymio.configure_events(**events)
     if thymio.connect(target=target):
-        print(f"Starting {' - '.join(names)}")
+        logging.info(f"Starting {' - '.join(names)}")
         thymio.call_prox_comm_enable(enable_prox_comm)
         thymio.set_controller(behavior, time_step=0.1)
         try:
@@ -54,8 +56,8 @@ def main(target: str, names: str) -> None:
             pass
         thymio.call_leds_buttons(0, 0, 0, 0)
     else:
-        print(f'Could not find a Thymio on {target}')
-    print('Closing')
+        logging.error(f'Could not find a Thymio on {target}')
+    logging.info('Closing')
     thymio.close(reset=True)
 
 
@@ -70,8 +72,11 @@ if __name__ == '__main__':
                             "led_acc"
                         ])
     parser.add_argument('--target', default="ser:name=Thymio")
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         main(args.target, args.behavior)
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)

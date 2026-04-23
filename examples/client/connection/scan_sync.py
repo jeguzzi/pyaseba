@@ -1,28 +1,31 @@
 import argparse
+import logging
 import sys
 
 from pyaseba import Client
+from pyaseba.examples.utils import setup_logging
 
 
 def main(target: str, number: int) -> None:
-    client = Client(ping_period_ms=0, automatic_query=False)
-    if client.connect(target, max_retries=1):
-        print(client.node_ids)
-        nodes = client.scan(wait_ms=1000, number=number)
-        print(f"Found nodes {nodes}")
-        connections = client.connections
-        for t, ns in nodes.items():
-            print(f'Found nodes {ns} on {connections.get(t, "?")}')
-    else:
-        raise RuntimeError(f"Could not connect to {target}!")
+    with Client(ping_period_ms=0, automatic_query=False) as client:
+        if client.connect(target, max_retries=1):
+            nodes = client.scan(wait_ms=1000, number=number)
+            connections = client.connections
+            for t, ns in nodes.items():
+                logging.info(f'Found nodes {ns} on {connections.get(t, "?")}')
+        else:
+            raise RuntimeError(f"Could not connect to {target}!")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', default="tcp:port=33333")
     parser.add_argument('--number', default=2, type=int)
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     try:
         main(args.target, args.number)
     except Exception as e:
-        sys.exit(f"ERROR: {e}")
+        logging.error(str(e))
+        sys.exit(1)
