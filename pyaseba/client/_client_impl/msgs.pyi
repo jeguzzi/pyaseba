@@ -1,11 +1,7 @@
 import collections.abc
-import enum
 
-from . import Message
+from . import Message, DeviceInfoType
 
-class DeviceInfoType(enum.IntEnum):
-    UUID = 1
-    NAME = 2
 
 class ArrayAccessOutOfBounds(Message):
     index: int

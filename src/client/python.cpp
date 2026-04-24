@@ -139,12 +139,43 @@ The payload of the event.
                py::str(py::cast(e.data)) + py::str(")");
       });
 
-  auto msgs = m.def_submodule("msgs", "Aseba messages");
+  py::classh<ThymioRFSettings>(m, "ThymioRFSettings", R"doc(
+ThymioRFSettings(network_id: int, node_id: int, channel: int)
 
-  py::native_enum<DeviceInfoType>(msgs, "DeviceInfoType", "enum.IntEnum")
+The radio settings of a wireless Thymio.
+
+Args:
+  network_id: The id of the network (0-65535).
+  node_id: The id of the node (0-65535).
+  channel: The channel (0-65535). Thymio supports channels 0, 1, 2.
+)doc")
+      .def(py::init<uint16_t, uint16_t, uint16_t>(), py::arg("network_id"),
+           py::arg("node_id"), py::arg("channel"))
+      .def_readwrite("network_id", &ThymioRFSettings::network_id, R"doc(
+The 16-bit id of the network.
+)doc")
+      .def_readwrite("node_id", &ThymioRFSettings::node_id, R"doc(
+The 16-bit id of the node.
+)doc")
+      .def_readwrite("channel", &ThymioRFSettings::channel, R"doc(
+The 16-bit channel. Thymio supports channels 0, 1, 2.
+)doc")
+      .def("__repr__", [](const ThymioRFSettings &e) {
+        const auto hex = py::module_::import("builtins").attr("hex");
+        return py::str("ThymioRFSettings(network_id=") +
+               hex(py::cast(e.network_id)) + py::str(", node_id=") +
+               py::str(py::cast(e.node_id)) + py::str(", channel=") +
+               py::str(py::cast(e.channel)) + py::str(")");
+      });
+
+  py::native_enum<DeviceInfoType>(m, "DeviceInfoType", "enum.IntEnum")
       .value("UUID", DeviceInfoType::DEVICE_INFO_UUID)
       .value("NAME", DeviceInfoType::DEVICE_INFO_NAME)
+      .value("THYMIO2_RF_SETTINGS",
+             DeviceInfoType::DEVICE_INFO_THYMIO2_RF_SETTINGS)
       .finalize();
+
+  auto msgs = m.def_submodule("msgs", "Aseba messages");
 
   py::classh<Aseba::Message>(m, "Message", R"doc(
 )doc")
@@ -606,7 +637,7 @@ The payload of the event.
         return py::str("GetDeviceInfo(source=") +
                py::str(py::cast(msg.source)) + py::str(", dest=") +
                py::str(py::cast(msg.dest)) + py::str(", info=") +
-               py::str(py::cast(msg.info)) + py::str(")");
+               py::cast(msg.info).attr("__repr__")() + py::str(")");
       });
 
   py::classh<Aseba::DeviceInfo, Aseba::Message>(msgs, "DeviceInfo",
@@ -614,17 +645,18 @@ The payload of the event.
 )doc")
       .def(py::init<DeviceInfoType, std::vector<uint8_t>>(), py::arg("info"),
            py::arg("data"))
+      .def_readwrite("data", &Aseba::DeviceInfo::data)
       .def("__repr__", [](const Aseba::DeviceInfo &msg) {
-        return py::str("GetDeviceInfo(source=") +
-               py::str(py::cast(msg.source)) + py::str(", info=") +
-               py::str(py::cast(msg.info)) + py::str(", data=") +
-               py::str(py::cast(msg.data)) + py::str(")");
+        return py::str("DeviceInfo(source=") + py::str(py::cast(msg.source)) +
+               py::str(", info=") + py::cast(msg.info).attr("__repr__")() +
+               py::str(", data=") + py::str(py::cast(msg.data)) + py::str(")");
       });
 
   py::classh<Aseba::ChangedVariables, Aseba::Message>(msgs, "ChangedVariables",
                                                       R"doc(
 )doc")
       .def(py::init<>())
+      .def_readonly("variables", &Aseba::ChangedVariables::variables)
       .def("__repr__", [](const Aseba::ChangedVariables &msg) {
         return py::str("ChangedVariables(source=") +
                py::str(py::cast(msg.source)) + py::str(", variables=") +
@@ -1078,11 +1110,11 @@ Returns:
            py::arg("callback") = nullptr,
            py::arg("include") = std::set<unsigned>{},
            py::arg("exclude") = std::set<unsigned>{}, R"DOC(
-query_description_fragment(self, node_id: int, fragment: int, wait_ms: int = 1000, callback: Callable[[Message], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> Message | None
+query_description_fragment(self, node_id: int, fragment: int, wait_ms: int = 1000, callback: Callable[[DescriptionFragment], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> DescriptionFragment | None
 
 Queries a fragment of the description of a node. 
 
-Only supported is built against Mobsya Aseba, 
+Only supported if built against Mobsya Aseba, 
 see :py:func:`pyaseba.uses_mobsya_aseba`.
 
 Args:
@@ -1091,11 +1123,177 @@ Args:
             to the index of the desired fragment, i.e. 0 for the first variable, 1 for the second and so on
             through all variables, events and functions (until the last functions). 
   wait_ms: The maximal time in milliseconds to wait.
-  callback: An optional callback called after the description is received.  
+  callback: An optional callback called after the message is received.  
   include: If not empty, restricts the search to nodes on the networks specified in this set.
   exclude: Ignore nodes on networks specified in this set.
 Returns:
   An Aseba message with the description or ``None`` if not received in time.
+)DOC")
+      .def("query_device_info", &Client::query_device_info, py::arg("node_id"),
+           py::arg("type"), py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+query_device_info(self, node_id: int, type: DeviceInfoType, wait_ms: int = 1000, callback: Callable[[DeviceInfo], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> DeviceInfo | None
+
+Retrieves device information from a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  type: The type of information.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the message is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  An Aseba message with the information or ``None`` if not received in time.
+)DOC")
+      .def("query_device_uuid", &Client::query_device_uuid, py::arg("node_id"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+query_device_uuid(self, node_id: int, wait_ms: int = 1000, callback: Callable[[list[int]], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> list[int]
+
+Retrieves the device uuid from a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the message is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  A list of bytes. Will be empty if not received (or not set by the device).
+)DOC")
+      .def("query_device_name", &Client::query_device_name, py::arg("node_id"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+query_device_name(self, node_id: int, wait_ms: int = 1000, callback: Callable[[str], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> str
+
+Retrieves the device name from a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the message is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  The name. Will be empty if not received (or not set by the device)
+)DOC")
+      .def("query_thymio_rf_settings", &Client::query_thymio_rf_settings,
+           py::arg("node_id"), py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+query_thymio_rf_settings(self, node_id: int, wait_ms: int = 1000, callback: Callable[[ThymioRFSettings], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> ThymioRFSettings | None
+
+Retrieves the RF settings from a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+.. warning::
+    
+   The Thymio does not read the RF channel, which is always set to 0xFFFF.
+   The actual supported channels are 0, 1, and 2.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the message is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  The settings.
+)DOC")
+      .def("set_device_info", &Client::set_device_info, py::arg("node_id"),
+           py::arg("type"), py::arg("data"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_device_info(self, node_id: int, type: DeviceInfoType, value: list[int], include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Send a request to set device information to a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  type: The type of information.
+  data: A list of bytes.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+)DOC")
+      .def("set_device_uuid", &Client::set_device_uuid, py::arg("node_id"),
+           py::arg("uuid"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_device_uuid(self, node_id: int, uuid: list[int], include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Send a request to set the device uuid to a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  type: The type of information.
+  uuid: A list of bytes.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+)DOC")
+      .def("set_device_name", &Client::set_device_name, py::arg("node_id"),
+           py::arg("name"), py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_device_name(self, node_id: int, name: str, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Send a request to set the device name to a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  name: The name.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+)DOC")
+      .def("set_thymio_rf_settings", &Client::set_thymio_rf_settings,
+           py::arg("node_id"), py::arg("settings"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+set_thymio_rf_settings(self, node_id: int, settings: ThymioRFSettings, include: set[int] = set(), exclude: set[int] = set()) -> None
+
+Send a request to set RF settings to a node. 
+
+Only supported if built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  settings: The settings.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+)DOC")
+      .def("add_node_callback", &Client::add_node_connection_callback,
+           py::arg("callback"), R"DOC(
+add_node_callback(self, callback: Callable[[int, int], None]) -> None
+
+Adds a callback called called when a node is discovered. 
+
+Args:
+  callback: A callback that receives a two arguments ``(node_id, connection)``.
+
 )DOC")
       .def("add_node_callback", &Client::add_node_connection_callback,
            py::arg("callback"), R"DOC(
@@ -1374,7 +1572,7 @@ get_changed_variables(self, node_id: int, wait_ms: int = 1000, callback: Callabl
 
 Query a node for the value of variables that have changed.
 
-Only supported is built against Mobsya Aseba, 
+Only supported if built against Mobsya Aseba, 
 see :py:func:`pyaseba.uses_mobsya_aseba`.
 
 Args:

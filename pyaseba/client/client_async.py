@@ -3,7 +3,8 @@ from collections.abc import Callable
 from functools import partial
 from typing import Any, Awaitable, Protocol, Unpack, cast
 
-from ._client_impl import Client, Description, Event, Message, complete_target
+from ._client_impl import (Client, Description, DeviceInfoType, Event, Message,
+                           ThymioRFSettings, complete_target)
 from .msgs import DescriptionFragment
 
 type Callback[*Ts] = Callable[[*Ts], None]
@@ -131,6 +132,56 @@ class ClientAsync(Client):
         """
         f = partial(super().query_description_fragment, node_id=node_id, fragment=fragment, include=include, exclude=exclude)
         return await call_async(f, wait_ms=wait_ms)
+
+    async def query_device_info(self, #type: ignore[override]
+                                node_id: int,
+                                type: DeviceInfoType,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()
+                                ) -> list[int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_device_info`
+        """
+        f = partial(super().query_device_info, node_id=node_id, type=type, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
+    async def query_device_name(self, #type: ignore[override]
+                                node_id: int,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()
+                                ) -> str:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_description_fragment`
+        """
+        f = partial(super().query_device_name, node_id=node_id, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
+    async def query_device_uuid(self, #type: ignore[override]
+                                node_id: int,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()
+                                ) -> list[int]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_device_uuid`
+        """
+        f = partial(super().query_device_uuid, node_id=node_id, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
+    async def query_thymio_rf_settings(self, #type: ignore[override]
+                                node_id: int,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()
+                                ) -> ThymioRFSettings:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_device_uuid`
+        """
+        f = partial(super().query_thymio_rf_settings, node_id=node_id, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
 
     async def get_message(self, #type: ignore[override]
                           node_id: int = -1,

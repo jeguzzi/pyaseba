@@ -1,6 +1,6 @@
-from ._client_impl import (Client, Description, Event, Message, complete_target, scan_serial_ports)
-
-
+from ._client_impl import (Client, Description, DeviceInfoType, Event, Message,
+                           ThymioRFSettings, complete_target,
+                           scan_serial_ports)
 from .client_async import ClientAsync, wrap_callback
 from .node import EventSpec, Node, NodeAsync
 
@@ -23,5 +23,6 @@ def find_serial_targets(name: str) -> list[str]:
 __all__ = [
     'Client', 'ClientAsync', 'Description', 'Event', 'Message',
     'scan_serial_ports', 'find_serial_targets', 'Node', 'NodeAsync',
-    'complete_target', 'EventSpec', 'wrap_callback'
+    'complete_target', 'EventSpec', 'wrap_callback', 'DeviceInfoType',
+    'ThymioRFSettings'
 ]

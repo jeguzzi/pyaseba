@@ -107,6 +107,40 @@ using NodeCallback = std::function<void(unsigned, unsigned)>;
 using TargetCallback = std::function<void(unsigned, const std::string &)>;
 using MessageVector = std::vector<std::unique_ptr<Aseba::Message>>;
 
+using DeviceInfo = std::vector<uint8_t>;
+using DeviceInfoCallback = std::function<void(const DeviceInfo &)>;
+using DeviceNameCallback = std::function<void(const std::string &)>;
+
+struct ThymioRFSettings {
+  uint16_t network_id;
+  uint16_t node_id;
+  uint16_t channel;
+
+  explicit ThymioRFSettings(uint16_t n, uint16_t i, uint16_t c)
+      : network_id(n), node_id(i), channel(c) {}
+
+  static std::optional<ThymioRFSettings> from_info(const DeviceInfo &info) {
+    if (info.size() == 6) {
+      const uint16_t n = info[0] + (info[1] << 8);
+      const uint16_t i = info[2] + (info[3] << 8);
+      const uint16_t c = info[4] + (info[5] << 8);
+      return ThymioRFSettings{n, i, c};
+    }
+    return std::nullopt;
+  }
+
+  DeviceInfo info() const {
+    return {static_cast<uint8_t>(network_id & 0xFF),
+            static_cast<uint8_t>(network_id >> 8),
+            static_cast<uint8_t>(node_id & 0xFF),
+            static_cast<uint8_t>(node_id >> 8),
+            static_cast<uint8_t>(channel & 0xFF),
+            static_cast<uint8_t>(channel >> 8)};
+  }
+};
+
+using ThymioRFSettingsCallback = std::function<void(const ThymioRFSettings &)>;
+
 struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   int port;
   std::string address;
@@ -772,6 +806,110 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
 #endif
   }
 
+  DeviceInfo query_device_info(unsigned nodeId, DeviceInfoType type,
+                               unsigned wait_ms = 1000,
+                               const DeviceInfoCallback &cb = nullptr,
+                               const std::set<unsigned> &include = {},
+                               const std::set<unsigned> &exclude = {}) {
+#ifdef USE_MOBSYA_ASEBA
+    AwaitedMessage::Callback mcb = nullptr;
+    if (cb) {
+      mcb = [cb](const std::shared_ptr<Aseba::Message> &msg, unsigned) {
+        if (const auto &info =
+                std::dynamic_pointer_cast<Aseba::DeviceInfo>(msg)) {
+          cb(info->data);
+        }
+      };
+    }
+    send_message_of_type<Aseba::GetDeviceInfo, uint16_t, DeviceInfoType>(
+        nodeId, type, include, exclude);
+    const auto [msg, _] =
+        get_message(nodeId, {ASEBA_MESSAGE_DEVICE_INFO}, wait_ms, mcb);
+    if (const auto &info = std::dynamic_pointer_cast<Aseba::DeviceInfo>(msg)) {
+      return info->data;
+    }
+    return {};
+#else
+    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting device "
+             "information is not supported!");
+    return {};
+#endif
+  }
+
+  DeviceInfo query_device_uuid(unsigned nodeId, unsigned wait_ms = 1000,
+                               const DeviceInfoCallback &cb = nullptr,
+                               const std::set<unsigned> &include = {},
+                               const std::set<unsigned> &exclude = {}) {
+    return query_device_info(nodeId, DEVICE_INFO_UUID, wait_ms, cb, include,
+                             exclude);
+  }
+
+  std::string query_device_name(unsigned nodeId, unsigned wait_ms = 1000,
+                                const DeviceNameCallback &cb = nullptr,
+                                const std::set<unsigned> &include = {},
+                                const std::set<unsigned> &exclude = {}) {
+    DeviceInfoCallback mcb = nullptr;
+    if (cb) {
+      mcb = [cb](const DeviceInfo &info) {
+        cb(std::string(info.begin(), info.end()));
+      };
+    }
+    const auto &info = query_device_info(nodeId, DEVICE_INFO_NAME, wait_ms, mcb,
+                                         include, exclude);
+    return std::string(info.begin(), info.end());
+  }
+
+  std::optional<ThymioRFSettings>
+  query_thymio_rf_settings(unsigned nodeId, unsigned wait_ms = 1000,
+                           const ThymioRFSettingsCallback &cb = nullptr,
+                           const std::set<unsigned> &include = {},
+                           const std::set<unsigned> &exclude = {}) {
+    DeviceInfoCallback mcb = nullptr;
+    if (cb) {
+      mcb = [cb](const DeviceInfo &info) {
+        if (const auto s = ThymioRFSettings::from_info(info)) {
+          cb(*s);
+        }
+      };
+    }
+    const auto info = query_device_info(nodeId, DEVICE_INFO_THYMIO2_RF_SETTINGS,
+                                        wait_ms, mcb, include, exclude);
+    return ThymioRFSettings::from_info(info);
+  }
+
+  void set_device_info(unsigned nodeId, DeviceInfoType type,
+                       const DeviceInfo &data,
+                       const std::set<unsigned> &include = {},
+                       const std::set<unsigned> &exclude = {}) {
+#ifdef USE_MOBSYA_ASEBA
+    send_message_of_type<Aseba::SetDeviceInfo, uint16_t, DeviceInfoType,
+                         DeviceInfo>(nodeId, type, data, include, exclude);
+#else
+    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: setting device "
+             "information is not supported!");
+#endif
+  }
+
+  void set_device_uuid(unsigned nodeId, const DeviceInfo &uuid,
+                       const std::set<unsigned> &include = {},
+                       const std::set<unsigned> &exclude = {}) {
+    set_device_info(nodeId, DEVICE_INFO_UUID, uuid, include, exclude);
+  }
+
+  void set_device_name(unsigned nodeId, const std::string &name,
+                       const std::set<unsigned> &include = {},
+                       const std::set<unsigned> &exclude = {}) {
+    DeviceInfo data;
+    data.assign(name.begin(), name.end());
+    set_device_info(nodeId, DEVICE_INFO_NAME, data, include, exclude);
+  }
+
+  void set_thymio_rf_settings(unsigned nodeId, const ThymioRFSettings &data,
+                              const std::set<unsigned> &include = {},
+                              const std::set<unsigned> &exclude = {}) {
+    set_device_info(nodeId, DEVICE_INFO_THYMIO2_RF_SETTINGS, data.info(), include, exclude);
+  }
+
   void load_script_to_node(ClientNode &node, unsigned nodeId,
                            const std::string &code,
                            const std::vector<Aseba::NamedValue> &events = {},
@@ -865,8 +1003,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
         }
       };
     }
-    const auto [msg, target] =
-        get_message(nodeId, {static_cast<unsigned>(type)}, wait_ms, mcb, indices);
+    const auto [msg, target] = get_message(
+        nodeId, {static_cast<unsigned>(type)}, wait_ms, mcb, indices);
     if (msg) {
       return make_event_from_msg(msg.get(), target);
     }
