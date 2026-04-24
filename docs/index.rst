@@ -16,6 +16,7 @@ documentation for details.
    :caption: Contents:
 
    intro
+   first_steps
    gallery/index.rst
    reference/index.rst
 

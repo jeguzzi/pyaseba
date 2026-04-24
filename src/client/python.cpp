@@ -144,6 +144,8 @@ ThymioRFSettings(network_id: int, node_id: int, channel: int)
 
 The radio settings of a wireless Thymio.
 
+This is was introduced by in the Mobsya version of Aseba.
+
 Args:
   network_id: The id of the network (0-65535).
   node_id: The id of the node (0-65535).
@@ -168,12 +170,24 @@ The 16-bit channel. Thymio supports channels 0, 1, 2.
                py::str(py::cast(e.channel)) + py::str(")");
       });
 
-  py::native_enum<DeviceInfoType>(m, "DeviceInfoType", "enum.IntEnum")
-      .value("UUID", DeviceInfoType::DEVICE_INFO_UUID)
-      .value("NAME", DeviceInfoType::DEVICE_INFO_NAME)
+  options.disable_function_signatures();
+  py::native_enum<DeviceInfoType>(m, "DeviceInfoType", "enum.IntEnum", R"doc(
+DeviceInfoType(value: int)
+
+An enum used by :py:meth:`pyaseba.client.Client.get_device_info`.
+
+This is was introduced by in the Mobsya version of Aseba.
+
+Args:
+  value: 1, 2 or 3.
+)doc")
+      .value("UUID", DeviceInfoType::DEVICE_INFO_UUID, "The device UUID")
+      .value("NAME", DeviceInfoType::DEVICE_INFO_NAME, "The device name")
       .value("THYMIO2_RF_SETTINGS",
-             DeviceInfoType::DEVICE_INFO_THYMIO2_RF_SETTINGS)
+             DeviceInfoType::DEVICE_INFO_THYMIO2_RF_SETTINGS, "The device RF settings")
       .finalize();
+
+  options.enable_function_signatures();
 
   auto msgs = m.def_submodule("msgs", "Aseba messages");
 

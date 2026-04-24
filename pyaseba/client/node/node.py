@@ -213,7 +213,7 @@ class Node:
     properties: Collection[str] = ()
     """Which variables should be exposed as Python properties"""
     functions: Collection[str] = ()
-    """"Which functions should be exposed as ``call_<name>`` methods"""
+    """Which functions should be exposed as ``call_<name>`` methods"""
     control_event = ""
     """Which local event to use to trigger the control step"""
     sync_include: Collection[str] = (r'.*', )
@@ -542,14 +542,10 @@ end
                                      events=self._code_events)
         except Exception as e:
             m = re.search(r"Error at Line: (\d*)", str(e))
-            print(m)
             if m:
                 ln = int(m.group(1))
-                print('ln', ln)
                 line = self._code.splitlines()[ln - 1:ln + 1]
-                print('line', line)
                 print(line, file=sys.stderr)
-                print(self._code)
             raise e
         self._client.cmd_run(self._node_id)
         self._description = self._client.get_description(

@@ -5,4 +5,3 @@ Event
 
 .. autoclass:: Event
    :members:
-   :undoc-members:

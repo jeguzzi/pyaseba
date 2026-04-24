@@ -8,12 +8,15 @@ Client
    :caption: Contents:
 
    client
+   client_async
    messages
    event
    description
-   client_async
+   device_info_type
+   thymio_rf_settings
    node
    node_async
+   event_spec
    thymio
    helpers
    
