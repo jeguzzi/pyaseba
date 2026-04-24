@@ -69,9 +69,7 @@ template <typename C, bool P, typename V, typename... T> struct Awaited {
     }
   }
 
-  ~Awaited() { 
-    cancel();
-  }
+  ~Awaited() { cancel(); }
 
   void check(T... args) {
     if (complete) {
@@ -218,19 +216,21 @@ struct AwaitedMessage
   using A::Value;
 
   int target_source;
-  int target_type;
+  std::set<unsigned> target_types;
   std::set<unsigned> targets;
 
   AwaitedMessage(unsigned wait_ms, const Callback &cb, const Value &v,
-                 int source, int type, const std::set<unsigned> &targets)
-      : A(wait_ms, cb, v), target_source(source), target_type(type),
+                 int source, std::set<unsigned> types,
+                 const std::set<unsigned> &targets)
+      : A(wait_ms, cb, v), target_source(source), target_types(types),
         targets(targets) {}
 
   bool update(const std::shared_ptr<Aseba::Message> &msg,
               unsigned target_index) {
-    const bool r = (targets.size() == 0 || targets.count(target_index) > 0) &&
-                   (target_source < 0 || target_source == msg->source) &&
-                   (target_type < 0 || target_type == msg->type);
+    const bool r =
+        (targets.size() == 0 || targets.count(target_index) > 0) &&
+        (target_source < 0 || target_source == msg->source) &&
+        (target_types.size() == 0 || target_types.count(msg->type) > 0);
     if (r) {
       value = {msg, target_index};
     }

@@ -622,7 +622,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       };
     }
     const auto [msg, _] =
-        get_message(nodeId, ASEBA_MESSAGE_VARIABLES, wait_ms, mcb);
+        get_message(nodeId, {ASEBA_MESSAGE_VARIABLES}, wait_ms, mcb);
     if (const auto v_msg = std::dynamic_pointer_cast<Aseba::Variables>(msg)) {
       return v_msg->variables;
     }
@@ -680,8 +680,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
     send_message_of_type<Aseba::GetChangedVariables, uint16_t>(nodeId, include,
                                                                exclude);
-    const auto &[msg, _] = get_message(nodeId, ASEBA_MESSAGE_CHANGED_VARIABLES,
-                                       wait_ms, mcb, include, exclude);
+    const auto &[msg, _] =
+        get_message(nodeId, {ASEBA_MESSAGE_CHANGED_VARIABLES}, wait_ms, mcb,
+                    include, exclude);
     if (auto cmsg = std::dynamic_pointer_cast<Aseba::ChangedVariables>(msg)) {
       return cmsg->variables;
     }
@@ -718,6 +719,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
                     const TargetDescriptionCallback &cb = nullptr,
                     const std::set<unsigned> &include = {},
                     const std::set<unsigned> &exclude = {}) {
+    // TODO: expose whether to query or return cached value.
     const auto d = get_node(nodeId, include, exclude);
     if (d)
       return d;
@@ -738,6 +740,36 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       return get_node(node, {target});
     }
     return nullptr;
+  }
+
+  std::shared_ptr<Aseba::Message>
+  query_description_fragment(unsigned nodeId, int fragment,
+                             unsigned wait_ms = 0,
+                             const MessageCallback &cb = nullptr,
+                             const std::set<unsigned> &include = {},
+                             const std::set<unsigned> &exclude = {}) {
+#ifdef USE_MOBSYA_ASEBA
+    // MAYBE: With fragment -2 the node is going to whole description over
+    // (possibly) multiple messages.
+    // ... we just wait for the first. Let the callback / waitable stay alive
+    // until we receive all messages?
+    if (fragment < -2) {
+      fragment = -1;
+    }
+    send_message_of_type<Aseba::GetNodeDescriptionFragment, int16_t, uint16_t>(
+        fragment, nodeId, include, exclude);
+    const auto [msg, _] = get_message(
+        nodeId,
+        {ASEBA_MESSAGE_DESCRIPTION, ASEBA_MESSAGE_NAMED_VARIABLE_DESCRIPTION,
+         ASEBA_MESSAGE_LOCAL_EVENT_DESCRIPTION,
+         ASEBA_MESSAGE_NATIVE_FUNCTION_DESCRIPTION},
+        wait_ms, cb);
+    return msg;
+#else
+    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting fragments of "
+             "descriptions is not supported!");
+    return nullptr;
+#endif
   }
 
   void load_script_to_node(ClientNode &node, unsigned nodeId,
@@ -816,10 +848,12 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     const auto indices = streams.get_indices(include, exclude);
     const auto node = get_node(nodeId, indices);
     if (!node || !node->has_event(name)) {
-      // std::cerr << "no node or event\n";
       return nullptr;
     }
     const auto type = node->get_event_index(name);
+    if (type < 0) {
+      return nullptr;
+    }
     AwaitedMessage::Callback mcb = nullptr;
     if (cb) {
       mcb = [cb, this](const std::shared_ptr<Aseba::Message> &msg,
@@ -831,7 +865,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
         }
       };
     }
-    const auto [msg, target] = get_message(nodeId, type, wait_ms, mcb, indices);
+    const auto [msg, target] =
+        get_message(nodeId, {static_cast<unsigned>(type)}, wait_ms, mcb, indices);
     if (msg) {
       return make_event_from_msg(msg.get(), target);
     }
@@ -839,7 +874,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   }
 
   AwaitedMessage::Value
-  get_message(int nodeId = -1, int type = -1, int wait_ms = 0,
+  get_message(int nodeId = -1, std::set<unsigned> types = {}, int wait_ms = 0,
               const AwaitedMessage::Callback &cb = nullptr,
               const std::set<unsigned> &include = {},
               const std::set<unsigned> &exclude = {}, bool pause = false) {
@@ -847,7 +882,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (pause) {
       in_msgs.next();
     }
-    return awaited_messages.wait(wait_ms, cb, {nullptr, 0}, nodeId, type,
+    return awaited_messages.wait(wait_ms, cb, {nullptr, 0}, nodeId, types,
                                  indices);
   }
 

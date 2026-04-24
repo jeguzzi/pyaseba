@@ -646,7 +646,8 @@ The version of Aseba used by the node (readonly).
 The variables defined by the Aseba node as a dictionary
 of ``(index, size)`` tuples keyed by name (readonly).
 )doc")
-      .def_property("variables_by_index", &ClientNode::get_indexed_variables, nullptr, R"doc(
+      .def_property("variables_by_index", &ClientNode::get_indexed_variables,
+                    nullptr, R"doc(
 The variables defined by the Aseba node as a dictionary
 of ``(name, size)`` tuples keyed by index (readonly).
 )doc")
@@ -1072,6 +1073,30 @@ Args:
 Returns:
   A description or ``None`` if not received in time.
 )DOC")
+      .def("query_description_fragment", &Client::query_description_fragment,
+           py::arg("node_id"), py::arg("fragment"), py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+query_description_fragment(self, node_id: int, fragment: int, wait_ms: int = 1000, callback: Callable[[Message], None]| None = None, include: set[int] = set(), exclude: set[int] = set()) -> Message | None
+
+Queries a fragment of the description of a node. 
+
+Only supported is built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  fragment: -1 corresponds to the header, -2 to the whole description, while positive values 
+            to the index of the desired fragment, i.e. 0 for the first variable, 1 for the second and so on
+            through all variables, events and functions (until the last functions). 
+  wait_ms: The maximal time in milliseconds to wait.
+  callback: An optional callback called after the description is received.  
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+Returns:
+  An Aseba message with the description or ``None`` if not received in time.
+)DOC")
       .def("add_node_callback", &Client::add_node_connection_callback,
            py::arg("callback"), R"DOC(
 add_node_callback(self, callback: Callable[[int, int], None]) -> None
@@ -1126,17 +1151,18 @@ Deletes all incoming messages.
 
 )DOC")
       .def("get_message", &Client::get_message, py::arg("node_id") = -1,
-           py::arg("type") = -1, py::arg("wait_ms") = 1000,
+           py::arg("types") = std::set<unsigned>(), py::arg("wait_ms") = 1000,
            py::arg("callback") = nullptr,
            py::arg("include") = std::set<unsigned>{},
            py::arg("exclude") = std::set<unsigned>{}, py::arg("pause") = false,
            R"DOC(
-get_message(self, node_id: int = -1, type: int = -1, wait_ms: int = 1000, callback: Callable[[Message, int], None]| None = None, include: set[int] = set(), exclude: set[int] = set(), pause: bool = false) -> tuple[Message | None, int]
+get_message(self, node_id: int = -1, types: set[int] = set(), wait_ms: int = 1000, callback: Callable[[Message, int], None]| None = None, include: set[int] = set(), exclude: set[int] = set(), pause: bool = false) -> tuple[Message | None, int]
 
 Wait until a message is received.
 
 Args:
   node_id: The id of the node.
+  types: The type of messages. Leave empty to accept all messages.
   wait_ms: The maximal time in milliseconds to wait.
   callback: An optional callback called after the message is received.  
   include: If not empty, restricts to networks specified in this set.
@@ -1339,8 +1365,9 @@ Args:
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
 )DOC")
-      .def("get_changed_variables", &Client::get_changed_variables, py::arg("node_id"),
-           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+      .def("get_changed_variables", &Client::get_changed_variables,
+           py::arg("node_id"), py::arg("wait_ms") = 1000,
+           py::arg("callback") = nullptr,
            py::arg("include") = std::set<unsigned>{},
            py::arg("exclude") = std::set<unsigned>{}, R"DOC(
 get_changed_variables(self, node_id: int, wait_ms: int = 1000, callback: Callable[[list[int]], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> list[tuple[int, list[int]]]

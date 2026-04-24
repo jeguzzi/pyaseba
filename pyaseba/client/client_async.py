@@ -1,14 +1,15 @@
 import asyncio
 from collections.abc import Callable
 from functools import partial
-from typing import Any, Protocol, Unpack, Awaitable, cast
+from typing import Any, Awaitable, Protocol, Unpack, cast
 
+from . import msgs
 from ._client_impl import Client, Description, Event, Message, complete_target
-
 
 type Callback[*Ts] = Callable[[*Ts], None]
 type AsyncCallback[*Ts] = Callable[[*Ts], Awaitable[None]]
 type MaybeAsyncCallback[*Ts] = Callback[*Ts] | AsyncCallback[*Ts]
+type DescriptionFragment = msgs.Description | msgs.LocalEventDescription | msgs.NamedVariableDescription | msgs.NativeFunctionDescription
 
 
 def wrap_callback[*Ts](callback: MaybeAsyncCallback[*Ts] | None) -> Callback[*Ts]:
@@ -120,9 +121,22 @@ class ClientAsync(Client):
         f = partial(super().query_description, node_id=node_id, include=include, exclude=exclude)
         return await call_async(f, wait_ms=wait_ms)
 
+    async def query_description_fragment(self, #type: ignore[override]
+                                node_id: int,
+                                fragment: int,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()
+                                ) -> DescriptionFragment | None:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.query_description_fragment`
+        """
+        f = partial(super().query_description_fragment, node_id=node_id, fragment=fragment, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
     async def get_message(self, #type: ignore[override]
                           node_id: int = -1,
-                          type: int = -1,
+                          types: set[int] = set(),
                           wait_ms: int = 0,
                           include: set[int] = set(),
                           exclude: set[int] = set(),
@@ -130,7 +144,7 @@ class ClientAsync(Client):
         """
         Asynchronous version of :py:meth:`pyaseba.client.Client.get_message`
         """
-        f = partial(super().get_message, node_id=node_id, type=type, include=include, exclude=exclude, pause=pause)
+        f = partial(super().get_message, node_id=node_id, types=types, include=include, exclude=exclude, pause=pause)
         return await call_async_tuple(f, wait_ms=wait_ms)
 
     async def get_event(self, #type: ignore[override]
@@ -167,6 +181,17 @@ class ClientAsync(Client):
         Asynchronous version of :py:meth:`pyaseba.client.Client.get_all_variables`
         """
         f = partial(super().get_all_variables, node_id=node_id, include=include, exclude=exclude)
+        return await call_async(f, wait_ms=wait_ms)
+
+    async def get_changed_variables(self, #type: ignore[override]
+                                node_id: int,
+                                wait_ms: int = 0,
+                                include: set[int] = set(),
+                                exclude: set[int] = set()) -> list[tuple[int, list[int]]]:
+        """
+        Asynchronous version of :py:meth:`pyaseba.client.Client.get_changed_variables`
+        """
+        f = partial(super().get_changed_variables, node_id=node_id, include=include, exclude=exclude)
         return await call_async(f, wait_ms=wait_ms)
 
     async def wait_nodes(self, #type: ignore[override]
