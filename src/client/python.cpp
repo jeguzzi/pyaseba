@@ -646,6 +646,10 @@ The version of Aseba used by the node (readonly).
 The variables defined by the Aseba node as a dictionary
 of ``(index, size)`` tuples keyed by name (readonly).
 )doc")
+      .def_property("variables_by_index", &ClientNode::get_indexed_variables, nullptr, R"doc(
+The variables defined by the Aseba node as a dictionary
+of ``(name, size)`` tuples keyed by index (readonly).
+)doc")
       .def_property("local_events", &ClientNode::get_local_events, nullptr,
                     R"doc(
 The local events defined by the Aseba node as a dictionary
@@ -1032,7 +1036,7 @@ Scans for nodes on all connected networks.
 
 Args:
   number: The minimal number of nodes to find before returning.
-  wait_ms: the maximal time in ms to wait.
+  wait_ms: The maximal time in ms to wait.
   callback: An optional callback called each time a node is found.
             It receives a three arguments ``(node_id, connection, complete)`` where
             complete is `True` only if ``number`` nodes have been found.
@@ -1297,6 +1301,7 @@ Query a node for the value of a variable by name.
 Args:
   node_id: The id of the node.
   name: The name of the variable.
+  wait_ms: The maximal time (in ms) to wait for answers.
   callback: An optional callback called when the value is received.
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
@@ -1314,6 +1319,7 @@ Args:
   node_id: The id of the node.
   index: The index of the variable.
   length: The size of the variable.
+  wait_ms: The maximal time (in ms) to wait for answers.
   callback: An optional callback called when the value is received.
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.
@@ -1328,6 +1334,25 @@ Query a node for the value of all variables
 
 Args:
   node_id: The id of the node.
+  wait_ms: The maximal time (in ms) to wait for answers.
+  callback: An optional callback called when the value is received.
+  include: If not empty, restricts to networks specified in this set.
+  exclude: Ignores networks specified in this set.
+)DOC")
+      .def("get_changed_variables", &Client::get_changed_variables, py::arg("node_id"),
+           py::arg("wait_ms") = 1000, py::arg("callback") = nullptr,
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{}, R"DOC(
+get_changed_variables(self, node_id: int, wait_ms: int = 1000, callback: Callable[[list[int]], None] | None = None, include: set[int] = set(), exclude: set[int] = set()) -> list[tuple[int, list[int]]]
+
+Query a node for the value of variables that have changed.
+
+Only supported is built against Mobsya Aseba, 
+see :py:func:`pyaseba.uses_mobsya_aseba`.
+
+Args:
+  node_id: The id of the node.
+  wait_ms: The maximal time (in ms) to wait for answers.
   callback: An optional callback called when the value is received.
   include: If not empty, restricts to networks specified in this set.
   exclude: Ignores networks specified in this set.

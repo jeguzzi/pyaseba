@@ -5,10 +5,10 @@
 #include "aseba/common/msg/msg.h"
 #include "aseba/common/utils/utils.h"
 #include "utils_client.h"
+#include <list>
 #include <mutex>
 #include <set>
 #include <string>
-#include <list>
 #include <vector>
 
 struct ClientNode : public Aseba::TargetDescription {
@@ -18,14 +18,16 @@ struct ClientNode : public Aseba::TargetDescription {
   using Arguments =
       std::vector<Aseba::TargetDescription::NativeFunctionParameter>;
   using Functions = std::map<std::wstring, std::tuple<std::wstring, Arguments>>;
+  using IndexedVariables =
+      std::map<unsigned, std::tuple<std::wstring, unsigned>>;
 
   ClientNode() = default;
   ClientNode(const Aseba::TargetDescription &targetDescription)
       : Aseba::TargetDescription(targetDescription),
         namedVariablesReceptionCounter(0), localEventsReceptionCounter(0),
         nativeFunctionReceptionCounter(0), connected(false), complete(false),
-        variables(), variables_size(0), event_indices(), events(),
-        local_events(), functions(), script() {
+        variables(), variables_by_index(), variables_size(0), event_indices(),
+        events(), local_events(), functions(), script() {
     complete = is_complete();
   }
 
@@ -36,6 +38,7 @@ struct ClientNode : public Aseba::TargetDescription {
   bool complete;
   Aseba::UnifiedTime lastSeen;
   Aseba::VariablesMap variables;
+  IndexedVariables variables_by_index;
   unsigned variables_size;
   Events event_indices;
   Events events;
@@ -55,6 +58,10 @@ struct ClientNode : public Aseba::TargetDescription {
         unsigned i;
         variables = getVariablesMap(i);
         variables_size = compute_variables_size(variables);
+        for (const auto &[name, v] : variables) {
+          const auto [index, s] = v;
+          variables_by_index[index] = {name, s};
+        }
       }
       complete = is_complete();
     }
@@ -109,6 +116,10 @@ struct ClientNode : public Aseba::TargetDescription {
 
   const Aseba::VariablesMap &get_variables() const { return variables; }
 
+  const IndexedVariables &get_indexed_variables() const {
+    return variables_by_index;
+  }
+
   unsigned get_variables_size() const { return variables_size; }
 
   const Events &get_user_events() const { return events; }
@@ -116,7 +127,6 @@ struct ClientNode : public Aseba::TargetDescription {
   const LocalEvents &get_local_events() const { return local_events; }
 
   const Functions &get_functions() const { return functions; }
-
 };
 
 template <typename T> class DescriptionManager {
@@ -139,8 +149,8 @@ protected:
       : target_nodes(), ignored_target_nodes(), query(query),
         min_protocol_version(min_protocol_version),
         max_protocol_version(max_protocol_version) {
-          set_disconnection_timeout_ms(disconnection_timeout_ms);
-        }
+    set_disconnection_timeout_ms(disconnection_timeout_ms);
+  }
 
 public:
   bool query;

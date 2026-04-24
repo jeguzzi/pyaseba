@@ -168,9 +168,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
   }
 
-  ~Client() { 
-    stop_and_close(); 
-  }
+  ~Client() { stop_and_close(); }
 
   // +++++++++++++++ Dashel::Hub specialization +++++++++++++++
 
@@ -623,8 +621,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
         }
       };
     }
-    const auto [msg, _] = get_message(
-        nodeId, static_cast<int>(ASEBA_MESSAGE_VARIABLES), wait_ms, mcb);
+    const auto [msg, _] =
+        get_message(nodeId, ASEBA_MESSAGE_VARIABLES, wait_ms, mcb);
     if (const auto v_msg = std::dynamic_pointer_cast<Aseba::Variables>(msg)) {
       return v_msg->variables;
     }
@@ -660,6 +658,50 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     return awaited_variables.wait(wait_ms, cb, VariablesMap{}, nodeId,
                                   node->variables);
   }
+
+#if USE_MOBSYA_ASEBA
+  using ChangedVariables = std::vector<Aseba::ChangedVariables::area>;
+  using ChangedVariablesCallback =
+      std::function<void(const ChangedVariables &)>;
+
+  ChangedVariables
+  get_changed_variables(int nodeId, unsigned wait_ms,
+                        const ChangedVariablesCallback &cb = nullptr,
+                        const std::set<unsigned> &include = {},
+                        const std::set<unsigned> &exclude = {}) {
+    AwaitedMessage::Callback mcb = nullptr;
+    if (cb) {
+      mcb = [cb](const std::shared_ptr<Aseba::Message> &msg, unsigned target) {
+        if (auto cmsg =
+                std::dynamic_pointer_cast<Aseba::ChangedVariables>(msg)) {
+          cb(cmsg->variables);
+        }
+      };
+    }
+    send_message_of_type<Aseba::GetChangedVariables, uint16_t>(nodeId, include,
+                                                               exclude);
+    const auto &[msg, _] = get_message(nodeId, ASEBA_MESSAGE_CHANGED_VARIABLES,
+                                       wait_ms, mcb, include, exclude);
+    if (auto cmsg = std::dynamic_pointer_cast<Aseba::ChangedVariables>(msg)) {
+      return cmsg->variables;
+    }
+    return {};
+  }
+#else
+  using ChangedVariables = std::vector<std::tuple<unsigned, std::vector<int>>>;
+  using ChangedVariablesCallback =
+      std::function<void(const ChangedVariables &)>;
+
+  ChangedVariables
+  get_changed_variables(int nodeId, unsigned wait_ms,
+                        const ChangedVariablesCallback &cb = nullptr,
+                        const std::set<unsigned> &include = {},
+                        const std::set<unsigned> &exclude = {}) {
+    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting changed "
+             "variables is not supported!");
+    return {};
+  }
+#endif
 
   AwaitedNodes::Value scan(int number = -1, unsigned wait_ms = 1000,
                            const AwaitedNodes::Callback &cb = nullptr) {
