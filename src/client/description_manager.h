@@ -8,6 +8,8 @@
 #include <mutex>
 #include <set>
 #include <string>
+#include <list>
+#include <vector>
 
 struct ClientNode : public Aseba::TargetDescription {
 
@@ -115,36 +117,6 @@ struct ClientNode : public Aseba::TargetDescription {
 
   const Functions &get_functions() const { return functions; }
 
-#if 0
-  std::vector<std::wstring> get_event_names() const {
-    std::vector<std::wstring> rs(events.size() + localEvents.size());
-    size_t i = 0;
-    for (const auto &[name, _] : localEvents) {
-      rs[i++] = name;
-    }
-    for (const auto &[name, _] : events) {
-      rs[i++] = name;
-    }
-    return rs;
-  }
-  std::vector<std::wstring> get_variable_names() const {
-    std::vector<std::wstring> vs(variables.size());
-    size_t i = 0;
-    for (const auto &[name, _] : variables) {
-      vs[i++] = name;
-    }
-    return vs;
-  }
-
-  std::vector<std::wstring> get_function_names() const {
-    std::vector<std::wstring> vs(variables.size());
-    size_t i = 0;
-    for (const auto &[name, desc, params] : nativeFunctions) {
-      vs[i++] = name;
-    }
-    return vs;
-  }
-#endif
 };
 
 template <typename T> class DescriptionManager {
@@ -303,7 +275,7 @@ public:
     const Aseba::UnifiedTime now;
     const Aseba::UnifiedTime delayToDisconnect(3000);
     bool isAnyConnected(false);
-    std::vector<std::tuple<unsigned, unsigned>> disconnected;
+    std::list<std::tuple<unsigned, unsigned>> disconnected;
     {
       Guard lock(mutex);
       for (auto &[target, nodes] : target_nodes) {

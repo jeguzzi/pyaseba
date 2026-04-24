@@ -1,12 +1,15 @@
 import logging
+import warnings
 
 from .client import Client, ClientAsync
 from .client import Description as ClientDescription
-from .client._client_impl import _set_logger_level as _set_client_logger_level
+from .client import _client_impl
+from .client._client_impl import supports_logging, uses_mobsya_aseba
 from .network import Description as NetworkDescription
-from .network import Network, Node
-from .network._network_impl import \
-    _set_logger_level as _set_network_logger_level
+from .network import Network, Node, _network_impl
+
+_client_impl._init_logger()
+_network_impl._init_logger()
 
 
 def get_logger() -> logging.Logger:
@@ -40,8 +43,11 @@ def set_logger_level(level: int | str) -> None:
         name = "error"
     else:
         name = "critical"
-    _set_network_logger_level(name)
-    _set_client_logger_level(name)
+    if supports_logging():
+        _network_impl._set_logger_level(name)
+        _client_impl._set_logger_level(name)
+    else:
+        warnings.warn("Pyaseba was built without logging support")
     if level < 0:
         get_logger().disabled = True
     else:
@@ -49,10 +55,9 @@ def set_logger_level(level: int | str) -> None:
         get_logger().setLevel(level)
 
 
-def print_description(
-        node_id: int,
-        description: ClientDescription | NetworkDescription,
-        prefix: str = '') -> None:
+def print_description(node_id: int,
+                      description: ClientDescription | NetworkDescription,
+                      prefix: str = '') -> None:
     """
     Pretty-prints a node description.
 
@@ -89,4 +94,7 @@ def print_description(
     print()
 
 
-__all__ = ['Client', 'ClientAsync', 'Network', 'Node', 'print_description']
+__all__ = [
+    'Client', 'ClientAsync', 'Network', 'Node', 'print_description',
+    'supports_logging', 'uses_mobsya_aseba'
+]

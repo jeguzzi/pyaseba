@@ -1,15 +1,8 @@
-from ._client_impl import (Client, Description, Event, Message, _init_logger,
-                           complete_target, scan_serial_ports)
+from ._client_impl import (Client, Description, Event, Message, complete_target, scan_serial_ports)
 
-try:
-    from ._client_impl import DeviceInfoType  # noqa: F401
-except ImportError:
-    pass
 
 from .client_async import ClientAsync, wrap_callback
 from .node import EventSpec, Node, NodeAsync
-
-_init_logger()
 
 
 def find_serial_targets(name: str) -> list[str]:

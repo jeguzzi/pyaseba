@@ -5,7 +5,6 @@
 #include "aseba/common/msg/msg.h"
 #include "dashel/dashel.h"
 #include "utils.h"
-#include <vector>
 
 Aseba::Message *receive(Dashel::Stream *stream) {
   uint16_t len, source, type;

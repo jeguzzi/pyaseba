@@ -3,7 +3,6 @@
 
 #include "aseba/common/msg/msg.h"
 #include "aseba/compiler/compiler.h"
-// #include "aseba/transport/dashel_plugins/dashel-plugins.h"
 #ifdef ZEROCONF
 #include "advertise.h"
 #include "zeroconf/zeroconf-dashelhub.h"

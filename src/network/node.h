@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <list>
 #include <map>
 #include <set>
 #include <tuple>
@@ -115,7 +114,7 @@ public:
   }
 
   void add_variable(const std::string &name, unsigned int size) {
-    LOG_DEBUG("Try to add variable {0} of size {1}", name, size);
+    LOG_DEBUG("Adding variable {0} of size {1}", name, size);
     if (named_variable.count(name)) {
       LOG_WARN("Variable {0} cannot be added: already defined", name);
       return;
@@ -128,7 +127,6 @@ public:
     named_variable.emplace(name, std::make_pair(next_variable, size));
     next_variable += size;
     description.add_variable(name, size);
-    LOG_DEBUG("Added variable");
   }
 
   std::map<std::string, std::vector<int>> get_variables() const {
@@ -162,6 +160,7 @@ public:
   }
 
   void add_event(const std::string &name, const std::string &desc = "") {
+    LOG_INFO("Adding event {0}", name);
     if (named_event.count(name)) {
       LOG_WARN("Event {0} cannot be added: already defined", name);
       return;
@@ -193,7 +192,7 @@ public:
 
   void add_function(const std::string &name, const Description::Function &fun,
                     size_t input_size) {
-    LOG_DEBUG("Try to add function {0}", name);
+    LOG_DEBUG("Adding function {0}", name);
     for (const auto &[fname, a, i] : functions) {
       if (fname == name) {
         LOG_WARN("Function {0} cannot be added: already defined", name);
@@ -207,7 +206,6 @@ public:
     }
     description.add_function(name, fun);
     functions.emplace_back(name, sizes, input_size);
-    LOG_DEBUG("Added function");
   }
 
   void set_uuid(const std::array<uint8_t, 16> &uuid_) {

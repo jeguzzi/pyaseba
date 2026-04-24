@@ -110,22 +110,10 @@ template <> struct type_caster<Aseba::ChangedVariables::area> {
 } // namespace detail
 } // namespace pybind11
 
-// PYBIND11_MAKE_OPAQUE(std::vector<Client::MessageCallback>)
-
 PYBIND11_MODULE(_client_impl, m) {
 
   py::options options;
   options.enable_function_signatures();
-
-  // py::bind_vector<std::vector<Client::MessageCallback>>(m,
-  // "CallbackList");
-
-#ifdef USE_MOBSYA_ASEBA
-  py::native_enum<DeviceInfoType>(m, "DeviceInfoType", "enum.IntEnum")
-      .value("UUID", DeviceInfoType::DEVICE_INFO_UUID)
-      .value("NAME", DeviceInfoType::DEVICE_INFO_NAME)
-      .finalize();
-#endif
 
   py::classh<Event>(m, "Event", R"doc(
 A named Aseba event
@@ -152,6 +140,12 @@ The payload of the event.
       });
 
   auto msgs = m.def_submodule("msgs", "Aseba messages");
+
+  py::native_enum<DeviceInfoType>(msgs, "DeviceInfoType", "enum.IntEnum")
+      .value("UUID", DeviceInfoType::DEVICE_INFO_UUID)
+      .value("NAME", DeviceInfoType::DEVICE_INFO_NAME)
+      .finalize();
+
   py::classh<Aseba::Message>(m, "Message", R"doc(
 )doc")
       .def_readwrite("source", &Aseba::Message::source)
@@ -1536,20 +1530,42 @@ Whether incoming messages are processed or kept in the queue.
       },
       py::arg("level"));
 
-  // .def("get_user_events", &Client::get_event_names, py::arg("node_id"),
-  //      py::arg("include") = std::set<unsigned>{},
-  //      py::arg("exclude") = std::set<unsigned>{})
-  // .def("get_variables", &Client::get_variable_names, py::arg("node_id"),
-  //      py::arg("include") = std::set<unsigned>{},
-  //      py::arg("exclude") = std::set<unsigned>{})
-  // .def(
-  //     "get_variables_size",
-  //     [](Client &client, unsigned id) -> unsigned {
-  //       auto node = client.get_node(id);
-  //       if (node) {
-  //         return node->variables_size;
-  //       }
-  //       return 0;
-  //     },
-  //     py::arg("node_id"))
+  m.def(
+      "supports_logging",
+      []() {
+#ifdef ENABLE_LOGGING
+        return true;
+#else
+        return false;
+#endif
+      },
+      R"doc(
+supports_logging() -> bool
+
+Returns whether pyaseba was built with logging support.
+
+
+Returns:
+  True if pyaseba supports logging.
+)doc");
+
+  m.def(
+      "uses_mobsya_aseba",
+      []() {
+#ifdef USE_MOBSYA_ASEBA
+        return true;
+#else
+        return false;
+#endif
+      },
+      R"doc(
+uses_mobsya_aseba() -> bool
+
+Returns whether pyaseba was built against the Mobsya version
+of Aseba.
+
+
+Returns:
+  True if pyaseba uses Mobsya's Aseba.
+)doc");
 }

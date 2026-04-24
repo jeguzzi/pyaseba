@@ -19,13 +19,13 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
-#include <iostream>
+#include <map>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <stack>
 #include <thread>
+#include <valarray>
+#include <vector>
 
 class Network : public Dashel::Hub {
 
@@ -204,7 +204,8 @@ public:
   }
 
   virtual void connectionClosed(Dashel::Stream *stream, bool abnormal) {
-    LOG_INFO("Connection to {0} closed ({1})", stream->getTargetName(), abnormal);
+    LOG_INFO("Connection to {0} closed ({1})", stream->getTargetName(),
+             abnormal);
 #ifdef ZEROCONF
     zeroconf.dashelConnectionClosed(stream);
 #endif // ZEROCONF
@@ -234,12 +235,9 @@ public:
       return;
     }
 #endif // ZEROCONF
-    // std::cout << "incomingData from " << stream->getTargetName() << " ("
-    //           << this->stream->getTargetName() << ")" << std::endl;
+    LOG_DEBUG("Incoming data from {}", stream->getTargetName());
     // only process data for the current stream
     if (stream != this->stream) {
-      // printf("[DASHEL] incomingData from %p (%p) -> ignore\n", stream,
-      // this->stream);
       return;
     }
     uint16_t temp;
@@ -255,21 +253,18 @@ public:
     // uint16_t type = bswap16(lastMessageData[0]);
     uint16_t type;
     memcpy(&type, &lastMessageData[0], 2);
-    // std::cout << std::hex << type;
     type = bswap16(type);
-    // std::cout << " => " << std::hex << type << std::dec << std::endl;
-    // memcpy(data, &node->lastMessageData[0], node->lastMessageData.size());
     LOG_DEBUG("Incoming data ({0} bytes) of type 0x{1:X} from {2}", len, type,
               lastMessageSource);
-    // std::vector<std::shared_ptr<Node>> dest_nodes;
     /* from IDE to a specific node */
     if (type >= ASEBA_MESSAGE_SET_BYTECODE &&
         type <= ASEBA_MESSAGE_GET_NODE_DESCRIPTION) {
       uint16_t dest;
       memcpy(&dest, &lastMessageData[2], 2);
       dest = bswap16(dest);
-      LOG_DEBUG("Got cmd message of type type 0x{0:X} from IDE ({1}) for node {2}", type,
-                lastMessageSource, dest);
+      LOG_DEBUG(
+          "Got cmd message of type type 0x{0:X} from IDE ({1}) for node {2}",
+          type, lastMessageSource, dest);
       if (nodes.count(dest)) {
         auto node = nodes.at(dest);
         if (type == ASEBA_MESSAGE_GET_EXECUTION_STATE) {
@@ -294,7 +289,6 @@ public:
   }
 
   bool spin_once(unsigned timeout_ms) {
-    // std::cout << "spin_once " << timeout_ms << std::endl;
 #ifdef ZEROCONF
     if (!zeroconf.dashelStep(timeout_ms))
 #else
@@ -350,7 +344,6 @@ public:
           deadline += delta;
         }
         const auto d = deadline - now;
-        // std::cout << "will spin_once " << d.value << std::endl;
         if (!spin_once(d.value))
           break;
       } else {

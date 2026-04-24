@@ -1,8 +1,14 @@
 #include "network.h"
 #include "node.h"
 #include <algorithm>
+#include <array>
+#include <iostream>
+#include <map>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <stack>
+#include <string>
+#include <vector>
 
 #ifdef ENABLE_LOGGING
 #include "pybind11_log.h"
@@ -419,7 +425,7 @@ Returns:
     spdlog::set_level(spdlog::level::debug);
     pybind11_log::init_mt("pyaseba");
 #else
-        std::cerr << "pyaseba was built without logging support" << std::endl;
+  // std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
   });
 
@@ -429,7 +435,7 @@ Returns:
 #ifdef ENABLE_LOGGING
         spdlog::set_level(spdlog::level::from_str(level));
 #else
-        std::cerr << "pyaseba was built without logging support" << std::endl;
+  // std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
       },
       py::arg("level"));
