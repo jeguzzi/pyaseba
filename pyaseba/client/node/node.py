@@ -4,9 +4,8 @@ import sys
 import time
 import warnings
 from collections.abc import Callable, Collection, Iterable, Sequence
-# from functools import Placeholder, partial
 from itertools import chain
-from typing import Any, NotRequired, Self, TypedDict, TypeVar
+from typing import Any, NotRequired, Self, TypedDict, TypeVar, Protocol
 
 from .._client_impl import Client, Description, Event, complete_target
 from ..targets import are_targets_compatible
@@ -16,16 +15,22 @@ T = TypeVar("T")
 EventCallback = Callable[[T], None]
 
 
+class ExposedFunctionMethod(Protocol):
+
+    def __call__(_, self: 'Node', *args: int) -> None:
+        ...
+
+
 def int16(x: int) -> int:
     if x > 2**15:
         x -= 2**16
     return x
 
 
-def make_property(n: str) -> property:
+def make_property_with_variable(name: str) -> property:
 
     def getter(self: Node) -> int | list[int]:
-        v = self._variable_values.get(n)
+        v = self._variable_values.get(name)
         assert (v is not None)
         if len(v) == 1:
             return v[0]
@@ -34,10 +39,37 @@ def make_property(n: str) -> property:
     def setter(self: Node, vs: int | list[int]) -> None:
         if not isinstance(vs, Sequence):
             vs = [vs]
-        self._next_variables_values[n] = vs
-        self._variable_values[n] = vs
+        self._next_variables_values[name] = vs
+        self._variable_values[name] = vs
 
-    return property(fget=getter, fset=setter, doc=f"Aseba variable {n}")
+    return property(fget=getter, fset=setter, doc=f"Aseba variable {name}")
+
+
+def make_method_with_function(name: str) -> ExposedFunctionMethod:
+
+    def f(self: Node, *args: int) -> None:
+        self.call(name, *args)
+
+    f.__doc__ = f"""
+    Calls native function {name}
+
+    :param *args: The argument passed to the function.
+"""
+
+    return f
+
+
+def make_property_with_event(name: str) -> property:
+
+    def getter(self: Node) -> EventCallback[Node] | None:
+        return self.get_callback(name)
+
+    def setter(self: Node, callback: EventCallback[Node] | None) -> None:
+        self.set_callback(name, callback)
+
+    return property(fget=getter,
+                    fset=setter,
+                    doc=f"Callback for Aseba event {name}")
 
 
 @dc.dataclass
@@ -321,9 +353,9 @@ class Node:
         for name, spec in self.events.items():
             self._add_event(name, spec)
         for name, (_, vs) in description.functions.items():
-            function_include = list(self.function_include) + list(self.functions)
-            match = _matches(name, function_include,
-                             self.function_exclude)
+            function_include = list(self.function_include) + list(
+                self.functions)
+            match = _matches(name, function_include, self.function_exclude)
             if match:
                 self._add_function(name, [v[1] for v in vs])
         temp_defs = ("var temp", )
@@ -742,34 +774,13 @@ end
         super().__init_subclass__(**kwargs)
         for v in cls.properties:
             n = v.replace('.', '_')
-            setattr(cls, n, make_property(v))
-        if sys.version_info >= (3, 14):
-            from functools import Placeholder, partial
-        else:
-            return
+            setattr(cls, n, make_property_with_variable(v))
         for f in cls.functions:
-            n = f"call_{f.replace('.', '_')}"
-            setattr(
-                cls,
-                n,
-                partial(
-                    cls.call,
-                    Placeholder,  # type: ignore[arg-type]
-                    f))
+            setattr(cls, f"call_{f.replace('.', '_')}",
+                    make_method_with_function(f))
         for e in cls.events:
-            n = f"on_{e.replace('.', '_')}"
-            setattr(
-                cls,
-                n,
-                property(
-                    fget=partial(
-                        cls.get_callback,
-                        Placeholder,  # type: ignore[type-var]
-                        e),
-                    fset=partial(
-                        cls.set_callback,
-                        Placeholder,  # type: ignore[type-var]
-                        e)))
+            setattr(cls, f"on_{e.replace('.', '_')}",
+                    make_property_with_event(e))
 
     def set_control_period(self, time_step: float, event: str = "") -> None:
         """
