@@ -1765,7 +1765,7 @@ Whether incoming messages are processed or kept in the queue.
     spdlog::set_level(spdlog::level::debug);
     pybind11_log::init_mt("pyaseba");
 #else
-        std::cerr << "pyaseba was built without logging support" << std::endl;
+        // std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
   });
 
@@ -1775,7 +1775,7 @@ Whether incoming messages are processed or kept in the queue.
 #ifdef ENABLE_LOGGING
         spdlog::set_level(spdlog::level::from_str(level));
 #else
-        std::cerr << "pyaseba was built without logging support" << std::endl;
+        // std::cerr << "pyaseba was built without logging support" << std::endl;
 #endif
       },
       py::arg("level"));
