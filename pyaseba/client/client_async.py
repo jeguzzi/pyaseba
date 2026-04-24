@@ -3,14 +3,12 @@ from collections.abc import Callable
 from functools import partial
 from typing import Any, Awaitable, Protocol, Unpack, cast
 
-from . import msgs
 from ._client_impl import Client, Description, Event, Message, complete_target
+from .msgs import DescriptionFragment
 
 type Callback[*Ts] = Callable[[*Ts], None]
 type AsyncCallback[*Ts] = Callable[[*Ts], Awaitable[None]]
 type MaybeAsyncCallback[*Ts] = Callback[*Ts] | AsyncCallback[*Ts]
-type DescriptionFragment = msgs.Description | msgs.LocalEventDescription | msgs.NamedVariableDescription | msgs.NativeFunctionDescription
-
 
 def wrap_callback[*Ts](callback: MaybeAsyncCallback[*Ts] | None) -> Callback[*Ts]:
     """
