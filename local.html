@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Local Aseba network &#8212; pyaseba 0.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+
+    <script src="_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'local';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="gallery/index.html" />
+    <link rel="prev" title="Thymio" href="thymio.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyaseba 0.0.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="first_steps.html">First steps</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="thymio.html">Thymio</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Local Aseba network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery/index.html">Examples</a></li>
+
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/client/index.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/client.html">Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/client_async.html">ClientAsync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/messages.html">Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/event.html">Event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/description.html">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/device_info_type.html">DeviceTypeInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/thymio_rf_settings.html">ThymioRFSettings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/node.html">Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/node_async.html">NodeAsync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/event_spec.html">EventSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/thymio.html">Thymio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/client/helpers.html">Helpers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/network/index.html">Network</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/network/node.html">Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/network/network.html">Network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/helpers.html">Helpers</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/local.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Local Aseba network</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client">Client</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node">Node</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="local-aseba-network">
+<h1>Local Aseba network<a class="headerlink" href="#local-aseba-network" title="Link to this heading">#</a></h1>
+<p>If you do not have a Thymio but want to try out <code class="docutils literal notranslate"><span class="pre">pyaseba</span></code>, run your own Aseba network</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pyaseba.examples.network.simple --number 1
+</pre></div>
+</div>
+<p>before interacting with it in a separate Python console by connecting to <code class="docutils literal notranslate"><span class="pre">tcp:port=33333</span></code>.</p>
+<section id="client">
+<h2>Client<a class="headerlink" href="#client" title="Link to this heading">#</a></h2>
+<p>We follow similar steps as with the Thymio. First we connect and discover nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+
+&gt;&gt;&gt; from pyaseba import Client
+&gt;&gt;&gt; client = Client()
+&gt;&gt;&gt; client.connect(&quot;tcp:port=33333&quot;)
+1
+&gt;&gt;&gt; node_id, conn = client.wait_node()
+&gt;&gt;&gt; node_id, conn
+(0, 1)
+</pre></div>
+</div>
+<p>A positive <code class="docutils literal notranslate"><span class="pre">node_id</span></code> means that we discovered the Aseba node
+running on the local Aseba network. We can use it to get/set variables</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+<span class="go">[&#39;_productId&#39;, &#39;args&#39;, &#39;counter&#39;, &#39;id&#39;, &#39;source&#39;, &#39;value&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+<span class="go">[0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Unfortunately, contrary to a robot, the local Aseba node is not doing much except manipulating values. Therefore to check that the interact is working, we just get the value again</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<span class="go">[32]</span>
+</pre></div>
+</div>
+<p>Let us inspect the full description of the node</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_description</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print_description</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+<span class="go">Node 0</span>
+<span class="go">======</span>
+
+<span class="go">Variables</span>
+<span class="go">---------</span>
+<span class="go">- _productId[1]</span>
+<span class="go">- args[32]</span>
+<span class="go">- counter[1]</span>
+<span class="go">- id[1]</span>
+<span class="go">- source[1]</span>
+<span class="go">- value[1]</span>
+
+<span class="go">Local events</span>
+<span class="go">------------</span>
+<span class="go">- event: emitted at each control step after incrementing counter</span>
+
+<span class="go">Functions</span>
+<span class="go">---------</span>
+<span class="go">- duplicate(input[1], result[1]): duplicates the input</span>
+<span class="go">- square(input[1]): set value to the square of the input</span>
+</pre></div>
+</div>
+<p>Let us verify that counter is indeed incremented</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s1">&#39;counter&#39;</span><span class="p">)</span>
+<span class="go">[4819]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s1">&#39;counter&#39;</span><span class="p">)</span>
+<span class="go">[4827]</span>
+</pre></div>
+</div>
+<p>We can load an Aseba script that send down <code class="docutils literal notranslate"><span class="pre">counter</span></code> each time it is updated, and ask the node to run it</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="go">onevent event</span>
+<span class="go">emit counter_incremented counter</span>
+
+<span class="go">onevent reset</span>
+<span class="go">counter = 0</span>
+<span class="go">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">client.load_script(node_id, script, events={&#39;counter_incremented&#39;: 1, &#39;reset&#39;: 0})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">client.cmd_run(node_id)</span>
+</pre></div>
+</div>
+<p>We can now send an event from Python, which in this case, should make the counter reset</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">emit_event</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;counter&quot;</span><span class="p">)</span>
+<span class="go">[16]</span>
+</pre></div>
+</div>
+<p>The client listen for incoming events. For example, let us wait
+until the counter is incremented</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get_event</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;counter_incremented&quot;</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">Event(source=0, name=&#39;counter_incremented&#39;, data=[507])</span>
+<span class="go">Event(source=0, name=&#39;counter_incremented&#39;, data=[508])</span>
+<span class="go">Event(source=0, name=&#39;counter_incremented&#39;, data=[509])</span>
+</pre></div>
+</div>
+</section>
+<section id="node">
+<h2>Node<a class="headerlink" href="#node" title="Link to this heading">#</a></h2>
+<p>The first step is configure the Python interface by listing
+which events we want to receive (and which variables they are modify) and which variables we want to expose as attributes (properties). This requires knowing the specifics of the remote node we want to interact with.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+
+&gt;&gt;&gt; from pyaseba.client.node import Node, EventSpec
+
+&gt;&gt;&gt; class MyNode(Node):
+...    events = {&#39;event&#39;: EventSpec(variables=[&#39;counter&#39;])}
+...    properties = [&#39;value&#39;, &#39;counter&#39;]
+...    functions = [&#39;square&#39;]
+...    default_target = &quot;tcp:port=33333&quot;
+...
+</pre></div>
+</div>
+<p>The next step is to connect to the node:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>We can get and set variables by name</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+<span class="go">[&#39;_productId&#39;, &#39;args&#39;, &#39;counter&#39;, &#39;id&#39;, &#39;source&#39;, &#39;temp&#39;, &#39;value&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or using Python attributes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">node</span></code> object caches variable values.
+The <a class="reference internal" href="reference/client/node.html#pyaseba.client.Node.sync" title="pyaseba.client.Node.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Node.sync()</span></code></a> forwards to the robot
+any variable we have changed locally. When calling
+<a class="reference internal" href="reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Node.get()</span></code></a> and <a class="reference internal" href="reference/client/node.html#pyaseba.client.Node.set" title="pyaseba.client.Node.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Node.set()</span></code></a>, we can specify if we want to query/forward variables or if we prefer to get/set them from the cache. Instead, attributes like <code class="docutils literal notranslate"><span class="pre">node.value</span></code> always use the cache.</p>
+</div>
+<p>We can call local functions by name, for example to set <code class="docutils literal notranslate"><span class="pre">value</span></code>  to the square of the argument,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;square&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<span class="go">49</span>
+</pre></div>
+</div>
+<p>or through specific methods</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call_square</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<span class="go">121</span>
+</pre></div>
+</div>
+<p>We can wait for local events</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span>
+<span class="go">343</span>
+<span class="go">344</span>
+<span class="go">345</span>
+</pre></div>
+</div>
+<p>The following Python callback resets the counter every two steps</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">cb</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">counter</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">node</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="n">node</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It implements in Python the same logic of this Aseba script</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">onevent</span> <span class="n">event</span>
+<span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="n">then</span>
+  <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>when assigned to the local event by name</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">set_callback</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or using an attribute</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">on_event</span> <span class="o">=</span> <span class="n">cb</span>
+</pre></div>
+</div>
+<p>Let us verify that it works as expected</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span>  <span class="n">node</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">1</span>
+<span class="go">0</span>
+<span class="go">1</span>
+<span class="go">0</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="thymio.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Thymio</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="gallery/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client">Client</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node">Node</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jerome Guzzi
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Jerome Guzzi.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
