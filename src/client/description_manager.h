@@ -323,11 +323,6 @@ public:
         if (dynamic_cast<const Aseba::NodePresent *>(message) && query) {
           client->template send_message_of_type<Aseba::GetNodeDescription,
                                                 uint16_t>(id, {target_index});
-        } else if (dynamic_cast<const Aseba::Disconnected *>(message)) {
-          nodes.erase(id);
-        }
-        if (!dynamic_cast<const Aseba::Description *>(message)) {
-          return;
         }
       } else {
         return;
@@ -344,7 +339,11 @@ public:
     if (!nodes.count(id))
       return;
     if (dynamic_cast<const Aseba::Disconnected *>(message)) {
+      // TODO: We get a message with source=1 when rebooting
+      // a Thymio instead of source=node_id 
       nodes.erase(id);
+      lock.unlock();
+      client->node_disconnected(id, target_index);
       return;
     }
     auto &node = nodes.at(id);
