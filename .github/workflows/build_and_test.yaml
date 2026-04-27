@@ -11,12 +11,12 @@ jobs:
           - windows-11-arm
           # - macos-latest
         python-version:
-          - "3.12"
+          # - "3.12"
           - "3.13"
-          - "3.14"
+          # - "3.14"
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: src/pyaseba
       - if: runner.os == 'Linux'
@@ -29,7 +29,7 @@ jobs:
         with:
           repository: 'G-P-S/bonjour-win-sdk'
           path: "bonjour-win-sdk"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: install deps
@@ -44,10 +44,11 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cd src\pyaseba
-          python -m build -w --config-setting cmake.define.DDNSSD_ROOT=${{ github.workspace }}/bonjour-win-sdk
+          python -m build -w --config-setting cmake.define.DNSSD_ROOT=${{ github.workspace }}/bonjour-win-sdk
+          $fileNames = Get-ChildItem -Path dist -Recurse -Include *.whl
           repairwheel -o repaired_dist $fileNames[0]
       - name: archive wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheel-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}
           path: src/pyaseba/repaired_dist/*
