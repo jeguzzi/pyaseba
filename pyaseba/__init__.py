@@ -4,12 +4,10 @@ import warnings
 from .client import Client, ClientAsync
 from .client import Description as ClientDescription
 from .client import _client_impl
-from .client._client_impl import supports_logging, uses_mobsya_aseba
+from .client._client_impl import (supports_logging, supports_zeroconf,
+                                  uses_mobsya_aseba)
 from .network import Description as NetworkDescription
 from .network import Network, Node, _network_impl
-
-_client_impl._init_logger()
-_network_impl._init_logger()
 
 
 def get_logger() -> logging.Logger:
@@ -94,7 +92,12 @@ def print_description(node_id: int,
     print()
 
 
+if supports_logging():
+    _client_impl._init_logger()
+    _network_impl._init_logger()
+    set_logger_level(-1)
+
 __all__ = [
     'Client', 'ClientAsync', 'Network', 'Node', 'print_description',
-    'supports_logging', 'uses_mobsya_aseba'
+    'supports_logging', 'uses_mobsya_aseba', 'supports_zeroconf'
 ]

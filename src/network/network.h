@@ -1,19 +1,14 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#ifndef ASEBA_ASSERT
-#define ASEBA_ASSERT
-#endif
-
+#include "advertise.h"
 #include "aseba/vm/vm.h"
 #include "dashel/dashel.h"
-
+#include "node.h"
+#include "utils.h"
 #ifdef ZEROCONF
 #include "zeroconf/zeroconf-dashelhub.h"
 #endif
-
-#include "node.h"
-#include "utils.h"
 
 #include <atomic>
 #include <cassert>
@@ -21,6 +16,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <pybind11/warnings.h>
 #include <set>
 #include <sstream>
 #include <thread>
@@ -100,72 +96,56 @@ public:
     node->init();
     endpoints[&(node->vm)] = std::make_pair(this, node.get());
     nodes[node->vm.nodeId] = node;
-#ifdef ZEROCONF
-    advertise();
-#endif
+    // #ifdef ZEROCONF
+    //     advertise();
+    // #endif
   }
 
   void remove_node(const std::shared_ptr<Node> &node) {
     endpoints.erase(&(node->vm));
     nodes.erase(node->vm.nodeId);
-#ifdef ZEROCONF
-    // if (nodes.size() == 0) {
-    //   deadvertise();
-    // }
-    advertise();
-#endif
+    // #ifdef ZEROCONF
+    //     // if (nodes.size() == 0) {
+    //     //   deadvertise();
+    //     // }
+    //     advertise();
+    // #endif
   }
 
-#ifdef ZEROCONF
+  std::vector<AdvertisedNode> make_record_nodes() const {
+    std::vector<AdvertisedNode> rs;
+    for (const auto &[id, node] : nodes) {
+      const auto vpid = node->get_variable(ASEBA_PID_VAR_NAME);
+      const unsigned int pid = vpid.size() ? vpid[0] : 0;
+      rs.emplace_back(static_cast<unsigned int>(id), pid,
+                      node->get_advertized_name());
+    }
+    return rs;
+  }
+
   void advertise() {
-    if (!advertise_enabled) {
+    if (!advertise_enabled || !listenStream) {
       return;
     }
-    if (!listenStream) {
-      return;
-    }
-    std::vector<unsigned int> ids;
-    std::vector<unsigned int> pids;
-    std::string name = "";
-    unsigned protocolVersion{ASEBA_PROTOCOL_VERSION};
-    // unsigned protocolVersion{9};
-    for (auto const &[id, node] : nodes) {
-      std::string n_name = node->get_advertized_name();
-      if (name.empty()) {
-        name = n_name;
-      } else if (name != n_name) {
-        name = "Group";
-      }
-      ids.push_back(static_cast<unsigned int>(id));
-      // names += node->name + " ";
-      auto pid = node->get_variable(ASEBA_PID_VAR_NAME);
-      if (pid.size()) {
-        pids.push_back(pid[0]);
-      } else {
-        pids.push_back(0);
-      }
-    }
-    if (name.empty()) {
-      name = "Empty Group";
-    }
-    // Aseba::Zeroconf::TxtRecord txt{protocolVersion, names, false, ids, pids};
-    Aseba::Zeroconf::TxtRecord txt{protocolVersion, name, false, ids, pids};
-    try {
-      zeroconf.advertise(advertise_name, listenStream, txt);
-      LOG_INFO("Advertised {0}", advertise_name);
-      // LOG_INFO("Advertised {0} with {1}", advertise_name, txt.record());
-    } catch (const std::runtime_error &e) {
-      LOG_WARN("Could not advertise: {0}", e.what());
-    }
+#ifdef ZEROCONF
+    ::advertise(zeroconf, listenStream, advertise_name, make_record_nodes());
+#else
+    pybind11::warnings::warn(
+        "Pyaseba was built without Zeroconf support: skip advertise!");
+#endif
   }
 
   void deadvertise() {
-    if (!listenStream)
+    if (!advertise_enabled || !listenStream) {
       return;
-    LOG_DEBUG("Deadvertise Aseba Network");
-    zeroconf.forget(advertise_name, listenStream);
-  }
+    }
+#ifdef ZEROCONF
+    ::deadvertise(zeroconf, listenStream, advertise_name);
+#else
+    pybind11::warnings::warn(
+        "Pyaseba was built without Zeroconf support: skip de-advertise!");
 #endif
+  }
 
   Dashel::Stream *listen() {
     // connect client
@@ -328,6 +308,9 @@ public:
   void spin(double dt, double duration = -1) {
     if (spinning)
       return;
+#ifdef ZEROCONF
+    advertise();
+#endif
     spinning = true;
     Aseba::UnifiedTime deadline;
     const Aseba::UnifiedTime until =
@@ -352,6 +335,9 @@ public:
       }
     }
     spinning = false;
+#ifdef ZEROCONF
+    deadvertise();
+#endif
   }
 };
 

@@ -28,6 +28,7 @@ endif()
 
 option(LOGGING "Whether to enable spdlog-based logging" OFF)
 option(MOBSYA "Whether to use the mobsya-fork of aseba" ON)
+option(ZEROCONF "Whether to include Zeroconf support" ON)
 
 include(FetchContent)
 
@@ -39,10 +40,26 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(TARGET zeroconf)
-  message("With Zeroconf support")
+if(LOGGING)
+  message("Building pyaseba with logging support")
 else()
-  message("Without Zeroconf support")
+  message("Building pyaseba without logging support")
+endif()
+
+if(MOBSYA)
+  message(
+    "Building pyaseba against the Mobsya version of Aseba: https://github.com/Mobsya/aseba"
+  )
+else()
+  message(
+    "Building pyaseba against the Aseba community version of Aseba: https://github.com/aseba-community/aseba"
+  )
+endif()
+
+if(TARGET zeroconf)
+  message("Building pyaseba with Zeroconf support")
+else()
+  message("Building pyaseba without Zeroconf support")
 endif()
 
 set(Python3_FIND_STRATEGY LOCATION)

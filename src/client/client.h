@@ -1,26 +1,26 @@
 #ifndef CLIENT_H_GUARD
 #define CLIENT_H_GUARD
 
-#include "aseba/common/msg/msg.h"
-#include "aseba/compiler/compiler.h"
-#ifdef ZEROCONF
 #include "advertise.h"
-#include "zeroconf/zeroconf-dashelhub.h"
-// #include "aseba/common/zeroconf/zeroconf-dashelhub.h"
-#endif
+#include "aseba/common/msg/msg.h"
 #include "aseba/common/productids.h"
-#include "dashel/dashel.h"
-
+#include "aseba/compiler/compiler.h"
 #include "aseba_dashel.h"
 #include "awaited.h"
+#include "dashel/dashel.h"
 #include "description_manager.h"
 #include "queue.h"
 #include "streams_manager.h"
 #include "utils.h"
 
+#ifdef ZEROCONF
+#include "zeroconf/zeroconf-dashelhub.h"
+#endif
+
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/warnings.h>
 
 #include <atomic>
 #include <chrono>
@@ -732,8 +732,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
                         const ChangedVariablesCallback &cb = nullptr,
                         const std::set<unsigned> &include = {},
                         const std::set<unsigned> &exclude = {}) {
-    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting changed "
-             "variables is not supported!");
+    pybind11::warnings::warn(
+        "Pyaseba was not built against Mobsya-Aseba: getting changed "
+        "variables is not supported!");
     return {};
   }
 #endif
@@ -800,8 +801,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
         wait_ms, cb);
     return msg;
 #else
-    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting fragments of "
-             "descriptions is not supported!");
+    pybind11::warnings::warn(
+        "Pyaseba was not built against Mobsya-Aseba: getting fragments of "
+        "descriptions is not supported!");
     return nullptr;
 #endif
   }
@@ -830,8 +832,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
     return {};
 #else
-    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: getting device "
-             "information is not supported!");
+    pybind11::warnings::warn(
+        "Pyaseba was not built against Mobsya-Aseba: getting device "
+        "information is not supported!");
     return {};
 #endif
   }
@@ -885,8 +888,9 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     send_message_of_type<Aseba::SetDeviceInfo, uint16_t, DeviceInfoType,
                          DeviceInfo>(nodeId, type, data, include, exclude);
 #else
-    LOG_WARN("Pyaseba was not built against Mobsya-Aseba: setting device "
-             "information is not supported!");
+    pybind11::warnings::warn(
+        "Pyaseba was not built against Mobsya-Aseba: setting device "
+        "information is not supported!");
 #endif
   }
 
@@ -907,7 +911,8 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   void set_thymio_rf_settings(unsigned nodeId, const ThymioRFSettings &data,
                               const std::set<unsigned> &include = {},
                               const std::set<unsigned> &exclude = {}) {
-    set_device_info(nodeId, DEVICE_INFO_THYMIO2_RF_SETTINGS, data.info(), include, exclude);
+    set_device_info(nodeId, DEVICE_INFO_THYMIO2_RF_SETTINGS, data.info(),
+                    include, exclude);
   }
 
   void load_script_to_node(ClientNode &node, unsigned nodeId,
@@ -1150,11 +1155,10 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (!streams.has_in())
       return;
 #ifdef ZEROCONF
-    const auto record_name = make_record_name(name);
-    zeroconf.forget(record_name, streams.get_in());
-    LOG_INFO("De-advertised {0}", record_name);
+    ::deadvertise(zeroconf, streams.get_in(), make_record_name(name));
 #else
-    LOG_ERROR("Zeroconf not supported");
+    pybind11::warnings::warn(
+        "Pyaseba was built without Zeroconf support: skip de-advertise!");
 #endif
   }
 
@@ -1165,17 +1169,11 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     if (!streams.has_in())
       return;
     const auto record_name = make_record_name(name);
-    const auto record = make_record(nodes, true, protocol_version);
-    try {
-      zeroconf.advertise(record_name, streams.get_in(), record);
-      LOG_INFO("Advertised {}", record_name);
-      // LOG_INFO("Advertised {0} with {1}", record_name, record.record());
-    } catch (const std::runtime_error &e) {
-      LOG_ERROR("Error while advertising {0} with {1}: {2}", name,
-                record.record(), e.what());
-    }
+    ::advertise(zeroconf, streams.get_in(), record_name, nodes,
+                protocol_version);
 #else
-    LOG_ERROR("Zeroconf not supported");
+    pybind11::warnings::warn(
+        "Pyaseba was built without Zeroconf support: skip advertise!");
 #endif
   }
 

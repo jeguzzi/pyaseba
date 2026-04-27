@@ -1814,6 +1814,25 @@ Returns:
 )doc");
 
   m.def(
+      "supports_zeroconf",
+      []() {
+#ifdef ZEROCONF
+        return true;
+#else
+        return false;
+#endif
+      },
+      R"doc(
+supports_zeroconf() -> bool
+
+Returns whether pyaseba was built with zeroconf support.
+
+
+Returns:
+  True if pyaseba supports Zeroconf.
+)doc");
+
+  m.def(
       "uses_mobsya_aseba",
       []() {
 #ifdef USE_MOBSYA_ASEBA
