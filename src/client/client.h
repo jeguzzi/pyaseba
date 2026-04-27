@@ -307,9 +307,14 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     // unlock();
   }
 
+  void run() {
+    while (!stopped &&
 #ifdef ZEROCONF
-  void run_zeroconf() {
-    while (!stopped && zeroconf.dashelStep(1)) {
+           zeroconf.dashelStep(1)
+#else
+           step(1)
+#endif
+    ) {
       while (const auto &r = out_msgs.get_nowait()) {
         process_out_message(*r);
       }
@@ -325,16 +330,11 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
       // unlock();
     }
   }
-#endif
 
   void start() {
     if (stopped) {
       stopped = false;
-#ifdef ZEROCONF
-      thread = std::make_unique<std::thread>(&Client::run_zeroconf, this);
-#else
-      thread = std::make_unique<std::thread>(&Dashel::Hub::run, this);
-#endif
+      thread = std::make_unique<std::thread>(&Client::run, this);
       if (ping_ms && !ping_thread) {
         ping_thread = std::make_unique<std::thread>(&Client::run_ping, this);
       }
@@ -547,7 +547,7 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
   try_to_connect(const std::string &target) {
     Dashel::Stream *stream;
     try {
-      LOG_INFO("Trying to connect to {0}", target);
+      LOG_INFO("Connecting to {0}", target);
       stream = connect(target);
       streams.add(stream);
     } catch (const Dashel::DashelException &e) {
