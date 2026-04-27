@@ -23,7 +23,7 @@ jobs:
         name: install apt deps
         run: |
           sudo apt-get update
-          sudo apt-get install libudev libavahi-compat-libdnssd-dev
+          sudo apt-get install libudev-dev libavahi-compat-libdnssd-dev
       # - if: runner.os == 'Windows'
       #   uses: actions/checkout@v6
       #   with:
