@@ -10,6 +10,11 @@ Aseba version
 .. autofunction:: uses_mobsya_aseba
 
 
+Zeroconf
+--------
+
+.. autofunction:: supports_zeroconf
+
 Logging
 -------
 

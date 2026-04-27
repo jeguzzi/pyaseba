@@ -148,6 +148,11 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../first_steps.html">First steps</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../thymio.html">Thymio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../local.html">Local Aseba network</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Examples</a></li>
 
 
@@ -325,6 +330,10 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.uses_mobsya_aseba"><code class="docutils literal notranslate"><span class="pre">uses_mobsya_aseba()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zeroconf">Zeroconf</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.supports_zeroconf"><code class="docutils literal notranslate"><span class="pre">supports_zeroconf()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging">Logging</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.supports_logging"><code class="docutils literal notranslate"><span class="pre">supports_logging()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
@@ -359,6 +368,21 @@ of Aseba.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if pyaseba uses Mobsya’s Aseba.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="zeroconf">
+<h2>Zeroconf<a class="headerlink" href="#zeroconf" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyaseba.supports_zeroconf">
+<span class="sig-prename descclassname"><span class="pre">pyaseba.</span></span><span class="sig-name descname"><span class="pre">supports_zeroconf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyaseba.supports_zeroconf" title="Link to this definition">#</a></dt>
+<dd><p>supports_zeroconf() -&gt; bool</p>
+<p>Returns whether pyaseba was built with zeroconf support.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if pyaseba supports Zeroconf.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -461,6 +485,10 @@ of Aseba.</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aseba-version">Aseba version</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.uses_mobsya_aseba"><code class="docutils literal notranslate"><span class="pre">uses_mobsya_aseba()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zeroconf">Zeroconf</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.supports_zeroconf"><code class="docutils literal notranslate"><span class="pre">supports_zeroconf()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging">Logging</a><ul class="pst-show_toc_level nav section-nav flex-column">
