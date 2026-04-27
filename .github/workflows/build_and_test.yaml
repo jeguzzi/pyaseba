@@ -24,11 +24,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libavahi-compat-libdnssd-dev
-      - if: runner.os == 'Windows'
-        uses: actions/checkout@v6
-        with:
-          repository: 'G-P-S/bonjour-win-sdk'
-          path: "bonjour-win-sdk"
+      # - if: runner.os == 'Windows'
+      #   uses: actions/checkout@v6
+      #   with:
+      #     repository: 'G-P-S/bonjour-win-sdk'
+      #     path: "bonjour-win-sdk"
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
