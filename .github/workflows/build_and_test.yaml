@@ -36,11 +36,13 @@ jobs:
         run: pip install build repairwheel
       - name: build wheel (non-windows)
         if: runner.os != 'Windows'
+        run: |
           cd src/pyaseba
           python -m build -w
           repairwheel -o repaired_dist dist/*.whl
       - name: build wheel (windows)
         if: runner.os == 'Windows'
+        run: |
           cd src\pyaseba
           python -m build -w --config-setting cmake.define.DDNSSD_ROOT=${{ github.workspace }}/bonjour-win-sdk
           repairwheel -o repaired_dist $fileNames[0]
