@@ -24,29 +24,41 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libavahi-compat-libdnssd-dev
+      - if: runner.os == 'Windows'
+        uses: actions/checkout@v6
+        with:
+          repository: 'G-P-S/bonjour-win-sdk'
+          path: "bonjour-win-sdk"
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: install deps
-        run: pip install build
-      - name: build wheel
-        run: |
+        run: pip install build repairwheel
+      - name: build wheel (non-windows)
+        if: runner.os != 'Windows'
           cd src/pyaseba
           python -m build -w
+          repairwheel -o repaired_dist dist/*.whl
+      - name: build wheel (windows)
+        if: runner.os == 'Windows'
+          cd src\pyaseba
+          python -m build -w --config-setting cmake.define.DDNSSD_ROOT=${{ github.workspace }}/bonjour-win-sdk
+          repairwheel -o repaired_dist $fileNames[0]
       - name: archive wheel
         uses: actions/upload-artifact@v4
         with:
           name: wheel-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}
-          path: src/pyaseba/dist/*
+          path: src/pyaseba/repaired_dist/*
           if-no-files-found: error
       - name: install wheel (non windows)
+        if: runner.os != 'Windows'
         run: |
-          wheels=( src/pyaseba/dist/*.whl )
+          wheels=( src/pyaseba/repaired_dist/*.whl )
           pip install ${wheels[0]}[all]
       - name: install wheel (windows)
         if: runner.os == 'Windows'
         run: |
-          $wheels = Get-ChildItem -Path src\pyaseba\dist -Recurse -Include *.whl
+          $wheels = Get-ChildItem -Path src\pyaseba\repaired_dist -Recurse -Include *.whl
           pip install "$($wheels[0])[all]"
       - name: test import
         run: |
