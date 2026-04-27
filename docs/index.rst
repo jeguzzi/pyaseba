@@ -13,5 +13,6 @@ pyaseba documentation
    intro
    first_steps
    gallery/index.rst
+   shells/index.rst
    reference/index.rst
 

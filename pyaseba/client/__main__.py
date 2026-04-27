@@ -1,5 +1,7 @@
-from pyaseba.client import Client
 import cmd
+
+from pyaseba import print_description
+from pyaseba.client import Client
 
 
 class ClientShell(cmd.Cmd):
@@ -38,7 +40,7 @@ class ClientShell(cmd.Cmd):
             v, *_ = arg.split(' ')
             node_id = int(v)
             desc = self.client.get_description(node_id)
-            print(desc)
+            print_description(node_id, desc)
         except Exception:
             pass
 
@@ -50,8 +52,14 @@ class ClientShell(cmd.Cmd):
             number = int(v)
         except Exception:
             pass
-        node_id, conn = self.client.wait_nodes(number=number)
-        print(node_id, conn)
+        nodes = self.client.wait_nodes(number=number)
+        for conn, nids in nodes.items():
+            if nids:
+                ids = ', '.join(str(i) for i in nids)
+                s = 's' if len(nids) > 1 else ''
+                print(
+                    f"Discovered node{s} {ids} on connection #{conn}"
+                )
 
     def complete_variables(self, text: str, line: str, begidx: int,
                            endidx: int) -> list[str]:
@@ -148,7 +156,6 @@ class ClientShell(cmd.Cmd):
             v, name, *vs = arg.split(' ')
             node_id = int(v)
             value = [int(x) for x in vs]
-            print(node_id, name, value)
             self.client.set_variable(node_id, name, value)
         except Exception:
             pass

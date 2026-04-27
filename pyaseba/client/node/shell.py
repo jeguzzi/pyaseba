@@ -1,9 +1,10 @@
 from .node import Node
+from pyaseba import print_description
 import cmd
 
 
 class NodeShell(cmd.Cmd):
-    intro = 'Welcome to the pyaseba node shell.   Type help or ? to list commands.\n'
+    intro = 'Welcome to the pyaseba client node shell.   Type help or ? to list commands.\n'
     prompt = '(node) '
 
     def __init__(self, node: Node) -> None:
@@ -12,7 +13,7 @@ class NodeShell(cmd.Cmd):
 
     def do_description(self, arg: str) -> None:
         'Print the description:  description'
-        print(self.node.description)
+        print_description(self.node.node_id, self.node.description)
 
     def do_variables(self, arg: str) -> None:
         'Print the name of all variables:  variables'
