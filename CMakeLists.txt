@@ -90,6 +90,8 @@ if(LOGGING)
     OVERRIDE_FIND_PACKAGE)
   FetchContent_MakeAvailable(fmt)
 
+  find_package(fmt REQUIRED)
+
   FetchContent_Declare(
     spdlog
     EXCLUDE_FROM_ALL

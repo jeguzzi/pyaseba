@@ -8,7 +8,7 @@ target_compile_definitions(_network_impl
                            PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES=1)
 
 if(LOGGING)
-  target_link_libraries(_network_impl PRIVATE spdlog::spdlog_header_only)
+  target_link_libraries(_network_impl PRIVATE spdlog::spdlog_header_only fmt::fmt-header-only)
   target_compile_definitions(_network_impl PRIVATE ENABLE_LOGGING)
   target_include_directories(_network_impl PRIVATE ${pybind11_log_SOURCE_DIR}/include)
 endif()
