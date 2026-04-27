@@ -49,9 +49,11 @@ bool serialize(const Aseba::Message &message,
                Dashel::Stream *stream) {
   const auto len = static_cast<uint16_t>(buffer.rawData.size());
   if (len > ASEBA_MAX_EVENT_ARG_SIZE) {
-    LOG_ERROR("Message size {0} too large", len);
+    LOG_ERROR("Message size {} too large", len);
     return false;
   }
+  LOG_DEBUG("Sending Aseba message of length {} and type 0x{:X} to {}", len,
+            message.type, stream->getTargetName());
   uint16_t t;
   Aseba::swapEndian(len);
   stream->write(&len, 2);

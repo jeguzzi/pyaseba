@@ -1,6 +1,7 @@
 #ifndef QUEUE_H_GUARD
 #define QUEUE_H_GUARD
 
+#include "utils.h"
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -70,8 +71,10 @@ public:
 
   void put(const T &item) {
     std::unique_lock<std::mutex> lck(mutex);
-    if (queue.size() >= _max_size)
+    if (queue.size() >= _max_size) {
+      LOG_WARN("Max size reached {}", _max_size);
       return;
+    }
     queue.push(item);
     cv.notify_one();
   }

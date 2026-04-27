@@ -5,6 +5,7 @@ Simple Network
 import argparse
 
 from pyaseba.network import Network, Node
+from pyaseba.examples.utils import setup_logging
 
 
 class SimpleNode(Node):
@@ -81,5 +82,7 @@ if __name__ == '__main__':
     parser.add_argument('--number', default=1, type=int)
     parser.add_argument('--advertise', default="pyaseba")
     parser.add_argument('--name', default="SimpleNode")
+    parser.add_argument('--log_level', default="INFO")
     args = parser.parse_args()
+    setup_logging(args.log_level)
     main(args.number, args.advertise, args.name)
