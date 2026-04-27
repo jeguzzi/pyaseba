@@ -1,12 +1,12 @@
-# pyaseba
+# Pyaseba
 
 Pyaseba provides Python bindings for [Aseba](https://github.com/aseba-community/aseba) using [pybind11](https://pybind11.readthedocs.io/en/stable).
 
-Aseba is a light-way communication protocol and scripting language which works from tiny micro-controllers to your fully feature PC, developed at EPFL Lausanne. For the `words <https://github.com/aseba-community/aseba#aseba>`_ of its authors
+Aseba is a light-way communication protocol and scripting language which works from tiny micro-controllers to your fully feature PC, developed at EPFL Lausanne. For the [words](https://github.com/aseba-community/aseba#aseba) of its authors
 
    Aseba is a set of tools which allow novices to program robots easily and efficiently. For these reasons, Aseba is well-suited for robotic education and research. Aseba is an open-source software created by Dr. Stéphane Magnenat with contributions from the community.
 
-It is known as the scripting language of the educational `Thymio <https://www.thymio.org>`_ robot. Programming it is normally done in a GUI client, like Aseba Studio or the Thymio VPL.
+It is known as the scripting language of the educational [Thymio](https://www.thymio.org) robot. Programming it is normally done in a GUI client, like Aseba Studio or the Thymio VPL.
 
 Pyaseba offers an alternative to GUI clients to interact with any robot that runs Aseba (or more generally with any Aseba network). With Pyaseba, you can perform common operations like reading and writing Aseba variables or loading Aseba scripts but also more low-level actions, like sending and receiving Aseba messages directly.
 
