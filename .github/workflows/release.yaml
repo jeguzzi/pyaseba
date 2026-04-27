@@ -1,0 +1,93 @@
+name: Build and Release
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+      - '!*-*'
+permissions:
+  contents: write
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
+          - windows-latest
+          - windows-11-arm
+          - macos-latest
+          - macos-15-intel
+        python-version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: src/pyaseba
+      - if: runner.os == 'Linux'
+        name: install apt deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install libavahi-compat-libdnssd-dev
+      # - if: runner.os == 'Windows'
+      #   uses: actions/checkout@v6
+      #   with:
+      #     repository: 'G-P-S/bonjour-win-sdk'
+      #     path: "bonjour-win-sdk"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install deps
+        run: pip install build repairwheel
+      - name: build wheel (non-windows)
+        if: runner.os != 'Windows'
+        run: |
+          cd src/pyaseba
+          python -m build -w
+          repairwheel -o repaired_dist dist/*.whl
+      - name: build wheel (windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd src\pyaseba
+          python -m build -w --config-setting cmake.define.DNSSD_ROOT=${{ github.workspace }}/bonjour-win-sdk
+          $fileNames = Get-ChildItem -Path dist -Recurse -Include *.whl
+          repairwheel -o repaired_dist $fileNames[0]
+      - name: archive wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: wheel-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}
+          path: src/pyaseba/repaired_dist/*
+          if-no-files-found: error
+  publish_to_testpypi:
+    name: Publish wheels to TestPyPI
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/rm-libmedia-codec
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - run: |
+          echo "Ignore generic linux wheels:" $(find dist -type f | grep linux_x86_64)
+          rm -f dist/*linux_x86_64*
+      - run: |
+          echo "Ignore wrong macos wheels:" $(find dist -type f | grep macosx_26_0)
+          rm -f dist/*macosx_26_0*
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          verbose: true

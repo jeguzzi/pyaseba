@@ -26,7 +26,7 @@ else()
   add_compile_options(-fPIC)
 endif()
 
-option(LOGGING "Whether to enable spdlog-based logging" OFF)
+option(LOGGING "Whether to enable spdlog-based logging" ON)
 option(MOBSYA "Whether to use the mobsya-fork of aseba" ON)
 option(ZEROCONF "Whether to include Zeroconf support" ON)
 
