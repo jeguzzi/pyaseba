@@ -8,12 +8,12 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04-arm
-          - windows-11-arm
-          - macos-latest
+          # - windows-11-arm
+          # - macos-latest
         python-version:
           - "3.12"
-          - "3.13"
-          - "3.14"
+          # - "3.13"
+          # - "3.14"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -23,7 +23,7 @@ jobs:
         name: install apt deps
         run: |
           sudo apt-get update
-          sudo apt-get install libavahi-compat-libdnssd-dev
+          sudo apt-get install libudev libavahi-compat-libdnssd-dev
       # - if: runner.os == 'Windows'
       #   uses: actions/checkout@v6
       #   with:

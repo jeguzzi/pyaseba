@@ -34,7 +34,7 @@ jobs:
         name: install apt deps
         run: |
           sudo apt-get update
-          sudo apt-get install libavahi-compat-libdnssd-dev
+          sudo apt-get install libudev libavahi-compat-libdnssd-dev
       # - if: runner.os == 'Windows'
       #   uses: actions/checkout@v6
       #   with:
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/rm-libmedia-codec
+      url: https://test.pypi.org/p/pyaseba
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
@@ -86,8 +86,36 @@ jobs:
       - run: |
           echo "Ignore wrong macos wheels:" $(find dist -type f | grep macosx_26_0)
           rm -f dist/*macosx_26_0*
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
           verbose: true
+  publish_to_pypi:
+    name: Publish wheels to PyPI
+    needs:
+      - publish_to_testpypi
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyaseba
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - run: |
+          echo "Ignore generic linux wheels:" $(find dist -type f | grep linux_x86_64)
+          rm -f dist/*linux_x86_64*
+      - run: |
+          echo "Ignore wrong macos wheels:" $(find dist -type f | grep macosx_26_0)
+          rm -f dist/*macosx_26_0*
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
