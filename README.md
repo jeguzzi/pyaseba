@@ -15,6 +15,20 @@ The clients can connect to multiple Aseba networks at once, each comprising pote
 
 Moreover, it comes with its own local Aseba network that runs Aseba nodes implemented in Python, i.e., nodes with Python native functions and Python control steps. Its primary motivation is to test the client interfaces but it may be used to extend an Aseba network with custom nodes, for example for teaching.
 
+## Installation
+
+Build from source
+
+```
+pip install https://github.com/jeguzzi/pyaseba.git
+```
+
+or fetch pre-build wheels
+
+```
+pip install pyaseba
+```
+   
 ## Example
 
 Assuming a Thymio is connected to one of the serial ports, we can use pyaseba to interact with it from Python
