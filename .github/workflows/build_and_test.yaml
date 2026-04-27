@@ -8,6 +8,7 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04-arm
+          - windows-11-arm
           - macos-latest
         python-version:
           - "3.12"
@@ -38,10 +39,15 @@ jobs:
           name: wheel-${{ runner.os }}-${{ runner.arch }}-py${{ matrix.python-version }}
           path: src/pyaseba/dist/*
           if-no-files-found: error
-      - name: install wheel
+      - name: install wheel (non windows)
         run: |
           wheels=( src/pyaseba/dist/*.whl )
           pip install ${wheels[0]}[all]
+      - name: install wheel (windows)
+        if: runner.os == 'Windows'
+        run: |
+          $wheels = Get-ChildItem -Path src\pyaseba\dist -Recurse -Include *.whl
+          pip install "$($wheels[0])[all]"
       - name: test import
         run: |
           python -c "import pyaseba"
