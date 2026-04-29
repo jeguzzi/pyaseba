@@ -46,7 +46,7 @@ async def main(target: str) -> None:
     done = loop.create_future()
     thymio.set_callback("prox", partial(control, loop=loop, done=done))
     thymio.set_callback("button.forward", Switch())
-    if await thymio.connect(target=target):
+    if await thymio.connect(target=target, start_mirroring=True):
         await done
         thymio.call_leds_buttons(0, 0, 0, 0)
     else:

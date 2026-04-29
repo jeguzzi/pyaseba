@@ -15,7 +15,7 @@ class SimpleNode(Node):
 
 def main(target: str) -> None:
     node = SimpleNode()
-    if node.connect(target=target):
+    if node.connect(target=target, start_mirroring=True):
         # Variables
         print(f"Variables: {node.get_all()}")
         for name in ('value', 'counter'):

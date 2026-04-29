@@ -47,7 +47,7 @@ def main(target: str) -> None:
     control = Control()
     thymio.set_callback("prox", control)
     thymio.set_callback("button.forward", Switch())
-    if thymio.connect(target=target):
+    if thymio.connect(target=target, start_mirroring=True):
         while not control.done:
             time.sleep(1)
         thymio.call_leds_buttons(0, 0, 0, 0)

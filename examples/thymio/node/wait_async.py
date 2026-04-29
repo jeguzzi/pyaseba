@@ -9,7 +9,7 @@ from pyaseba.examples.utils import setup_logging
 
 async def main(target: str) -> None:
     thymio = ThymioAsync()
-    if await thymio.connect(target=target, wait_ms=1000):
+    if await thymio.connect(target=target, wait_ms=1000, start_mirroring=True):
         thymio.leds_top = [32, 32, 0]
         thymio.motor_left_target = 100
         thymio.motor_right_target = 100

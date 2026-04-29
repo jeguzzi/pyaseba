@@ -8,7 +8,7 @@ from pyaseba.examples.utils import setup_logging
 
 def main(target: str) -> None:
     thymio = Thymio()
-    if thymio.connect(target=target):
+    if thymio.connect(target=target, start_mirroring=True):
         thymio.leds_top = [32, 32, 0]
         thymio.motor_left_target = 100
         thymio.motor_right_target = 100

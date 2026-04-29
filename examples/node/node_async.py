@@ -15,7 +15,7 @@ class SimpleNode(NodeAsync):
 
 async def main(target: str) -> None:
     node = SimpleNode()
-    if await node.connect(target=target):
+    if await node.connect(target=target, start_mirroring=True):
         print(f"Variables: {await node.get_all()}")
         for name in ('value', 'counter'):
             print(f"{name} = {await node.get(name)}")

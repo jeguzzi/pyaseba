@@ -20,7 +20,7 @@ def control(thymio: ThymioAsync, dt: float, loop: asyncio.AbstractEventLoop,
 
 async def main(target: str) -> None:
     thymio = ThymioAsync()
-    if await thymio.connect(target=target):
+    if await thymio.connect(target=target, start_mirroring=True):
         thymio.leds_top = [0, 32, 0]
         thymio.motor_left_target = 100
         thymio.motor_right_target = 100
