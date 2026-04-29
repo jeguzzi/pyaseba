@@ -103,9 +103,9 @@ Pyaseba uses the source code of [Dashel](https://github.com/aseba-community/dash
 
 Pyaseba is using Aseba source code without redistributing it.
 
-### Spdlog, Fmt and pybind11_log
+### Spdlog, {fmt} and pybind11_log
 
-If pyaseba is build with logging support, it uses [Spdlog](https://github.com/gabime/spdlog), [fmt](https://github.com/fmtlib/fmt), and [pybind11_log](https://github.com/tanghaibao/pybind11_log) without redistributing them.
+If pyaseba is build with logging support, it uses [Spdlog](https://github.com/gabime/spdlog), [{fmt}](https://github.com/fmtlib/fmt), and [pybind11_log](https://github.com/tanghaibao/pybind11_log) without redistributing them.
 
 
 
