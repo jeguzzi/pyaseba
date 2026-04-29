@@ -7,7 +7,7 @@ and expose local Aseba functions to Python.
 """
 
 from pyaseba.client import Node
-from pyaseba.client.node import EventSpec
+from pyaseba.client.node import EventSpec, MirroringConfig
 import time
 
 # %%
@@ -37,12 +37,13 @@ import time
 
 
 class MySimpleNode(Node):
-    events = {"event": EventSpec(variables=["counter"])}
-    function_args = "args"
+    mirroring_config = MirroringConfig(
+        events={"event": EventSpec(variables=["counter"])},
+        function_include=["square"])
 
 
 node = MySimpleNode(cached=True)
-node.connect(target="tcp:port=33333")
+node.connect(target="tcp:port=33333", start_mirroring=True)
 
 # %%
 # The node has loaded the Aseba script, created from
@@ -51,9 +52,9 @@ node.connect(target="tcp:port=33333")
 print(node.script)
 
 # %%
-# It exposes local functions
+# It mirrors local functions
 
-print(node.exposed_functions)
+print(node.mirrored_functions)
 
 # %%
 # which we can call using using
@@ -65,7 +66,7 @@ node.call("square", 3)
 # the square of 3. As the ``value`` is not synchronized,
 # we need to query it explicitly.
 
-node.get("value", cached=False)
+print(node.get("value", cached=False))
 
 # %%
 # It also mirrors local events

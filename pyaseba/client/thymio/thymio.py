@@ -1,4 +1,4 @@
-from ..node import EventSpec, Node, NodeAsync
+from ..node import EventSpec, Node, NodeAsync, MirroringConfig
 from .._client_impl import Event
 
 
@@ -24,43 +24,43 @@ class Thymio(Node):
     >>>
     >>> thymio.set_controller(control)
     """
-
-    events = {
-        "acc":
-        EventSpec(["acc"]),
-        "motor":
-        EventSpec(["motor.left.speed", "motor.right.speed"]),
-        "prox":
-        EventSpec(variables=["prox.horizontal", "prox.ground.delta"],
-                  use_counter=True),
-        "prox.comm":
-        EventSpec(variables=["prox.comm.rx", "prox.comm.rx._intensities"],
-                  use_counter=True,
-                  epilog="call math.fill(prox.comm.rx._intensities, 0)",
-                  external_counter="event_prox"),
-        "button.backward":
-        EventSpec(["button.backward"]),
-        "button.left":
-        EventSpec(["button.left"]),
-        "button.center":
-        EventSpec(["button.center"]),
-        "button.forward":
-        EventSpec(["button.forward"]),
-        "button.right":
-        EventSpec(["button.right"]),
-        "tap":
-        EventSpec(["acc._tap"]),
-        "mic":
-        EventSpec(["mic.intensity"]),
-        "rc5":
-        EventSpec(["rc5.address", "rc5.command"]),
-        "timer0":
-        EventSpec([]),
-        "timer1":
-        EventSpec([])
-    }
-    function_include = (r'leds', '_leds', 'sound', 'prox')
-    function_exclude = (r"wave", )
+    mirroring_config = MirroringConfig(
+        events={
+            "acc":
+            EventSpec(["acc"]),
+            "motor":
+            EventSpec(["motor.left.speed", "motor.right.speed"]),
+            "prox":
+            EventSpec(variables=["prox.horizontal", "prox.ground.delta"],
+                      use_counter=True),
+            "prox.comm":
+            EventSpec(variables=["prox.comm.rx", "prox.comm.rx._intensities"],
+                      use_counter=True,
+                      epilog="call math.fill(prox.comm.rx._intensities, 0)",
+                      external_counter="event_prox"),
+            "button.backward":
+            EventSpec(["button.backward"]),
+            "button.left":
+            EventSpec(["button.left"]),
+            "button.center":
+            EventSpec(["button.center"]),
+            "button.forward":
+            EventSpec(["button.forward"]),
+            "button.right":
+            EventSpec(["button.right"]),
+            "tap":
+            EventSpec(["acc._tap"]),
+            "mic":
+            EventSpec(["mic.intensity"]),
+            "rc5":
+            EventSpec(["rc5.address", "rc5.command"]),
+            "timer0":
+            EventSpec([]),
+            "timer1":
+            EventSpec([])
+        },
+        function_include=[r'leds', '_leds', 'sound', 'prox'],
+        function_exclude=[r"wave"])
     default_target = "ser:name=Thymio"
     sync_include = {
         r'leds', r'mic\.threshold', r'target', r'prox\.comm\.tx',
@@ -105,11 +105,12 @@ class Thymio(Node):
         """
         super().__init__(cached=cached)
         if enable_prox_comm:
-            self.script_inits.append("call prox.comm.enable(1)")
+            self.mirroring_config.script_inits.append(
+                "call prox.comm.enable(1)")
         self._should_record_prox_comm = record_prox_comm
         self.prox_comm_buffer: list[tuple[int, list[int]]] = []
         self._next_prox_comm_buffers: dict[int, list[tuple[int,
-                                                           list[int]]]] = []
+                                                           list[int]]]] = {}
         self._prox_comm_counter: int = 0
 
     @property

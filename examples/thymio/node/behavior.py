@@ -44,7 +44,7 @@ def main(target: str, names: str) -> None:
     behavior = thymio_behaviors.Chain(*behaviors)
     thymio = Thymio(record_prox_comm=enable_prox_comm)
     if events:
-        thymio.configure_events(**events)
+        thymio.mirroring_config.configure_events(**events)
     if thymio.connect(target=target):
         logging.info(f"Starting {' - '.join(names)}")
         thymio.call_prox_comm_enable(enable_prox_comm)

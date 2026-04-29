@@ -40,7 +40,8 @@ class ClientShell(cmd.Cmd):
             v, *_ = arg.split(' ')
             node_id = int(v)
             desc = self.client.get_description(node_id)
-            print_description(node_id, desc)
+            if desc:
+                print_description(node_id, desc)
         except Exception:
             pass
 

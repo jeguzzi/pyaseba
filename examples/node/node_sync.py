@@ -1,12 +1,13 @@
 import argparse
 import sys
 
-from pyaseba.client import Node, EventSpec
+from pyaseba.client import EventSpec, MirroringConfig, Node
 
 
 class SimpleNode(Node):
-    events = {"event": EventSpec(variables=["counter"])}
-    function_include = [r'.*', ]
+    mirroring_config = MirroringConfig(
+        events={"event": EventSpec(variables=["counter"])},
+        function_include=[r'.*', ])
     properties = ['value', 'counter']
     counter: int
     value: int
@@ -31,7 +32,7 @@ def main(target: str) -> None:
             node.wait("event", wait_ms=1000)
             print(f"counter = {node.counter}")
         # Functions
-        print(f"We can call functions in {node.exposed_functions}")
+        print(f"We can call functions in {node.mirrored_functions}")
         print('Calling square(11) should set value = 121')
         node.call("square", 11)
         print(f"value = {node.get("value", cached=False)}")

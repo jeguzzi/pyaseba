@@ -7,7 +7,7 @@ that exposes Aseba variables and functions as Python attributes and methods
 """
 
 from pyaseba.client import Node
-from pyaseba.client.node import EventSpec
+from pyaseba.client.node import EventSpec, MirroringConfig
 
 # %%
 # When specialized, py:class:`pyaseba.client.Node` offer a higher-level,
@@ -23,13 +23,15 @@ from pyaseba.client.node import EventSpec
 
 
 class MySimpleNode(Node):
-    events = {"event": EventSpec(variables=["counter"])}
+    mirroring_config = MirroringConfig(
+        events={"event": EventSpec(variables=["counter"])},
+        function_include=["square"])
     properties = ['counter', 'value']
     functions = ['square']
 
 
 node = MySimpleNode(cached=True)
-node.connect(target="tcp:port=33333")
+node.connect(target="tcp:port=33333", start_mirroring=True)
 
 # %%
 # Aseba variables are now accessible as attributes
@@ -53,7 +55,10 @@ node.call_square(3)  # type: ignore[attr-defined]
 # the square of 3. As ``value`` is not synchronized,
 # we need to query it explicitly.
 
-node.get("value", cached=False)
+import time
+time.sleep(1)
+
+print(node.get("value", cached=False))
 
 # %%
 node.close(reset=True)

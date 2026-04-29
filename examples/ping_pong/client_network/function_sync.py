@@ -16,7 +16,6 @@ emit ping
 
 class RespondingNode(Node):
     functions = {'respond': ('', [])}
-    function_include = [r'.*', ]
     events = {'response': 'emitted by respond'}
 
     def respond(self) -> None:

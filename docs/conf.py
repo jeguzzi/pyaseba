@@ -41,6 +41,8 @@ sphinx_gallery_conf = {
     },
     'inspect_global_variables': True,
     'prefer_full_module': {r'.*'},
+    'write_computation_times': False,
+    'within_subsection_order': "FileNameSortKey",
     # 'prefer_full_module': {r'pyaseba\.client'},
     'log_level': {'backreference_missing': 'error'},
 }

@@ -1,10 +1,13 @@
-EventSpec
-=========
+MirroringConfig
+===============
 
 .. py:currentmodule:: pyaseba.client
 
 
 .. autoclass:: EventSpec
+   :members:
+
+.. autoclass:: MirroringConfig
    :members:
 
 

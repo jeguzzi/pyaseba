@@ -968,6 +968,17 @@ struct Client : public DescriptionManager<Client>, public Dashel::Hub {
     }
   }
 
+  const std::string &get_script(unsigned nodeId,
+                                const std::set<unsigned> &include = {},
+                                const std::set<unsigned> &exclude = {}) {
+    static const std::string empty = "";
+    const auto node = get_node(nodeId, include, exclude);
+    if (node) {
+      return node->script;
+    }
+    return empty;
+  }
+
   void description_received(unsigned nodeId, unsigned target) {}
 
   void node_connected(unsigned nodeId, unsigned target) {

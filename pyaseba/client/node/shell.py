@@ -1,6 +1,9 @@
-from .node import Node
-from pyaseba import print_description
 import cmd
+
+from pyaseba import print_description
+
+from .mirroring import EventSpec
+from .node import Node
 
 
 class NodeShell(cmd.Cmd):
@@ -13,7 +16,8 @@ class NodeShell(cmd.Cmd):
 
     def do_description(self, arg: str) -> None:
         'Print the description:  description'
-        print_description(self.node.node_id, self.node.description)
+        if self.node.description:
+            print_description(self.node.node_id, self.node.description)
 
     def do_variables(self, arg: str) -> None:
         'Print the name of all variables:  variables'
@@ -33,13 +37,58 @@ class NodeShell(cmd.Cmd):
         if desc:
             print(list(desc.functions))
 
-    def do_mirrored(self, arg: str) -> None:
-        'Print the name of all mirrored events:  mirrored'
+    def do_start_mirroring(self, arg: str) -> None:
+        'Start mirroring local events and functions:  start'
+        self.node.start_mirroring()
+
+    def do_stop_mirroring(self, arg: str) -> None:
+        'Stop mirroring local events and functions:  stop'
+        self.node.stop()
+
+    def complete_add_mirrored_event(self, text: str, line: str, begidx: int,
+                                    endidx: int) -> list[str]:
+        desc = self.node.description
+        if desc:
+            options = list(desc.local_events)
+            return [i for i in options if text in i]
+        return []
+
+    def do_add_mirrored_event(self, arg: str) -> None:
+        'Start mirroring local events and functions:  add_mirrored_event event_name [VARIABLE_NAME_1 VARIABLE_NAME_2 ...]'
+        name, *variables = arg.split()
+        desc = self.node.description
+        if not desc:
+            return
+        if name not in desc.local_events:
+            return
+        variables = [v for v in variables if v in desc.variables]
+        self.node.mirroring_config.events[name] = EventSpec(
+            variables=variables)
+
+    def complete_add_mirrored_function(self, text: str, line: str, begidx: int,
+                                       endidx: int) -> list[str]:
+        desc = self.node.description
+        if desc:
+            options = list(desc.functions)
+            return [i for i in options if text in i]
+        return []
+
+    def do_add_mirrored_function(self, arg: str) -> None:
+        'Start mirroring local events and functions:  add_mirrored_function function_name'
+        desc = self.node.description
+        if not desc:
+            return
+        if arg not in desc.functions:
+            return
+        self.node.mirroring_config.function_include.append(arg)
+
+    def do_mirrored_events(self, arg: str) -> None:
+        'Print the name of all mirrored events:  mirrored_events'
         print(list(self.node.mirrored_events))
 
-    def do_exposed(self, arg: str) -> None:
-        'Print the name of all exposed functions:  exposed'
-        print(list(self.node.exposed_functions))
+    def do_mirrored_functions(self, arg: str) -> None:
+        'Print the name of all mirrored functions:  mirrored_functions'
+        print(list(self.node.mirrored_functions))
 
     def complete_get(self, text: str, line: str, begidx: int,
                      endidx: int) -> list[str]:
@@ -62,7 +111,7 @@ class NodeShell(cmd.Cmd):
         return self.complete_get(text, line, begidx, endidx)
 
     def do_set(self, arg: str) -> None:
-        'Set the value of variables: get NAME VALUE_1 VALUE_2 ...'
+        'Set the value of variables: get NAME VALUE_1 [VALUE_2 ...]'
         try:
             name, *xs = arg.split()
             value = [int(x) for x in xs]
@@ -72,7 +121,7 @@ class NodeShell(cmd.Cmd):
 
     def complete_call(self, text: str, line: str, begidx: int,
                       endidx: int) -> list[str]:
-        options = list(self.node.exposed_functions)
+        options = list(self.node.mirrored_functions)
         return [i for i in options if text in i]
 
     def do_call(self, arg: str) -> None:

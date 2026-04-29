@@ -1,10 +1,9 @@
 import asyncio
-from typing import Self, TypeVar
+from typing import Self
 
 from ..client_async import ClientAsync, MaybeAsyncCallback, wrap_callback
-from .node import Node, int16
-
-T = TypeVar("T")
+from .node import Node
+from .utils import int16
 
 
 class NodeAsync(Node):
@@ -39,7 +38,8 @@ class NodeAsync(Node):
             target: str = "",
             wait_ms: int = 1000,
             max_retries: int = 3,
-            node_id: int = -1) -> bool:
+            node_id: int = -1,
+            start_mirroring: bool = False) -> bool:
         """
         Asynchronous version of :py:meth:`pyaseba.client.Node.connect`
         """
@@ -58,8 +58,11 @@ class NodeAsync(Node):
                 self._target = target
                 self._node_id = node_id
                 self._node_id_int16 = int16(node_id)
-                self._init()
-                self._start()
+                self._description = self._client.get_description(
+                    node_id, include={conn})
+                if start_mirroring:
+                    self.start_mirroring()
+                self._init_variables()
                 await self.update(wait_ms=wait_ms)
                 self.setup()
                 return True
@@ -99,9 +102,9 @@ class NodeAsync(Node):
         Asynchronous version of :py:meth:`pyaseba.client.Node.close`
         """
         if reset:
-            self._reset()
+            self.reset()
         else:
-            self._stop()
+            self.stop()
         await asyncio.sleep(0.1)
         if not self._shared_client and self._client:
             self._client.close()
@@ -114,12 +117,10 @@ class NodeAsync(Node):
         Asynchronous version of :py:meth:`pyaseba.client.Node.wait`
         """
         assert (self._client)
-        event_name = f'event_{name}'
-        if event_name not in self._events:
+        name = self._event_name(name)
+        if name not in self.events:
             return False
-        e = await self._client.get_event(self._node_id,
-                                         event_name,
-                                         wait_ms=wait_ms)
+        e = await self._client.get_event(self._node_id, name, wait_ms=wait_ms)
         return e is not None
 
     async def get(  # type: ignore[override]

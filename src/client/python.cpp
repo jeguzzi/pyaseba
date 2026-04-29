@@ -1075,6 +1075,22 @@ Args:
 Returns:
   The node description or ``None`` is no suitable node was found. 
 )DOC")
+      .def("get_script", &Client::get_script, py::arg("node_id"),
+           py::arg("include") = std::set<unsigned>{},
+           py::arg("exclude") = std::set<unsigned>{},
+           R"DOC(
+get_script(self, node_id: int, include: set[int] = set(), exclude: set[int] = set()) -> str
+
+Gets a Aseba script loaded on the node (if any).
+
+Args:
+  node_id: The id of the node to wait. If negative, it will match any node id.
+  include: If not empty, restricts the search to nodes on the networks specified in this set.
+  exclude: Ignore nodes on networks specified in this set.
+
+Returns:
+  The text of the Aseba script or an empty string, if none has been loaded. 
+)DOC")
       .def("scan", &Client::scan, py::arg("number") = -1,
            py::arg("wait_ms") = 1000, py::arg("callback") = nullptr, R"DOC(
 scan(self, number: int = -1, wait_ms: int = 1000, callback: Callable[[int, int, bool], None]| None = None) -> dict[int, set[int]]

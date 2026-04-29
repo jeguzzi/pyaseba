@@ -1,12 +1,13 @@
 import argparse
-import sys
 import asyncio
+import sys
 
-from pyaseba.client import NodeAsync, EventSpec
+from pyaseba.client import EventSpec, MirroringConfig, NodeAsync
 
 
 class SimpleNode(NodeAsync):
-    events = {"event": EventSpec(variables=["counter"])}
+    mirroring_config = MirroringConfig(
+        events={"event": EventSpec(variables=["counter"])})
     properties = ['value', 'counter']
     counter: int
     value: int
@@ -30,7 +31,7 @@ async def main(target: str) -> None:
             await node.wait("event", wait_ms=1000)
             print(f"counter = {node.counter}")
         # Functions
-        print(f"We can call functions in {node.exposed_functions}")
+        print(f"We can call functions in {node.mirrored_functions}")
         print('Calling square(11) should set value = 121')
         node.call("square", 11)
         print(f"value = {await node.get("value", cached=False)}")

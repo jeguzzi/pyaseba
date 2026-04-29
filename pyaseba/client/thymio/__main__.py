@@ -9,6 +9,7 @@ if __name__ == '__main__':
     parser.add_argument('--target', default="ser:name=Thymio")
     args = parser.parse_args()
     node.connect(target=args.target)
+    node.start_mirroring()
     shell = NodeShell(node)
     shell.prompt = '(thymio)'
     shell.cmdloop()

@@ -1,14 +1,15 @@
 import dataclasses as dc
+import logging
 import re
-import sys
 import time
 import warnings
-from collections.abc import Callable, Collection, Iterable, Sequence
-from itertools import chain
-from typing import Any, NotRequired, Self, TypedDict, TypeVar, Protocol
+from collections.abc import Callable, Collection, Sequence
+from typing import Any, Protocol, Self, TypeVar
 
 from .._client_impl import Client, Description, Event, complete_target
 from ..targets import are_targets_compatible
+from .mirroring import Mirroring, MirroringConfig
+from .utils import int16, matches
 
 T = TypeVar("T")
 
@@ -19,12 +20,6 @@ class ExposedFunctionMethod(Protocol):
 
     def __call__(_, self: 'Node', *args: int) -> None:
         ...
-
-
-def int16(x: int) -> int:
-    if x > 2**15:
-        x -= 2**16
-    return x
 
 
 def make_property_with_variable(name: str) -> property:
@@ -53,7 +48,7 @@ def make_method_with_function(name: str) -> ExposedFunctionMethod:
     f.__doc__ = f"""
     Calls native function {name}
 
-    :param *args: The argument passed to the function.
+    :param args: The argument passed to the function.
 """
 
     return f
@@ -72,141 +67,139 @@ def make_property_with_event(name: str) -> property:
                     doc=f"Callback for Aseba event {name}")
 
 
-@dc.dataclass
-class EventSpec:
-    """
-    Describes how :py:class:`Node` should mirror local events.
-    """
-    variables: Sequence[str] = ()
-    """Which variables to synchronize when the event is emitted"""
-    use_counter: bool = False
-    """Whether to append a counter to the payload"""
-    external_counter: str = ''
-    """If not empty, it select a variable to use as a counter"""
-    window: int = 1
-    """The length of the window over which to average variables. If less or equal 0,
-    it will ignore the event"""
-    preamble: str = ''
-    """Aseba code to prepend to the event code"""
-    epilog: str = ''
-    """Aseba code to append to the event code"""
-
-
-class EventSpecUpdate(TypedDict):
-    variables: NotRequired[Sequence[str]]
-    use_counter: NotRequired[bool]
-    external_counter: NotRequired[str]
-    window: NotRequired[int]
-
-
-def _matches(name: str, include: Collection[str],
-             exclude: Collection[str]) -> bool:
-    return (any(re.findall(e, name) for e in include)
-            and not any(re.findall(e, name) for e in exclude))
-
-
 class Node:
     """
-    Offers an higher-level, stateful interface to
-    interact with a remote Aseba node.
+    A class to interact with a single remote Aseba node that
+    1) has a simpler interface compared to :py:class:`pyaseba.client.Client`,
+    2) uses a cache for Aseba variables,
+    3) exposes Aseba native functions and events,
+    4) access Aseba variables, events and functions by name through generic methods
+    or through specific attributes.
 
-    Can be used with a existent :py:class:`pyaseba.client.Client`
-    or can create its own client.
+    Under the hood, it uses :py:class:`pyaseba.client.Client`
+    to interact with a single Aseba node, either reusing
+    an existent client or instantiating one when required.
+
+    Compared to :py:class:`pyaseba.client.Client`,
+    which manages a collections remote Aseba nodes,
+    it simplify the interface by keeping track of the
+    network and id of a single remote node.
+
+    Nodes can be configured to execute an Aseba script
+    that exposes remote local events and native functions and keeps
+    variables up-to-date. When local events are emitted by the
+    remote node, a custom event, together with updated Aseba variables,
+    is broadcasted; once it is received, the value local variables
+    are automatically updated. The script also reacts to custom events that
+    in turns call native functions.
+
+    Nodes also provide a interface to access variables, events and functions
+    by specific attribute instead of by name, where dots in the variables
+    name are replaced by underscores in the attribute names.
+    For example, Aseba variable ``leds.top`` would be linked to Python
+    property ``leds_top``.
+
 
     Examples:
-
-       Using a base class, offers a slightly simpler interface to interact
-       with a single remote Aseba node compared to a client that manages
-       a collections remote Aseba nodes.
 
        >>> node = Node()
        >>> node.connect("tcp:port=33333")
        True
-
        >>> node.description.variables
        {"value": ...}
 
-       For instance, setting and getting variables, does not require passing the node_id
+       Setting and getting variables does not require passing ``node_id``
 
        >>> node.set("value", [1, 2, 3])
        >>> node.get("value")
        [1, 2, 3]
 
-       A more significant role of nodes is to provide a Pythonic
-       interface to the remote Aseba node. By sub-classing it,
-       we can specify:
+       Assuming that the remote node defines local Aseba event ``e``
 
-       - Aseba variables exposed as Python properties. For example,
-         assuming that the Aseba node defines variables ``a`` and ``b``:
+       >>> class MyNode(Node):
+       >>>     mirroring_config = MirroringConfig(
+       ...         events = {"e": EventSpec(variables=["a"])
 
-         >>> class MyNode(Node):
-         >>>     properties = ["a", "b"]
-         >>>
-         >>> node = MyNode()
-         >>> node.connect(...)
-         >>> node.a = [1, 2]
-         >>> node.b
-         [3, 4, 5]
+       after mirroring starts, the node will receive notifications
+       when ``e`` is emitted
 
-         exposes them as properties, with cached values.
-         Dots in the variables name are replaced by undescores
-         in the properties names. For example,
-         Aseba variable ``leds.top`` is linked to Python property
-         ``leds_top``.
+       >>> node = MyNode()
+       >>> node.connect(..., start_mirroring=True)
+       >>> node.wait("e")
+       True
+       >>> node.set_callback("e", lambda node: ...)
 
+       and ``a`` will be updated without further explicit synchronization.
 
-       - Aseba local events mirrored as user defined events
-         that can optionally synchronize some variables.
-         For example, assuming that the Aseba node defines local event ``e``:
+       >>> node.get("a", cached=False)
+       ...
 
-         >>> class MyNode(Node):
-         >>>     events = {"e": EventSpec(variables=["a"])
-         >>>
-         >>> node = MyNode()
-         >>> node.connect(...)
-         >>> node.wait("e")
-         >>> node.set_callback("e", lambda node: ...)
+       Assuming that the Aseba node defines local function ``f``
+       that accepts two integers,
 
-         mirror it to a local event ("event_e") that we can wait
-         and/or subscribe to using callbacks.
+       >>> class MyNode(Node):
+       >>>     mirroring_config = MirroringConfig(function_include=['f'])
 
-       - Aseba local functions exposed as Python methods.
-         For example, assuming that the Aseba node defines
-         local function ``f`` that accept two integers:
+       after mirroring starts, the node will be able to call
+       the function by name
 
-         >>> class MyNode(Node):
-         >>>     functions = ["f"]
-         >>>
-         >>> node = MyNode()
-         >>> node.connect(...)
-         >>> node.call("f", 1, 2)
+       >>> node = MyNode()
+       >>> node.connect(..., start_mirroring=True)
+       >>> node.call("f", 1, 2)
 
-         or analogously
-
-         >>> node.call_f(1, 2)
-
-       The last two (events and functions) are realized
-       by loading a executing an Aseba script
-       on the remote node, which we can inspect with
+       We can inspect the Aseba script loaded the remote node
+       for mirroring
 
        >>> print(node.script)
        onevent call_f
        call f args[1:3]
        onevent e
        emit event_e [a]
+
+       Assuming that the Aseba node has variables ``a`` and ``b``
+
+       >>> class MyNode(Node):
+       >>>     properties = ["a", "b"]
+
+       exposes ``a`` and ``b`` as properties with cached values
+
+       >>> node = MyNode()
+       >>> node.connect(...)
+       >>> node.a = [1, 2]
+       >>> node.b
+       [3, 4, 5]
+
+       Callbacks for mirrored events are exposed as Python properties too.
+       Following a previous example, instead of calling
+
+       >>> node.set_callback("e", cb)
+
+       we can set the attribute directly
+
+       >>> node.on_e = cb
+
+       The node class below expose Aseba functions as Python methods
+
+       >>> class MyNode(Node):
+       >>>     functions = ["f"]
+       ...     ...
+       >>> ...
+
+       Instead of calling
+
+       >>> node.call("f", 1, 2)
+
+       we can call a specific method
+
+       >>> node.call_f(1, 2)
+
+       to perform the same work.
+
     """
 
-    events: dict[str, EventSpec] = {}
+    mirroring_config: MirroringConfig = MirroringConfig()
     """
-    Local events that should be mirrored
-    """
-    function_include: Collection[str] = ()
-    """
-    Regular expressions for local functions to be exposed
-    """
-    function_exclude: Collection[str] = ()
-    """
-    Regular expressions that prevent local functions from being exposed
+    Mirroring config
     """
     default_target = ""
     """Default Dashel target"""
@@ -220,9 +213,6 @@ class Node:
     """Regular expressions for variables to be included in :py:meth:`sync`"""
     sync_exclude: Collection[str] = ()
     """Regular expressions for variables to be excluded from :py:meth:`sync`"""
-    script_inits: Sequence[str] = ()
-    """Aseba code to add to the preamble (should not define variables)"""
-
     cached: bool
     """The default value of ``cached``
        used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`"""
@@ -234,9 +224,10 @@ class Node:
         :param cached:  The default value of ``cached``
            used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`
         """
-        self.script_inits = list(self.script_inits)
-        self.events = dict(self.events)
-        self._code = ""
+        # TODO: make copy of default
+        self.mirroring_config = dc.replace(self.mirroring_config)
+        self.mirroring_config.function_include.extend(list(self.functions))
+        self.mirroring: Mirroring | None = None
         self._connection = 0
         self._description: Description | None = None
         self._target = ""
@@ -244,14 +235,7 @@ class Node:
         self._client: Client | None = None
         self._node_id = -1
         self._node_id_int16 = -1
-        self._buffer_name: str = ''
-        self._id_name: str = ''
         self._shared_client = False
-        self._code_events: dict[str, int] = {}
-        self._events: dict[str, str] = {}
-        self._events_variables: dict[str, list[str]] = {}
-        self._counters: list[str] = []
-        self._windows: list[tuple[str, int]] = []
         self._variable_values: dict[str, list[int]] = {}
         self._variable_sizes: dict[str, int] = {}
         self._event_callbacks: dict[str, EventCallback[Self]] = {}
@@ -259,11 +243,7 @@ class Node:
         self._next_variables_values: dict[str, list[int]] = {}
         self._prev_variables_values: dict[str, list[int]] = {}
         self._sync_variables: set[str] = set()
-
-    def configure_events(self, **events: EventSpecUpdate) -> None:
-        for name, kwargs in events.items():
-            if name in self.events:
-                self.events[name] = dc.replace(self.events[name], **kwargs)
+        self._last_payloads: dict[str, list[int]] = {}
 
     def __repr__(self) -> str:
         if self.connection:
@@ -299,20 +279,34 @@ class Node:
         return self._connection
 
     @property
-    def exposed_functions(self) -> list[str]:
+    def mirrored_functions(self) -> list[str]:
         """
         Which Aseba functions are callable through
         :py:meth:`call`.
         """
-        return list(self._functions)
+        if self.mirroring:
+            return list(self.mirroring._functions)
+        return []
 
     @property
     def mirrored_events(self) -> list[str]:
         """
-        Which Aseba local events are await-able through
+        Which local mirrored Aseba events are await-able through
         :py:meth:`wait`.
         """
-        return list(self._events.values())
+        if self.mirroring:
+            return list(self.mirroring._events.values())
+        return []
+
+    @property
+    def events(self) -> list[str]:
+        """
+        All Aseba user events are await-able through
+        :py:meth:`wait`.
+        """
+        if self._description:
+            return list(self._description.user_events)
+        return []
 
     @property
     def sync_variables(self) -> set[str]:
@@ -321,51 +315,31 @@ class Node:
         """
         return self._sync_variables
 
-    def _init(self) -> None:
+    def _init_variables(self) -> None:
+        variables = self.description.variables if self.description else {}
+        self._variable_values = {k: [] for k in variables}
+        self._variable_sizes = {k: vs[1] for k, vs in variables.items()}
+        self._sync_variables = {
+            k
+            for k in variables
+            if matches(k, self.sync_include, self.sync_exclude)
+        }
+
+    def start_mirroring(self) -> None:
+        """
+        Starts a mirroring local events and native functions.
+        through a custom Aseba script, as configured by :py:attr:`mirroring_config`.
+        """
         assert (self._client)
         description = self._client.get_description(self._node_id,
                                                    include={self.connection})
         assert (description)
-        for name, (index, size) in description.variables.items():
-            if index == 0:
-                self._id_name = name
-            if index == 2:
-                self._buffer_name = name
-        assert self._buffer_name
-        self._variable_values = {k: [] for k in description.variables}
-        self._variable_sizes = {
-            k: vs[1]
-            for k, vs in description.variables.items()
-        }
-        self._sync_variables = {
-            k
-            for k in description.variables
-            if _matches(k, self.sync_include, self.sync_exclude)
-        }
-
-        self._code_events.clear()
-        self._events.clear()
-        self._events_variables.clear()
-        self._counters.clear()
-        self._windows.clear()
-        self._functions.clear()
-        self._code = ""
-        for name, spec in self.events.items():
-            self._add_event(name, spec)
-        for name, (_, vs) in description.functions.items():
-            function_include = list(self.function_include) + list(
-                self.functions)
-            match = _matches(name, function_include, self.function_exclude)
-            if match:
-                self._add_function(name, [v[1] for v in vs])
-        temp_defs = ("var temp", )
-        couter_defs = (f"var {v}" for v in self._counters)
-        window_defs = (f"var {v}[{s}]" for v, s in self._windows)
-        couter_inits = (f"{v}=0" for v in self._counters)
-        window_inits = (f"call math.fill({v}, 0)" for v, s in self._windows)
-        parts = chain(temp_defs, couter_defs, window_defs, couter_inits,
-                      window_inits, self.script_inits, [self._code])
-        self._code = "\n".join(x for x in parts if x)
+        mirroring = Mirroring(description, self.mirroring_config)
+        if mirroring.code:
+            if self.load_script(script=mirroring.code,
+                                events=mirroring._code_events):
+                self.mirroring = mirroring
+                self._client.cmd_run(self._node_id)
 
     def setup(self) -> None:
         """
@@ -381,6 +355,7 @@ class Node:
                 wait_ms: int = 5000,
                 max_retries: int = 3,
                 node_id: int = -1,
+                start_mirroring: bool = False,
                 **kwargs: Any) -> bool:
         """
         Connect to a remote Aseba node through
@@ -392,7 +367,9 @@ class Node:
         :param wait_ms:      Time to wait before retrying to connect in case of failure.
         :param max_retries:  Maximal number of time to try to connect before returning a failure.
         :param node_id:      The node identifier. Negative value match any id.
-        :param **kwargs:     Parameters that are appended to ``target`` as ``"<key>=<value>"``.
+        :param start_mirroring: Whether to start mirroring after connecting. If not set, call
+                             :py:meth:`start_mirroring` later to start mirroring.
+        :param kwargs:       Parameters that are appended to ``target`` as ``"<key>=<value>"``.
                              For example, if target is ``"tcp"``, passing ``port=33333``
                              will result in a target ``"tcp:port=33333"``.
         :returns:            Whether the connection was successful.
@@ -418,8 +395,11 @@ class Node:
                 self._target = target
                 self._node_id = node_id
                 self._node_id_int16 = int16(node_id)
-                self._init()
-                self._start()
+                self._description = self._client.get_description(
+                    node_id, include={conn})
+                if start_mirroring:
+                    self.start_mirroring()
+                self._init_variables()
                 self.update(wait_ms=wait_ms)
                 self.setup()
                 return True
@@ -431,43 +411,9 @@ class Node:
     @property
     def script(self) -> str:
         """The loaded Aseba code (if any)"""
-        return self._code
-
-    def _add_function(self, name: str, argument_sizes: Iterable[int]) -> None:
-        event_name = f'call_{name}'
-        arguments = []
-        i = 1
-        for size in argument_sizes:
-            arguments.append(f'{self._buffer_name}[{i}:{i + size - 1}]')
-            i += size
-        self._code += f"""
-onevent {event_name}
-if {self._id_name} == {self._buffer_name}[0] then
-call {name}({','.join(arguments)})
-end
-"""
-        message_size = sum(argument_sizes)
-        self._functions[name] = event_name
-        self._code_events[event_name] = message_size
-
-    def _update_variables(self, event: Event) -> None:
-        if event.name not in self._events_variables:
-            return
-        i = 0
-        for name in self._events_variables[event.name]:
-            if name not in self._variable_sizes or name not in self._variable_values:
-                continue
-            size = self._variable_sizes[name]
-            value = event.data[i:i + size]
-            self._variable_values[name] = value
-            self._prev_variables_values[name] = value
-            i += size
-
-    def _call_callbacks(self, event: Event) -> None:
-        if event.name in self._events:
-            name = self._events[event.name]
-            if name in self._event_callbacks:
-                self._event_callbacks[name](self)  # type: ignore[arg-type]
+        assert self._client
+        return self._client.get_script(self._node_id,
+                                       include={self.connection})
 
     def _extra_event_cb(self, event: Event) -> None:
         pass
@@ -475,88 +421,92 @@ end
     def _event_cb(self, event: Event) -> None:
         if event.source != self._node_id:
             return
-        self._update_variables(event)
+        self._last_payloads[event.name] = event.data
+        if self.mirroring:
+            for name, value in self.mirroring.read_variables(event).items():
+                if name in self._variable_values:
+                    self._variable_values[name] = value
+                    self._prev_variables_values[name] = value
         self._extra_event_cb(event)
-        self._call_callbacks(event)
+        cb = self._event_callbacks.get(event.name)
+        if cb:
+            cb(self)  # type: ignore[arg-type]
 
-    def _add_event(self, name: str, spec: EventSpec) -> None:
-        if spec.window <= 0:
-            return
-        event_name = f'event_{name}'
-        counter = ''
-        variables = list(spec.variables)
-        message_size = sum(self._variable_sizes[v] for v in variables)
-        all_variables = variables
-        if spec.use_counter:
-            message_size += 1
-            if spec.external_counter:
-                all_variables.append(spec.external_counter)
-            else:
-                counter = event_name
-                all_variables.append(counter)
-                self._counters.append(counter)
-        counter_code = f"{counter}+=1" if counter else ""
-        if variables:
-            event_variables = f"[{','.join(all_variables)}]"
-        else:
-            event_variables = ""
-        if spec.window == 1 or not event_variables:
-            code = f"""
-onevent {name}
-{spec.preamble}
-emit {event_name} {event_variables}
-{counter_code}
-{spec.epilog}
-"""
-        else:
-            self._windows.append((f"{name}_payload", message_size))
-            self._counters.append(f"{name}_window")
-            code = f"""
-onevent {name}
-{spec.preamble}
-call math.add({name}_payload, {event_variables}, {name}_payload)
-{counter_code}
-{name}_window++
-if {name}_window == {spec.window} then
-  for temp in 0:{message_size - 1} do
-      {name}_payload[temp] /= {spec.window}
-  end
-  {name}_window = 0
-  emit {event_name} {name}_payload
-  call math.fill({name}_payload, 0)
-end
-{spec.epilog}
-"""
-        code = "\n".join(s for s in code.splitlines() if s.strip())
-        if code:
-            self._code += "\n\n" + code
-        self._events[event_name] = name
-        self._events_variables[event_name] = variables
-        self._code_events[event_name] = message_size
+    def get_last_payload(self, event_name: str) -> list[int]:
+        """
+        Gets the last event payload.
 
-    def _start(self) -> None:
+        :param      event_name:  The event name
+
+        :returns:   The payload of the last received event, if any.
+        """
+        return self._last_payloads.get(event_name, [])
+
+    def load_script(self,
+                    script: str,
+                    events: dict[str, int] = {},
+                    constants: dict[str, int] = {}) -> bool:
+        """
+        Loads an Aseba script.
+
+        :param      script:          The script
+        :param      events:          User defined events as dictionary
+                                     of payload sizes keyed by name.
+        :param      constants:       The constants
+        :type       constants:       User defined constants as dictionary
+                                     of scalar sizes values keyed by name.
+
+        :returns:   True if the script was successfully compiled and loaded.
+        """
         assert (self._client)
+        self.mirroring = None
         try:
             self._client.load_script(node_id=self._node_id,
-                                     script=self._code,
-                                     events=self._code_events)
+                                     script=script,
+                                     events=events,
+                                     constants=constants)
         except Exception as e:
             m = re.search(r"Error at Line: (\d*)", str(e))
             if m:
                 ln = int(m.group(1))
-                line = self._code.splitlines()[ln - 1:ln + 1]
-                print(line, file=sys.stderr)
-            raise e
-        self._client.cmd_run(self._node_id)
+                line = script.splitlines()[ln - 1:ln + 1]
+                logging.error(
+                    f"Error while compiling script: {e}.\nLine: {line}")
+            return False
         self._description = self._client.get_description(
             self._node_id, include={self.connection})
+        self._init_variables()
+        return True
 
-    def _stop(self) -> None:
+    def run(self) -> None:
+        """
+        Sends a command to start running the remote node.
+        It is only effective if a script has been loaded.
+        """
+        assert self._client
+        self._client.cmd_run(self._node_id, include={self.connection})
+
+    def pause(self) -> None:
+        """
+        Sends a command to pause running the remote node.
+        """
+        assert self._client
+        self._client.cmd_pause(self._node_id, include={self.connection})
+
+    def stop(self) -> None:
+        """
+        Sends a command to stop running the remote node.
+        """
         assert (self._client)
+        self.mirroring = None
         self._client.cmd_stop(self._node_id, include={self.connection})
 
-    def _reset(self) -> None:
+    def reset(self) -> None:
+        """
+        Sends a command to pause reset the remote node.
+        """
         assert self._client
+        self.mirroring = None
         self._client.cmd_reset(self._node_id, include={self.connection})
 
     def close(self, reset: bool = False) -> None:
@@ -567,9 +517,9 @@ end
         """
         assert self._client
         if reset:
-            self._reset()
+            self.reset()
         else:
-            self._stop()
+            self.stop()
         time.sleep(0.1)
         if not self._shared_client:
             self._client.close()
@@ -577,21 +527,29 @@ end
         self._connection = 0
         self._target = ''
 
+    def _event_name(self, name: str) -> str:
+        if self.mirroring:
+            return self.mirroring.get_event_name(name) or name
+        return name
+
     def wait(self, name: str, wait_ms: int = 1000) -> bool:
         """
-        Waits for an mirrored local event
+        Waits for an event.
 
-        :param      name:     The name of the local event
+        If name is the name of a a mirrored local event, it waits for the
+        corresponding user event.
+
+        :param      name:     The name of the event.
         :param      wait_ms:  The maximal time to wait.
 
         :returns:   Whether an event has been received before the deadline.
         """
         assert (self._client)
-        event_name = f'event_{name}'
-        if event_name not in self._events:
+        name = self._event_name(name)
+        if name not in self.events:
             return False
         e = self._client.get_event(self._node_id,
-                                   event_name,
+                                   name,
                                    include={self.connection},
                                    wait_ms=wait_ms)
         return e is not None
@@ -604,6 +562,7 @@ end
         :param      name:      The name of the local event
         :param      callback:  The callback
         """
+        name = self._event_name(name)
         if callback is None:
             if name in self._event_callbacks:
                 del self._event_callbacks[name]
@@ -618,6 +577,7 @@ end
 
         :returns:   The callback, if any.
         """
+        name = self._event_name(name)
         return self._event_callbacks.get(name)
 
     def emit(self, name: str, *args: int) -> None:
@@ -625,7 +585,7 @@ end
         Emits an event
 
         :param name:   The name of the (user) event
-        :param *args:  The payload
+        :param args:  The payload
         """
         assert (self._client)
         self._client.emit_event(self._node_id,
@@ -639,15 +599,17 @@ end
         corresponding user event.
 
         :param name:  The name of the local function
-        :param *args:  The arguments
+        :param args: The arguments
         """
         assert (self._client)
-        if name in self._functions:
-            data = [self._node_id_int16] + list(args)
-            self._client.emit_event(self._node_id,
-                                    self._functions[name],
-                                    data,
-                                    include={self.connection})
+        if self.mirroring:
+            fname = self.mirroring.get_function_name(name)
+            if fname:
+                data = [self._node_id_int16] + list(args)
+                self._client.emit_event(self._node_id,
+                                        fname,
+                                        data,
+                                        include={self.connection})
 
     def set(self,
             name: str,
@@ -774,7 +736,7 @@ end
         for f in cls.functions:
             setattr(cls, f"call_{f.replace('.', '_')}",
                     make_method_with_function(f))
-        for e in cls.events:
+        for e in cls.mirroring_config.events:
             setattr(cls, f"on_{e.replace('.', '_')}",
                     make_property_with_event(e))
 

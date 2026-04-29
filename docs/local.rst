@@ -126,10 +126,10 @@ which events we want to receive (and which variables they are modify) and which 
 
    $ python
 
-   >>> from pyaseba.client.node import Node, EventSpec
+   >>> from pyaseba.client.node import Node, EventSpec, MirroringConfig
 
    >>> class MyNode(Node):
-   ...    events = {'event': EventSpec(variables=['counter'])}
+   ...    events = MirroringConfig(events={'event': EventSpec(variables=['counter'])})
    ...    properties = ['value', 'counter']
    ...    functions = ['square']
    ...    default_target = "tcp:port=33333"
@@ -139,7 +139,7 @@ which events we want to receive (and which variables they are modify) and which 
 The next step is to connect to the node:
 
    >>> node = MyNode()
-   >>> node.connect()
+   >>> node.connect(start_mirroring)
    True
 
 
