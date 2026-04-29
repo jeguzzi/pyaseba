@@ -93,7 +93,7 @@ We go through similar steps as with the client: first, connect the robot:
 
    >>> from pyaseba.client.thymio import Thymio
    >>> thymio = Thymio()
-   >>> thymio.connect()
+   >>> thymio.connect(start_mirroring=True)
    True
 
 We can get and set variables by name 

@@ -5,6 +5,10 @@
 Client examples
 ===============
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -18,10 +22,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_connection_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_1_connection_thumb.png
     :alt:
 
-  :doc:`/gallery/client/connection`
+  :doc:`/gallery/client/1_connection`
 
 .. raw:: html
 
@@ -35,10 +39,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_automatic_node_discovery_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_2_automatic_node_discovery_thumb.png
     :alt:
 
-  :doc:`/gallery/client/automatic_node_discovery`
+  :doc:`/gallery/client/2_automatic_node_discovery`
 
 .. raw:: html
 
@@ -52,10 +56,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_manual_node_discovery_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_3_manual_node_discovery_thumb.png
     :alt:
 
-  :doc:`/gallery/client/manual_node_discovery`
+  :doc:`/gallery/client/3_manual_node_discovery`
 
 .. raw:: html
 
@@ -69,10 +73,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_messages_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_4_messages_thumb.png
     :alt:
 
-  :doc:`/gallery/client/messages`
+  :doc:`/gallery/client/4_messages`
 
 .. raw:: html
 
@@ -82,14 +86,31 @@ Client examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support.">
+
+.. only:: html
+
+  .. image:: /gallery/client/images/thumb/sphx_glr_5_callbacks_thumb.png
+    :alt:
+
+  :doc:`/gallery/client/5_callbacks`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Callbacks</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Shows how to get and set variables of a (remote) Aseba node.">
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_variables_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_6_variables_thumb.png
     :alt:
 
-  :doc:`/gallery/client/variables`
+  :doc:`/gallery/client/6_variables`
 
 .. raw:: html
 
@@ -103,31 +124,14 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_events_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_7_events_thumb.png
     :alt:
 
-  :doc:`/gallery/client/events`
+  :doc:`/gallery/client/7_events`
 
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Events</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support.">
-
-.. only:: html
-
-  .. image:: /gallery/client/images/thumb/sphx_glr_callbacks_thumb.png
-    :alt:
-
-  :doc:`/gallery/client/callbacks`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Callbacks</div>
     </div>
 
 
@@ -141,11 +145,11 @@ Client examples
 .. toctree::
    :hidden:
 
-   /gallery/client/connection
-   /gallery/client/automatic_node_discovery
-   /gallery/client/manual_node_discovery
-   /gallery/client/messages
-   /gallery/client/variables
-   /gallery/client/events
-   /gallery/client/callbacks
+   /gallery/client/1_connection
+   /gallery/client/2_automatic_node_discovery
+   /gallery/client/3_manual_node_discovery
+   /gallery/client/4_messages
+   /gallery/client/5_callbacks
+   /gallery/client/6_variables
+   /gallery/client/7_events
 

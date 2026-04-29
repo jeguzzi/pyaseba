@@ -3,6 +3,10 @@
 Examples
 ========
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -19,6 +23,10 @@ Examples
 Client examples
 ===============
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -32,10 +40,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_connection_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_1_connection_thumb.png
     :alt:
 
-  :doc:`/gallery/client/connection`
+  :doc:`/gallery/client/1_connection`
 
 .. raw:: html
 
@@ -49,10 +57,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_automatic_node_discovery_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_2_automatic_node_discovery_thumb.png
     :alt:
 
-  :doc:`/gallery/client/automatic_node_discovery`
+  :doc:`/gallery/client/2_automatic_node_discovery`
 
 .. raw:: html
 
@@ -66,10 +74,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_manual_node_discovery_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_3_manual_node_discovery_thumb.png
     :alt:
 
-  :doc:`/gallery/client/manual_node_discovery`
+  :doc:`/gallery/client/3_manual_node_discovery`
 
 .. raw:: html
 
@@ -83,10 +91,10 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_messages_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_4_messages_thumb.png
     :alt:
 
-  :doc:`/gallery/client/messages`
+  :doc:`/gallery/client/4_messages`
 
 .. raw:: html
 
@@ -96,14 +104,31 @@ Client examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support.">
+
+.. only:: html
+
+  .. image:: /gallery/client/images/thumb/sphx_glr_5_callbacks_thumb.png
+    :alt:
+
+  :doc:`/gallery/client/5_callbacks`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Callbacks</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Shows how to get and set variables of a (remote) Aseba node.">
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_variables_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_6_variables_thumb.png
     :alt:
 
-  :doc:`/gallery/client/variables`
+  :doc:`/gallery/client/6_variables`
 
 .. raw:: html
 
@@ -117,31 +142,14 @@ Client examples
 
 .. only:: html
 
-  .. image:: /gallery/client/images/thumb/sphx_glr_events_thumb.png
+  .. image:: /gallery/client/images/thumb/sphx_glr_7_events_thumb.png
     :alt:
 
-  :doc:`/gallery/client/events`
+  :doc:`/gallery/client/7_events`
 
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Events</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support.">
-
-.. only:: html
-
-  .. image:: /gallery/client/images/thumb/sphx_glr_callbacks_thumb.png
-    :alt:
-
-  :doc:`/gallery/client/callbacks`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Callbacks</div>
     </div>
 
 
@@ -153,6 +161,10 @@ Client examples
 
 Client nodes examples
 =====================
+
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
 
 
 .. raw:: html
@@ -167,10 +179,10 @@ Client nodes examples
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_basics_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_1_basics_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/basics`
+  :doc:`/gallery/client_node/1_basics`
 
 .. raw:: html
 
@@ -180,35 +192,35 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_attributes_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_2_mirroring_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/attributes`
+  :doc:`/gallery/client_node/2_mirroring`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
+      <div class="sphx-glr-thumbnail-title">Nodes mirroring</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_mirroring_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_3_attributes_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/mirroring`
+  :doc:`/gallery/client_node/3_attributes`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Nodes mirroring</div>
+      <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
     </div>
 
 
@@ -220,6 +232,10 @@ Client nodes examples
 
 Network examples
 ================
+
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
 
 
 .. raw:: html
@@ -234,10 +250,10 @@ Network examples
 
 .. only:: html
 
-  .. image:: /gallery/network/images/thumb/sphx_glr_basics_thumb.png
+  .. image:: /gallery/network/images/thumb/sphx_glr_1_network_basics_thumb.png
     :alt:
 
-  :doc:`/gallery/network/basics`
+  :doc:`/gallery/network/1_network_basics`
 
 .. raw:: html
 

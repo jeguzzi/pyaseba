@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Node &#8212; pyaseba 0.0.0 documentation</title>
+    <title>Node &#8212; pyaseba 0.0.5 documentation</title>
   
   
   
@@ -27,25 +27,26 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/client/node';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
@@ -73,7 +74,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -100,6 +103,50 @@
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
     </header>
   
 
@@ -134,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.0 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -149,10 +196,21 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../first_steps.html">First steps</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../thymio.html">Thymio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../local.html">Local Aseba network</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Examples</a></li>
 
 
 
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../shells/index.html">Command shells</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/client.html">Client shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/node.html">Node shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/thymio.html">Thymio shell</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Client</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="client.html">Client</a></li>
@@ -164,7 +222,7 @@
 <li class="toctree-l3"><a class="reference internal" href="thymio_rf_settings.html">ThymioRFSettings</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_async.html">NodeAsync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="event_spec.html">EventSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mirroring_config.html">MirroringConfig</a></li>
 <li class="toctree-l3"><a class="reference internal" href="thymio.html">Thymio</a></li>
 <li class="toctree-l3"><a class="reference internal" href="helpers.html">Helpers</a></li>
 </ul>
@@ -333,23 +391,28 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.description"><code class="docutils literal notranslate"><span class="pre">description</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.emit"><code class="docutils literal notranslate"><span class="pre">emit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.events"><code class="docutils literal notranslate"><span class="pre">events</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.exposed_functions"><code class="docutils literal notranslate"><span class="pre">exposed_functions</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.function_exclude"><code class="docutils literal notranslate"><span class="pre">function_exclude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.function_include"><code class="docutils literal notranslate"><span class="pre">function_include</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.functions"><code class="docutils literal notranslate"><span class="pre">functions</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_all"><code class="docutils literal notranslate"><span class="pre">get_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_callback"><code class="docutils literal notranslate"><span class="pre">get_callback()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_last_payload"><code class="docutils literal notranslate"><span class="pre">get_last_payload()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.load_script"><code class="docutils literal notranslate"><span class="pre">load_script()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirrored_events"><code class="docutils literal notranslate"><span class="pre">mirrored_events</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirrored_functions"><code class="docutils literal notranslate"><span class="pre">mirrored_functions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirroring_config"><code class="docutils literal notranslate"><span class="pre">mirroring_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.node_id"><code class="docutils literal notranslate"><span class="pre">node_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.pause"><code class="docutils literal notranslate"><span class="pre">pause()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.properties"><code class="docutils literal notranslate"><span class="pre">properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.reset"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.script"><code class="docutils literal notranslate"><span class="pre">script</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.script_inits"><code class="docutils literal notranslate"><span class="pre">script_inits</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set"><code class="docutils literal notranslate"><span class="pre">set()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_callback"><code class="docutils literal notranslate"><span class="pre">set_callback()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_control_period"><code class="docutils literal notranslate"><span class="pre">set_control_period()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_controller"><code class="docutils literal notranslate"><span class="pre">set_controller()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.setup"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.start_mirroring"><code class="docutils literal notranslate"><span class="pre">start_mirroring()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.stop"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync"><code class="docutils literal notranslate"><span class="pre">sync()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync_exclude"><code class="docutils literal notranslate"><span class="pre">sync_exclude</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync_include"><code class="docutils literal notranslate"><span class="pre">sync_include</span></code></a></li>
@@ -375,86 +438,80 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyaseba.client.Node">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pyaseba.client.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyaseba.client.Node" title="Link to this definition">#</a></dt>
-<dd><p>Offers an higher-level, stateful interface to
-interact with a remote Aseba node.</p>
-<p>Can be used with a existent <a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>
-or can create its own client.</p>
+<dd><p>A class to interact with a single remote Aseba node that
+1) has a simpler interface compared to <a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>,
+2) uses a cache for Aseba variables,
+3) exposes Aseba native functions and events,
+4) access Aseba variables, events and functions by name through generic methods
+or through specific attributes.</p>
+<p>Under the hood, it uses <a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>
+to interact with a single Aseba node, either reusing
+an existent client or instantiating one when required.</p>
+<p>Compared to <a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>,
+which manages a collections remote Aseba nodes,
+it simplify the interface by keeping track of the
+network and id of a single remote node.</p>
+<p>Nodes can be configured to execute an Aseba script
+that exposes remote local events and native functions and keeps
+variables up-to-date. When local events are emitted by the
+remote node, a custom event, together with updated Aseba variables,
+is broadcasted; once it is received, the value local variables
+are automatically updated. The script also reacts to custom events that
+in turns call native functions.</p>
+<p>Nodes also provide a interface to access variables, events and functions
+by specific attribute instead of by name, where dots in the variables
+name are replaced by underscores in the attribute names.
+For example, Aseba variable <code class="docutils literal notranslate"><span class="pre">leds.top</span></code> would be linked to Python
+property <code class="docutils literal notranslate"><span class="pre">leds_top</span></code>.</p>
 <p class="rubric">Examples</p>
-<p>Using a base class, offers a slightly simpler interface to interact
-with a single remote Aseba node compared to a client that manages
-a collections remote Aseba nodes.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;tcp:port=33333&quot;</span><span class="p">)</span>
 <span class="go">True</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">variables</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">variables</span>
 <span class="go">{&quot;value&quot;: ...}</span>
 </pre></div>
 </div>
-<p>For instance, setting and getting variables, does not require passing the node_id</p>
+<p>Setting and getting variables does not require passing <code class="docutils literal notranslate"><span class="pre">node_id</span></code></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
 <span class="go">[1, 2, 3]</span>
 </pre></div>
 </div>
-<p>A more significant role of nodes is to provide a Pythonic
-interface to the remote Aseba node. By sub-classing it,
-we can specify:</p>
-<ul>
-<li><p>Aseba variables exposed as Python properties. For example,
-assuming that the Aseba node defines variables <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>:</p>
+<p>Assuming that the remote node defines local Aseba event <code class="docutils literal notranslate"><span class="pre">e</span></code></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">b</span>
-<span class="go">[3, 4, 5]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">mirroring_config</span> <span class="o">=</span> <span class="n">MirroringConfig</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">events</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">EventSpec</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>exposes them as properties, with cached values.
-Dots in the variables name are replaced by undescores
-in the properties names. For example,
-Aseba variable <code class="docutils literal notranslate"><span class="pre">leds.top</span></code> is linked to Python property
-<code class="docutils literal notranslate"><span class="pre">leds_top</span></code>.</p>
-</li>
-<li><p>Aseba local events mirrored as user defined events
-that can optionally synchronize some variables.
-For example, assuming that the Aseba node defines local event <code class="docutils literal notranslate"><span class="pre">e</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">events</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">EventSpec</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<p>after mirroring starts, the node will receive notifications
+when <code class="docutils literal notranslate"><span class="pre">e</span></code> is emitted</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">start_mirroring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">)</span>
+<span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">set_callback</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>mirror it to a local event (“event_e”) that we can wait
-and/or subscribe to using callbacks.</p>
-</li>
-<li><p>Aseba local functions exposed as Python methods.
-For example, assuming that the Aseba node defines
-local function <code class="docutils literal notranslate"><span class="pre">f</span></code> that accept two integers:</p>
+<p>and <code class="docutils literal notranslate"><span class="pre">a</span></code> will be updated without further explicit synchronization.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>Assuming that the Aseba node defines local function <code class="docutils literal notranslate"><span class="pre">f</span></code>
+that accepts two integers,</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">functions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">mirroring_config</span> <span class="o">=</span> <span class="n">MirroringConfig</span><span class="p">(</span><span class="n">function_include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>after mirroring starts, the node will be able to call
+the function by name</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">start_mirroring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>or analogously</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call_f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-</li>
-</ul>
-<p>The last two (events and functions) are realized
-by loading a executing an Aseba script
-on the remote node, which we can inspect with</p>
+<p>We can inspect the Aseba script loaded the remote node
+for mirroring</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">script</span><span class="p">)</span>
 <span class="go">onevent call_f</span>
 <span class="go">call f args[1:3]</span>
@@ -462,6 +519,44 @@ on the remote node, which we can inspect with</p>
 <span class="go">emit event_e [a]</span>
 </pre></div>
 </div>
+<p>Assuming that the Aseba node has variables <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>exposes <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> as properties with cached values</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">MyNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">b</span>
+<span class="go">[3, 4, 5]</span>
+</pre></div>
+</div>
+<p>Callbacks for mirrored events are exposed as Python properties too.
+Following a previous example, instead of calling</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">set_callback</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>we can set the attribute directly</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">on_e</span> <span class="o">=</span> <span class="n">cb</span>
+</pre></div>
+</div>
+<p>The node class below expose Aseba functions as Python methods</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">functions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Instead of calling</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>we can call a specific method</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">call_f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to perform the same work.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyaseba.client.Node.cached">
 <span class="sig-name descname"><span class="pre">cached</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#pyaseba.client.Node.cached" title="Link to this definition">#</a></dt>
@@ -478,8 +573,7 @@ corresponding user event.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of the local function</p></li>
-<li><p><strong>*args</strong> – <p>The arguments</p>
-</p></li>
+<li><p><strong>args</strong> – The arguments</p></li>
 </ul>
 </dd>
 </dl>
@@ -498,7 +592,7 @@ corresponding user event.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyaseba.client.Node.connect">
-<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client._client_impl.Client"><span class="pre">Client</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyaseba.client.Node.connect" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="client.html#pyaseba.client.Client" title="pyaseba.client._client_impl.Client"><span class="pre">Client</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_mirroring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyaseba.client.Node.connect" title="Link to this definition">#</a></dt>
 <dd><p>Connect to a remote Aseba node through
 <a class="reference internal" href="client.html#pyaseba.client.Client.connect" title="pyaseba.client.Client.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Client.connect()</span></code></a></p>
 <dl class="field-list simple">
@@ -510,10 +604,11 @@ it will instantiate a new client.</p></li>
 <li><p><strong>wait_ms</strong> – Time to wait before retrying to connect in case of failure.</p></li>
 <li><p><strong>max_retries</strong> – Maximal number of time to try to connect before returning a failure.</p></li>
 <li><p><strong>node_id</strong> – The node identifier. Negative value match any id.</p></li>
-<li><p><strong>**kwargs</strong> – <p>Parameters that are appended to <code class="docutils literal notranslate"><span class="pre">target</span></code> as <code class="docutils literal notranslate"><span class="pre">&quot;&lt;key&gt;=&lt;value&gt;&quot;</span></code>.
+<li><p><strong>start_mirroring</strong> – Whether to start mirroring after connecting. If not set, call
+<a class="reference internal" href="#pyaseba.client.Node.start_mirroring" title="pyaseba.client.Node.start_mirroring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_mirroring()</span></code></a> later to start mirroring.</p></li>
+<li><p><strong>kwargs</strong> – Parameters that are appended to <code class="docutils literal notranslate"><span class="pre">target</span></code> as <code class="docutils literal notranslate"><span class="pre">&quot;&lt;key&gt;=&lt;value&gt;&quot;</span></code>.
 For example, if target is <code class="docutils literal notranslate"><span class="pre">&quot;tcp&quot;</span></code>, passing <code class="docutils literal notranslate"><span class="pre">port=33333</span></code>
-will result in a target <code class="docutils literal notranslate"><span class="pre">&quot;tcp:port=33333&quot;</span></code>.</p>
-</p></li>
+will result in a target <code class="docutils literal notranslate"><span class="pre">&quot;tcp:port=33333&quot;</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -554,36 +649,17 @@ will result in a target <code class="docutils literal notranslate"><span class="
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> – The name of the (user) event</p></li>
-<li><p><strong>*args</strong> – <p>The payload</p>
-</p></li>
+<li><p><strong>args</strong> – The payload</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyaseba.client.Node.events">
-<span class="sig-name descname"><span class="pre">events</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="event_spec.html#pyaseba.client.node.EventSpec" title="pyaseba.client.node.node.EventSpec"><span class="pre">EventSpec</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#pyaseba.client.Node.events" title="Link to this definition">#</a></dt>
-<dd><p>Local events that should be mirrored</p>
-</dd></dl>
-
 <dl class="py property">
-<dt class="sig sig-object py" id="pyaseba.client.Node.exposed_functions">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">exposed_functions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.Node.exposed_functions" title="Link to this definition">#</a></dt>
-<dd><p>Which Aseba functions are callable through
-<a class="reference internal" href="#pyaseba.client.Node.call" title="pyaseba.client.Node.call"><code class="xref py py-meth docutils literal notranslate"><span class="pre">call()</span></code></a>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyaseba.client.Node.function_exclude">
-<span class="sig-name descname"><span class="pre">function_exclude</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#pyaseba.client.Node.function_exclude" title="Link to this definition">#</a></dt>
-<dd><p>Regular expressions that prevent local functions from being exposed</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyaseba.client.Node.function_include">
-<span class="sig-name descname"><span class="pre">function_include</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#pyaseba.client.Node.function_include" title="Link to this definition">#</a></dt>
-<dd><p>Regular expressions for local functions to be exposed</p>
+<dt class="sig sig-object py" id="pyaseba.client.Node.events">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">events</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.Node.events" title="Link to this definition">#</a></dt>
+<dd><p>All Aseba user events are await-able through
+<a class="reference internal" href="#pyaseba.client.Node.wait" title="pyaseba.client.Node.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -645,11 +721,58 @@ If not set, it will default to <a class="reference internal" href="#pyaseba.clie
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.get_last_payload">
+<span class="sig-name descname"><span class="pre">get_last_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaseba.client.Node.get_last_payload" title="Link to this definition">#</a></dt>
+<dd><p>Gets the last event payload.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event_name</strong> – The event name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The payload of the last received event, if any.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.load_script">
+<span class="sig-name descname"><span class="pre">load_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyaseba.client.Node.load_script" title="Link to this definition">#</a></dt>
+<dd><p>Loads an Aseba script.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script</strong> – The script</p></li>
+<li><p><strong>events</strong> – User defined events as dictionary
+of payload sizes keyed by name.</p></li>
+<li><p><strong>constants</strong> (<em>User defined constants as dictionary</em><em>
+of </em><em>scalar sizes values keyed by name.</em>) – The constants</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the script was successfully compiled and loaded.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="pyaseba.client.Node.mirrored_events">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mirrored_events</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.Node.mirrored_events" title="Link to this definition">#</a></dt>
-<dd><p>Which Aseba local events are await-able through
+<dd><p>Which local mirrored Aseba events are await-able through
 <a class="reference internal" href="#pyaseba.client.Node.wait" title="pyaseba.client.Node.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.Node.mirrored_functions">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mirrored_functions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.Node.mirrored_functions" title="Link to this definition">#</a></dt>
+<dd><p>Which Aseba functions are callable through
+<a class="reference internal" href="#pyaseba.client.Node.call" title="pyaseba.client.Node.call"><code class="xref py py-meth docutils literal notranslate"><span class="pre">call()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyaseba.client.Node.mirroring_config">
+<span class="sig-name descname"><span class="pre">mirroring_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="mirroring_config.html#pyaseba.client.MirroringConfig" title="pyaseba.client.node.mirroring.MirroringConfig"><span class="pre">MirroringConfig</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MirroringConfig(events={},</span> <span class="pre">function_include=[],</span> <span class="pre">function_exclude=[],</span> <span class="pre">script_inits=[])</span></span><a class="headerlink" href="#pyaseba.client.Node.mirroring_config" title="Link to this definition">#</a></dt>
+<dd><p>Mirroring config</p>
 </dd></dl>
 
 <dl class="py property">
@@ -658,22 +781,35 @@ If not set, it will default to <a class="reference internal" href="#pyaseba.clie
 <dd><p>The node id</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.pause">
+<span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.pause" title="Link to this definition">#</a></dt>
+<dd><p>Sends a command to pause running the remote node.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyaseba.client.Node.properties">
 <span class="sig-name descname"><span class="pre">properties</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Collection</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#pyaseba.client.Node.properties" title="Link to this definition">#</a></dt>
 <dd><p>Which variables should be exposed as Python properties</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.reset" title="Link to this definition">#</a></dt>
+<dd><p>Sends a command to pause reset the remote node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.run" title="Link to this definition">#</a></dt>
+<dd><p>Sends a command to start running the remote node.
+It is only effective if a script has been loaded.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="pyaseba.client.Node.script">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">script</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#pyaseba.client.Node.script" title="Link to this definition">#</a></dt>
 <dd><p>The loaded Aseba code (if any)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyaseba.client.Node.script_inits">
-<span class="sig-name descname"><span class="pre">script_inits</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#pyaseba.client.Node.script_inits" title="Link to this definition">#</a></dt>
-<dd><p>Aseba code to add to the preamble (should not define variables)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -749,6 +885,19 @@ Override to specialize the class.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.start_mirroring">
+<span class="sig-name descname"><span class="pre">start_mirroring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.start_mirroring" title="Link to this definition">#</a></dt>
+<dd><p>Starts a mirroring local events and native functions.
+through a custom Aseba script, as configured by <a class="reference internal" href="#pyaseba.client.Node.mirroring_config" title="pyaseba.client.Node.mirroring_config"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mirroring_config</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.Node.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.stop" title="Link to this definition">#</a></dt>
+<dd><p>Sends a command to stop running the remote node.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyaseba.client.Node.sync">
 <span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.sync" title="Link to this definition">#</a></dt>
 <dd><p>Forwards cached variables changes to the remote node.</p>
@@ -794,11 +943,13 @@ and not excluded by <a class="reference internal" href="#pyaseba.client.Node.syn
 <dl class="py method">
 <dt class="sig sig-object py" id="pyaseba.client.Node.wait">
 <span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyaseba.client.Node.wait" title="Link to this definition">#</a></dt>
-<dd><p>Waits for an mirrored local event</p>
+<dd><p>Waits for an event.</p>
+<p>If name is the name of a a mirrored local event, it waits for the
+corresponding user event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – The name of the local event</p></li>
+<li><p><strong>name</strong> – The name of the event.</p></li>
 <li><p><strong>wait_ms</strong> – The maximal time to wait.</p></li>
 </ul>
 </dd>
@@ -870,23 +1021,28 @@ and not excluded by <a class="reference internal" href="#pyaseba.client.Node.syn
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.description"><code class="docutils literal notranslate"><span class="pre">description</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.emit"><code class="docutils literal notranslate"><span class="pre">emit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.events"><code class="docutils literal notranslate"><span class="pre">events</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.exposed_functions"><code class="docutils literal notranslate"><span class="pre">exposed_functions</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.function_exclude"><code class="docutils literal notranslate"><span class="pre">function_exclude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.function_include"><code class="docutils literal notranslate"><span class="pre">function_include</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.functions"><code class="docutils literal notranslate"><span class="pre">functions</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_all"><code class="docutils literal notranslate"><span class="pre">get_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_callback"><code class="docutils literal notranslate"><span class="pre">get_callback()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.get_last_payload"><code class="docutils literal notranslate"><span class="pre">get_last_payload()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.load_script"><code class="docutils literal notranslate"><span class="pre">load_script()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirrored_events"><code class="docutils literal notranslate"><span class="pre">mirrored_events</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirrored_functions"><code class="docutils literal notranslate"><span class="pre">mirrored_functions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.mirroring_config"><code class="docutils literal notranslate"><span class="pre">mirroring_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.node_id"><code class="docutils literal notranslate"><span class="pre">node_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.pause"><code class="docutils literal notranslate"><span class="pre">pause()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.properties"><code class="docutils literal notranslate"><span class="pre">properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.reset"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.script"><code class="docutils literal notranslate"><span class="pre">script</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.script_inits"><code class="docutils literal notranslate"><span class="pre">script_inits</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set"><code class="docutils literal notranslate"><span class="pre">set()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_callback"><code class="docutils literal notranslate"><span class="pre">set_callback()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_control_period"><code class="docutils literal notranslate"><span class="pre">set_control_period()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.set_controller"><code class="docutils literal notranslate"><span class="pre">set_controller()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.setup"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.start_mirroring"><code class="docutils literal notranslate"><span class="pre">start_mirroring()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.stop"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync"><code class="docutils literal notranslate"><span class="pre">sync()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync_exclude"><code class="docutils literal notranslate"><span class="pre">sync_exclude</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.Node.sync_include"><code class="docutils literal notranslate"><span class="pre">sync_include</span></code></a></li>
@@ -944,8 +1100,8 @@ By Jerome Guzzi
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
   </footer>

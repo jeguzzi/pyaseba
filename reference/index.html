@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reference &#8212; pyaseba 0.0.0 documentation</title>
+    <title>Reference &#8212; pyaseba 0.0.5 documentation</title>
   
   
   
@@ -27,32 +27,33 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../_static/documentation_options.js?v=6424ca4d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Client" href="client/index.html" />
-    <link rel="prev" title="Network" href="../gallery/network/basics.html" />
+    <link rel="prev" title="Thymio shell" href="../shells/thymio.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -73,7 +74,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -100,6 +103,46 @@
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
     </header>
   
 
@@ -134,7 +177,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.0 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -158,6 +201,12 @@
 
 
 
+<li class="toctree-l1 has-children"><a class="reference internal" href="../shells/index.html">Command shells</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../shells/client.html">Client shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../shells/node.html">Node shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../shells/thymio.html">Thymio shell</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="client/index.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="client/client.html">Client</a></li>
@@ -169,7 +218,7 @@
 <li class="toctree-l3"><a class="reference internal" href="client/thymio_rf_settings.html">ThymioRFSettings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client/node.html">Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client/node_async.html">NodeAsync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="client/event_spec.html">EventSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="client/mirroring_config.html">MirroringConfig</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client/thymio.html">Thymio</a></li>
 <li class="toctree-l3"><a class="reference internal" href="client/helpers.html">Helpers</a></li>
 </ul>
@@ -371,8 +420,9 @@
 <li class="toctree-l3"><a class="reference internal" href="client/node_async.html#pyaseba.client.NodeAsync"><code class="docutils literal notranslate"><span class="pre">NodeAsync</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="client/event_spec.html">EventSpec</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="client/event_spec.html#pyaseba.client.EventSpec"><code class="docutils literal notranslate"><span class="pre">EventSpec</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/mirroring_config.html">MirroringConfig</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client/mirroring_config.html#pyaseba.client.EventSpec"><code class="docutils literal notranslate"><span class="pre">EventSpec</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client/mirroring_config.html#pyaseba.client.MirroringConfig"><code class="docutils literal notranslate"><span class="pre">MirroringConfig</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="client/thymio.html">Thymio</a><ul>
@@ -437,12 +487,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../gallery/network/basics.html"
+       href="../shells/thymio.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Network</p>
+        <p class="prev-next-title">Thymio shell</p>
       </div>
     </a>
     <a class="right-next"
@@ -504,8 +554,8 @@ By Jerome Guzzi
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
   </footer>

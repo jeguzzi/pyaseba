@@ -1,0 +1,614 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Nodes mirroring &#8212; pyaseba 0.0.5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
+
+    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'gallery/client_node/2_mirroring';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Nodes attributes" href="3_attributes.html" />
+    <link rel="prev" title="Nodes basics" href="1_basics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../first_steps.html">First steps</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../thymio.html">Thymio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../local.html">Local Aseba network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Examples</a></li>
+
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../shells/index.html">Command shells</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/client.html">Client shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/node.html">Node shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../shells/thymio.html">Thymio shell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/client/index.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/client.html">Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/client_async.html">ClientAsync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/messages.html">Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/event.html">Event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/description.html">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/device_info_type.html">DeviceTypeInfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/thymio_rf_settings.html">ThymioRFSettings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/node.html">Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/node_async.html">NodeAsync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/mirroring_config.html">MirroringConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/thymio.html">Thymio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/client/helpers.html">Helpers</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/network/index.html">Network</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/network/node.html">Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/network/network.html">Network</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/helpers.html">Helpers</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/gallery/client_node/2_mirroring.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Nodes mirroring</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-gallery-client-node-2-mirroring-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="nodes-mirroring">
+<span id="sphx-glr-gallery-client-node-2-mirroring-py"></span><h1>Nodes mirroring<a class="headerlink" href="#nodes-mirroring" title="Link to this heading">#</a></h1>
+<p>Showcases how <a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Node</span></code></a> mirrors local Aseba events
+and expose local Aseba functions to Python.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba.client</span><span class="w"> </span><span class="kn">import</span> <a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">Node</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba.client.node</span><span class="w"> </span><span class="kn">import</span> <a href="../../reference/client/mirroring_config.html#pyaseba.client.EventSpec" title="pyaseba.client.EventSpec" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">EventSpec</span></a><span class="p">,</span> <a href="../../reference/client/mirroring_config.html#pyaseba.client.MirroringConfig" title="pyaseba.client.MirroringConfig" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">MirroringConfig</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+</pre></div>
+</div>
+<p>When specialized, py:class:<cite>pyaseba.client.Node</cite> may expose
+local Aseba events and functions of the remote node to Python
+by loading and running a custom Aseba script.</p>
+<p>In particular, they:</p>
+<ul class="simple">
+<li><p>Define user events that mirror local events. Each time a
+(remote) local event is emitted, the user events is forwarded
+to the client, together with a list of variables.
+This keeps the value of the Aseba variables in sync.
+Moreover, local events can be awaited using
+<a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node.wait" title="pyaseba.client.Node.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Node.wait()</span></code></a>.</p></li>
+<li><p>Define user events to call remote native functions.
+For example, a native function f that takes an input of size 2,
+is exposed by a user event <code class="docutils literal notranslate"><span class="pre">call_f</span></code> that takes a size 2 payload.
+Users can trigger a remote function call using
+<a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node.call" title="pyaseba.client.Node.call"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.Node.call()</span></code></a>.</p></li>
+</ul>
+<p>In this example, the node mirrors local event (<code class="docutils literal notranslate"><span class="pre">event</span></code>), synchronizing the value
+of variable <code class="docutils literal notranslate"><span class="pre">counter</span></code> (which is incremented by the remote node just before emitting a
+the event) and exposes the Aseba function <code class="docutils literal notranslate"><span class="pre">square</span></code>, which set the Aseba variable <code class="docutils literal notranslate"><span class="pre">value</span></code>
+to the square of the function argument.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MySimpleNode</span><span class="p">(</span><a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">Node</span></a><span class="p">):</span>
+    <span class="n">mirroring_config</span> <span class="o">=</span> <a href="../../reference/client/mirroring_config.html#pyaseba.client.MirroringConfig" title="pyaseba.client.MirroringConfig" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">MirroringConfig</span></a><span class="p">(</span>
+        <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <a href="../../reference/client/mirroring_config.html#pyaseba.client.EventSpec" title="pyaseba.client.EventSpec" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">EventSpec</span></a><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;counter&quot;</span><span class="p">])},</span>
+        <span class="n">function_include</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;square&quot;</span><span class="p">])</span>
+
+
+<span class="n">node</span> <span class="o">=</span> <a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">MySimpleNode</span></a><span class="p">(</span><span class="n">cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="../../reference/client/node.html#pyaseba.client.Node.connect" title="pyaseba.client.Node.connect" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">connect</span></a><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;tcp:port=33333&quot;</span><span class="p">,</span> <span class="n">start_mirroring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+<p>The node has loaded the Aseba script, created from
+the class specification.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../reference/client/node.html#pyaseba.client.Node.script" title="pyaseba.client.Node.script" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-property"><span class="n">node</span><span class="o">.</span><span class="n">script</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>var temp
+
+
+onevent event
+emit event_event [counter]
+onevent call_square
+if id == args[0] then
+call square(args[1:1])
+end
+</pre></div>
+</div>
+<p>It mirrors local functions</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../reference/client/node.html#pyaseba.client.Node.mirrored_functions" title="pyaseba.client.Node.mirrored_functions" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-property"><span class="n">node</span><span class="o">.</span><span class="n">mirrored_functions</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;square&#39;]
+</pre></div>
+</div>
+<p>which we can call using using</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.call" title="pyaseba.client.Node.call" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">call</span></a><span class="p">(</span><span class="s2">&quot;square&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let us verify that this indeed sets <code class="docutils literal notranslate"><span class="pre">value</span></code> to
+the square of 3. As the <code class="docutils literal notranslate"><span class="pre">value</span></code> is not synchronized,
+we need to query it explicitly.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2
+</pre></div>
+</div>
+<p>It also mirrors local events</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../reference/client/node.html#pyaseba.client.Node.mirrored_events" title="pyaseba.client.Node.mirrored_events" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-property"><span class="n">node</span><span class="o">.</span><span class="n">mirrored_events</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;event&#39;]
+</pre></div>
+</div>
+<p>which we can wait for.
+As the node is increasing <code class="docutils literal notranslate"><span class="pre">counter</span></code> variable each time, we expect to see it
+reflected in the <code class="docutils literal notranslate"><span class="pre">counter</span></code> attribute.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <a href="../../reference/client/node.html#pyaseba.client.Node.wait" title="pyaseba.client.Node.wait" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">wait</span></a><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;counter = </span><span class="si">{</span><a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>counter = 25
+counter = 26
+counter = 27
+counter = 28
+counter = 29
+</pre></div>
+</div>
+<p>We can also define callbacks for (mirrored) local events, like</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cb</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">MySimpleNode</span></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;counter = </span><span class="si">{</span><a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;counter&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+
+<a href="../../reference/client/node.html#pyaseba.client.Node.set_callback" title="pyaseba.client.Node.set_callback" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">set_callback</span></a><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sleeping for a while should get callback called several times</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>counter = 30
+counter = 31
+counter = 32
+counter = 33
+counter = 34
+counter = 35
+counter = 36
+counter = 37
+counter = 38
+counter = 39
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.close" title="pyaseba.client.Node.close" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">close</span></a><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.020 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-client-node-2-mirroring-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/706087f39054216d6e492454d88f1597/2_mirroring.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">2_mirroring.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/cdbbec142aad6e5e21452244f79dfb90/2_mirroring.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">2_mirroring.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/99dc99d6a22b6cbef2fb280123eea1ef/2_mirroring.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">2_mirroring.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="1_basics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Nodes basics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="3_attributes.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Nodes attributes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jerome Guzzi
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026, Jerome Guzzi.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

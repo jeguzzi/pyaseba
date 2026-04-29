@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:10.157** total execution time for 7 files **from gallery/client**:
+**00:10.136** total execution time for 7 files **from gallery/client**:
 
 .. container::
 
@@ -32,24 +32,24 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_client_callbacks.py` (``callbacks.py``)
-     - 00:03.014
+   * - :ref:`sphx_glr_gallery_client_5_callbacks.py` (``5_callbacks.py``)
+     - 00:03.021
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_variables.py` (``variables.py``)
-     - 00:02.017
+   * - :ref:`sphx_glr_gallery_client_6_variables.py` (``6_variables.py``)
+     - 00:02.014
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_connection.py` (``connection.py``)
-     - 00:01.046
+   * - :ref:`sphx_glr_gallery_client_3_manual_node_discovery.py` (``3_manual_node_discovery.py``)
+     - 00:01.035
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_automatic_node_discovery.py` (``automatic_node_discovery.py``)
-     - 00:01.036
+   * - :ref:`sphx_glr_gallery_client_1_connection.py` (``1_connection.py``)
+     - 00:01.027
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_manual_node_discovery.py` (``manual_node_discovery.py``)
-     - 00:01.017
+   * - :ref:`sphx_glr_gallery_client_7_events.py` (``7_events.py``)
+     - 00:01.015
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_messages.py` (``messages.py``)
-     - 00:01.014
-     - 0.0
-   * - :ref:`sphx_glr_gallery_client_events.py` (``events.py``)
+   * - :ref:`sphx_glr_gallery_client_2_automatic_node_discovery.py` (``2_automatic_node_discovery.py``)
      - 00:01.013
+     - 0.0
+   * - :ref:`sphx_glr_gallery_client_4_messages.py` (``4_messages.py``)
+     - 00:01.011
      - 0.0

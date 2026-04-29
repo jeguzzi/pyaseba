@@ -149,7 +149,6 @@ Callbacks for when messages are received.
     Received UserMessage(source=0, type=0, data=[19]) on network #1
     Received UserMessage(source=0, type=0, data=[20]) on network #1
     Received UserMessage(source=0, type=0, data=[21]) on network #1
-    Received NodePresent(source=0, version=9) on network #1
 
 
 
@@ -222,7 +221,7 @@ Callbacks for when events are received.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.014 seconds)
+   **Total running time of the script:** (0 minutes 3.020 seconds)
 
 
 .. _sphx_glr_download_gallery_client_callbacks.py:

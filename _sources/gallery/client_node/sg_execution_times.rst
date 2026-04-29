@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:04.249** total execution time for 3 files **from gallery/client_node**:
+**00:05.051** total execution time for 3 files **from gallery/client_node**:
 
 .. container::
 
@@ -32,12 +32,12 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_client_node_mirroring.py` (``mirroring.py``)
-     - 00:02.016
+   * - :ref:`sphx_glr_gallery_client_node_2_mirroring.py` (``2_mirroring.py``)
+     - 00:02.020
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_node_basics.py` (``basics.py``)
-     - 00:01.220
+   * - :ref:`sphx_glr_gallery_client_node_3_attributes.py` (``3_attributes.py``)
+     - 00:02.019
      - 0.0
-   * - :ref:`sphx_glr_gallery_client_node_attributes.py` (``attributes.py``)
+   * - :ref:`sphx_glr_gallery_client_node_1_basics.py` (``1_basics.py``)
      - 00:01.012
      - 0.0

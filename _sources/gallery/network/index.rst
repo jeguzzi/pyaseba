@@ -5,6 +5,10 @@
 Network examples
 ================
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -18,10 +22,10 @@ Network examples
 
 .. only:: html
 
-  .. image:: /gallery/network/images/thumb/sphx_glr_basics_thumb.png
+  .. image:: /gallery/network/images/thumb/sphx_glr_1_network_basics_thumb.png
     :alt:
 
-  :doc:`/gallery/network/basics`
+  :doc:`/gallery/network/1_network_basics`
 
 .. raw:: html
 
@@ -39,5 +43,5 @@ Network examples
 .. toctree::
    :hidden:
 
-   /gallery/network/basics
+   /gallery/network/1_network_basics
 

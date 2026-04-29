@@ -5,6 +5,10 @@
 Client nodes examples
 =====================
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -18,10 +22,10 @@ Client nodes examples
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_basics_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_1_basics_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/basics`
+  :doc:`/gallery/client_node/1_basics`
 
 .. raw:: html
 
@@ -31,35 +35,35 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_attributes_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_2_mirroring_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/attributes`
+  :doc:`/gallery/client_node/2_mirroring`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
+      <div class="sphx-glr-thumbnail-title">Nodes mirroring</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
 
 .. only:: html
 
-  .. image:: /gallery/client_node/images/thumb/sphx_glr_mirroring_thumb.png
+  .. image:: /gallery/client_node/images/thumb/sphx_glr_3_attributes_thumb.png
     :alt:
 
-  :doc:`/gallery/client_node/mirroring`
+  :doc:`/gallery/client_node/3_attributes`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Nodes mirroring</div>
+      <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
     </div>
 
 
@@ -73,7 +77,7 @@ Client nodes examples
 .. toctree::
    :hidden:
 
-   /gallery/client_node/basics
-   /gallery/client_node/attributes
-   /gallery/client_node/mirroring
+   /gallery/client_node/1_basics
+   /gallery/client_node/2_mirroring
+   /gallery/client_node/3_attributes
 

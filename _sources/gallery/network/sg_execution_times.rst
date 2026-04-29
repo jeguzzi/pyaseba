@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:01.013** total execution time for 1 file **from gallery/network**:
+**00:01.008** total execution time for 1 file **from gallery/network**:
 
 .. container::
 
@@ -32,6 +32,6 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_network_basics.py` (``basics.py``)
-     - 00:01.013
+   * - :ref:`sphx_glr_gallery_network_1_network_basics.py` (``1_network_basics.py``)
+     - 00:01.008
      - 0.0

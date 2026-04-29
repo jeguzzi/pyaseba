@@ -100,12 +100,12 @@ We get the current value of all variables one by one
 
  .. code-block:: none
 
-    _productId = [1]
-    args = [0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    counter = [7681]
-    id = [1]
+    _productId = [0]
+    args = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    counter = [126]
+    id = [0]
     source = [0]
-    value = [3]
+    value = [0]
 
 
 
@@ -196,7 +196,7 @@ before checking the current values, getting them all at once.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.017 seconds)
+   **Total running time of the script:** (0 minutes 2.034 seconds)
 
 
 .. _sphx_glr_download_gallery_client_variables.py:

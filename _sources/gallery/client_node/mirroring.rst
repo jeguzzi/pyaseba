@@ -30,7 +30,7 @@ and expose local Aseba functions to Python.
 
 
     from pyaseba.client import Node
-    from pyaseba.client.node import EventSpec
+    from pyaseba.client.node import EventSpec, MirroringConfig
     import time
 
 
@@ -66,19 +66,20 @@ of variable ``counter`` (which is incremented by the remote node just before emi
 the event) and exposes the Aseba function ``square``, which set the Aseba variable ``value``
 to the square of the function argument.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-47
+.. GENERATED FROM PYTHON SOURCE LINES 37-48
 
 .. code-block:: Python
 
 
 
     class MySimpleNode(Node):
-        events = {"event": EventSpec(variables=["counter"])}
-        function_args = "args"
+        mirroring_config = MirroringConfig(
+            events={"event": EventSpec(variables=["counter"])},
+            function_include=["square"])
 
 
     node = MySimpleNode(cached=True)
-    node.connect(target="tcp:port=33333")
+    node.connect(target="tcp:port=33333", start_mirroring=True)
 
 
 
@@ -93,12 +94,12 @@ to the square of the function argument.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-50
+.. GENERATED FROM PYTHON SOURCE LINES 49-51
 
 The node has loaded the Aseba script, created from
 the class specification.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-53
+.. GENERATED FROM PYTHON SOURCE LINES 51-54
 
 .. code-block:: Python
 
@@ -118,20 +119,25 @@ the class specification.
 
     onevent event
     emit event_event [counter]
+    onevent call_square
+    if id == args[0] then
+    call square(args[1:1])
+    end
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-55
 
-It exposes local functions
+.. GENERATED FROM PYTHON SOURCE LINES 55-56
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-58
+It mirrors local functions
+
+.. GENERATED FROM PYTHON SOURCE LINES 56-59
 
 .. code-block:: Python
 
 
-    print(node.exposed_functions)
+    print(node.mirrored_functions)
 
 
 
@@ -141,16 +147,16 @@ It exposes local functions
 
  .. code-block:: none
 
-    []
+    ['square']
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-60
+.. GENERATED FROM PYTHON SOURCE LINES 60-61
 
 which we can call using using
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-63
+.. GENERATED FROM PYTHON SOURCE LINES 61-64
 
 .. code-block:: Python
 
@@ -164,18 +170,18 @@ which we can call using using
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-67
+.. GENERATED FROM PYTHON SOURCE LINES 65-68
 
 Let us verify that this indeed sets ``value`` to
 the square of 3. As the ``value`` is not synchronized,
 we need to query it explicitly.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-70
+.. GENERATED FROM PYTHON SOURCE LINES 68-71
 
 .. code-block:: Python
 
 
-    node.get("value", cached=False)
+    print(node.get("value", cached=False))
 
 
 
@@ -185,16 +191,16 @@ we need to query it explicitly.
 
  .. code-block:: none
 
-
     9
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-72
+
+.. GENERATED FROM PYTHON SOURCE LINES 72-73
 
 It also mirrors local events
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-75
+.. GENERATED FROM PYTHON SOURCE LINES 73-76
 
 .. code-block:: Python
 
@@ -214,13 +220,13 @@ It also mirrors local events
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-79
+.. GENERATED FROM PYTHON SOURCE LINES 77-80
 
 which we can wait for.
 As the node is increasing ``counter`` variable each time, we expect to see it
 reflected in the ``counter`` attribute.
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-84
+.. GENERATED FROM PYTHON SOURCE LINES 80-85
 
 .. code-block:: Python
 
@@ -237,20 +243,20 @@ reflected in the ``counter`` attribute.
 
  .. code-block:: none
 
-    counter = 191
-    counter = 192
-    counter = 193
-    counter = 194
-    counter = 195
+    counter = 1505
+    counter = 1506
+    counter = 1507
+    counter = 1508
+    counter = 1509
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-86
+.. GENERATED FROM PYTHON SOURCE LINES 86-87
 
 We can also define callbacks for (mirrored) local events, like
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-94
+.. GENERATED FROM PYTHON SOURCE LINES 87-95
 
 .. code-block:: Python
 
@@ -269,11 +275,11 @@ We can also define callbacks for (mirrored) local events, like
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-96
+.. GENERATED FROM PYTHON SOURCE LINES 96-97
 
 Sleeping for a while should get callback called several times
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-99
+.. GENERATED FROM PYTHON SOURCE LINES 97-100
 
 .. code-block:: Python
 
@@ -288,21 +294,21 @@ Sleeping for a while should get callback called several times
 
  .. code-block:: none
 
-    counter = 196
-    counter = 197
-    counter = 198
-    counter = 199
-    counter = 200
-    counter = 201
-    counter = 202
-    counter = 203
-    counter = 204
-    counter = 205
+    counter = 1510
+    counter = 1511
+    counter = 1512
+    counter = 1513
+    counter = 1514
+    counter = 1515
+    counter = 1516
+    counter = 1517
+    counter = 1518
+    counter = 1519
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-101
+.. GENERATED FROM PYTHON SOURCE LINES 101-102
 
 .. code-block:: Python
 
@@ -317,7 +323,7 @@ Sleeping for a while should get callback called several times
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.016 seconds)
+   **Total running time of the script:** (0 minutes 2.010 seconds)
 
 
 .. _sphx_glr_download_gallery_client_node_mirroring.py:

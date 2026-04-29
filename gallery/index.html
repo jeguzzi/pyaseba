@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Examples &#8212; pyaseba 0.0.0 documentation</title>
+    <title>Examples &#8212; pyaseba 0.0.5 documentation</title>
   
   
   
@@ -27,32 +27,33 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../_static/documentation_options.js?v=6424ca4d"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gallery/index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Client examples" href="client/index.html" />
-    <link rel="prev" title="Introduction" href="../intro.html" />
+    <link rel="prev" title="Local Aseba network" href="../local.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -73,7 +74,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -100,6 +103,50 @@
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
     </header>
   
 
@@ -134,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.0 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -149,10 +196,21 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../first_steps.html">First steps</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../thymio.html">Thymio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../local.html">Local Aseba network</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Examples</a></li>
 
 
 
+<li class="toctree-l1 has-children"><a class="reference internal" href="../shells/index.html">Command shells</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../shells/client.html">Client shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../shells/node.html">Node shell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../shells/thymio.html">Thymio shell</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/client/index.html">Client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/client.html">Client</a></li>
@@ -164,7 +222,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/thymio_rf_settings.html">ThymioRFSettings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/node.html">Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/node_async.html">NodeAsync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/client/event_spec.html">EventSpec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/client/mirroring_config.html">MirroringConfig</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/thymio.html">Thymio</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/client/helpers.html">Helpers</a></li>
 </ul>
@@ -340,47 +398,47 @@
                   
   <section id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h1>
-<div class="sphx-glr-thumbnails"></div></section>
+<div id='sg-tag-list' class='sphx-glr-tag-list'></div><div class="sphx-glr-thumbnails"></div></section>
 <section id="client-examples">
 <h1>Client examples<a class="headerlink" href="#client-examples" title="Link to this heading">#</a></h1>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Showcases the life-cycle of an Aseba client."><img alt="" src="../_images/sphx_glr_connection_thumb.png" />
-<p><a class="reference internal" href="client/connection.html"><span class="doc">Client</span></a></p>
+<div id='sg-tag-list' class='sphx-glr-tag-list'></div><div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Showcases the life-cycle of an Aseba client."><img alt="" src="../_images/sphx_glr_1_connection_thumb.png" />
+<p><a class="reference internal" href="client/1_connection.html"><span class="doc">Client</span></a></p>
   <div class="sphx-glr-thumbnail-title">Client</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases how the client automatically discovers nodes and gets their description."><img alt="" src="../_images/sphx_glr_automatic_node_discovery_thumb.png" />
-<p><a class="reference internal" href="client/automatic_node_discovery.html"><span class="doc">Automatic node discovery</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases how the client automatically discovers nodes and gets their description."><img alt="" src="../_images/sphx_glr_2_automatic_node_discovery_thumb.png" />
+<p><a class="reference internal" href="client/2_automatic_node_discovery.html"><span class="doc">Automatic node discovery</span></a></p>
   <div class="sphx-glr-thumbnail-title">Automatic node discovery</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This script showcases how the client can discover nodes and query their description manually."><img alt="" src="../_images/sphx_glr_manual_node_discovery_thumb.png" />
-<p><a class="reference internal" href="client/manual_node_discovery.html"><span class="doc">Manual node discovery</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This script showcases how the client can discover nodes and query their description manually."><img alt="" src="../_images/sphx_glr_3_manual_node_discovery_thumb.png" />
+<p><a class="reference internal" href="client/3_manual_node_discovery.html"><span class="doc">Manual node discovery</span></a></p>
   <div class="sphx-glr-thumbnail-title">Manual node discovery</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives Aseba message."><img alt="" src="../_images/sphx_glr_messages_thumb.png" />
-<p><a class="reference internal" href="client/messages.html"><span class="doc">Messages</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives Aseba message."><img alt="" src="../_images/sphx_glr_4_messages_thumb.png" />
+<p><a class="reference internal" href="client/4_messages.html"><span class="doc">Messages</span></a></p>
   <div class="sphx-glr-thumbnail-title">Messages</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Shows how to get and set variables of a (remote) Aseba node."><img alt="" src="../_images/sphx_glr_variables_thumb.png" />
-<p><a class="reference internal" href="client/variables.html"><span class="doc">Variables</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Variables</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Shows how a client load an Aseba script to a remote node, and interacts with it using user-defined events."><img alt="" src="../_images/sphx_glr_events_thumb.png" />
-<p><a class="reference internal" href="client/events.html"><span class="doc">Events</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Events</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support."><img alt="" src="../_images/sphx_glr_callbacks_thumb.png" />
-<p><a class="reference internal" href="client/callbacks.html"><span class="doc">Callbacks</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases the different callbacks that clients support."><img alt="" src="../_images/sphx_glr_5_callbacks_thumb.png" />
+<p><a class="reference internal" href="client/5_callbacks.html"><span class="doc">Callbacks</span></a></p>
   <div class="sphx-glr-thumbnail-title">Callbacks</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Shows how to get and set variables of a (remote) Aseba node."><img alt="" src="../_images/sphx_glr_6_variables_thumb.png" />
+<p><a class="reference internal" href="client/6_variables.html"><span class="doc">Variables</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Variables</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Shows how a client load an Aseba script to a remote node, and interacts with it using user-defined events."><img alt="" src="../_images/sphx_glr_7_events_thumb.png" />
+<p><a class="reference internal" href="client/7_events.html"><span class="doc">Events</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Events</div>
 </div></div></section>
 <section id="client-nodes-examples">
 <h1>Client nodes examples<a class="headerlink" href="#client-nodes-examples" title="Link to this heading">#</a></h1>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Showcases the basic :pypyaseba.client.Node interface."><img alt="" src="../_images/sphx_glr_basics_thumb.png" />
-<p><a class="reference internal" href="client_node/basics.html"><span class="doc">Nodes basics</span></a></p>
+<div id='sg-tag-list' class='sphx-glr-tag-list'></div><div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Showcases the basic :pypyaseba.client.Node interface."><img alt="" src="../_images/sphx_glr_1_basics_thumb.png" />
+<p><a class="reference internal" href="client_node/1_basics.html"><span class="doc">Nodes basics</span></a></p>
   <div class="sphx-glr-thumbnail-title">Nodes basics</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods"><img alt="" src="../_images/sphx_glr_attributes_thumb.png" />
-<p><a class="reference internal" href="client_node/attributes.html"><span class="doc">Nodes attributes</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python."><img alt="" src="../_images/sphx_glr_mirroring_thumb.png" />
-<p><a class="reference internal" href="client_node/mirroring.html"><span class="doc">Nodes mirroring</span></a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python."><img alt="" src="../_images/sphx_glr_2_mirroring_thumb.png" />
+<p><a class="reference internal" href="client_node/2_mirroring.html"><span class="doc">Nodes mirroring</span></a></p>
   <div class="sphx-glr-thumbnail-title">Nodes mirroring</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods"><img alt="" src="../_images/sphx_glr_3_attributes_thumb.png" />
+<p><a class="reference internal" href="client_node/3_attributes.html"><span class="doc">Nodes attributes</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Nodes attributes</div>
 </div></div></section>
 <section id="network-examples">
 <h1>Network examples<a class="headerlink" href="#network-examples" title="Link to this heading">#</a></h1>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to setup a simple Aseba network from Python."><img alt="" src="../_images/sphx_glr_basics_thumb1.png" />
-<p><a class="reference internal" href="network/basics.html"><span class="doc">Network</span></a></p>
+<div id='sg-tag-list' class='sphx-glr-tag-list'></div><div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to setup a simple Aseba network from Python."><img alt="" src="../_images/sphx_glr_1_network_basics_thumb.png" />
+<p><a class="reference internal" href="network/1_network_basics.html"><span class="doc">Network</span></a></p>
   <div class="sphx-glr-thumbnail-title">Network</div>
 </div></div><div class="toctree-wrapper compound">
 </div>
@@ -407,12 +465,12 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../intro.html"
+       href="../local.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction</p>
+        <p class="prev-next-title">Local Aseba network</p>
       </div>
     </a>
     <a class="right-next"
@@ -495,8 +553,8 @@ By Jerome Guzzi
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
   </footer>

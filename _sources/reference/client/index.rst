@@ -16,7 +16,7 @@ Client
    thymio_rf_settings
    node
    node_async
-   event_spec
+   mirroring_config
    thymio
    helpers
    

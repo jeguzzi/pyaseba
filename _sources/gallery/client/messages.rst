@@ -100,7 +100,7 @@ and wait until we get a response
     Ignoring NamedVariableDescription(source=0, name='id', size=1)
     Ignoring NamedVariableDescription(source=0, name='args', size=32)
     Ignoring NamedVariableDescription(source=0, name='counter', size=1)
-    Ignoring NamedVariableDescription(source=0, name='value', size=1)
+    Ignoring LocalEventDescription(source=0, name='event', description='emitted at each control step after incrementing counter')
 
 
 
@@ -108,7 +108,7 @@ and wait until we get a response
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.014 seconds)
+   **Total running time of the script:** (0 minutes 1.015 seconds)
 
 
 .. _sphx_glr_download_gallery_client_messages.py:

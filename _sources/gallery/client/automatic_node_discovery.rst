@@ -187,7 +187,7 @@ and
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.036 seconds)
+   **Total running time of the script:** (0 minutes 1.040 seconds)
 
 
 .. _sphx_glr_download_gallery_client_automatic_node_discovery.py:

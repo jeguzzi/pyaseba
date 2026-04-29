@@ -30,7 +30,7 @@ that exposes Aseba variables and functions as Python attributes and methods
 
 
     from pyaseba.client import Node
-    from pyaseba.client.node import EventSpec
+    from pyaseba.client.node import EventSpec, MirroringConfig
 
 
 
@@ -52,20 +52,22 @@ more Python-affine interface:
 In this example, the node exposes properties
 ``counter`` and ``value``, and method `call_square``.
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-34
+.. GENERATED FROM PYTHON SOURCE LINES 23-36
 
 .. code-block:: Python
 
 
 
     class MySimpleNode(Node):
-        events = {"event": EventSpec(variables=["counter"])}
+        mirroring_config = MirroringConfig(
+            events={"event": EventSpec(variables=["counter"])},
+            function_include=["square"])
         properties = ['counter', 'value']
         functions = ['square']
 
 
     node = MySimpleNode(cached=True)
-    node.connect(target="tcp:port=33333")
+    node.connect(target="tcp:port=33333", start_mirroring=True)
 
 
 
@@ -80,11 +82,11 @@ In this example, the node exposes properties
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-36
+.. GENERATED FROM PYTHON SOURCE LINES 37-38
 
 Aseba variables are now accessible as attributes
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-39
+.. GENERATED FROM PYTHON SOURCE LINES 38-41
 
 .. code-block:: Python
 
@@ -98,12 +100,12 @@ Aseba variables are now accessible as attributes
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-42
+.. GENERATED FROM PYTHON SOURCE LINES 42-44
 
 Pushing changes from Python to Aseba is postponed until
 :py:meth:`pyaseba.client.Node.sync` is called.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-46
+.. GENERATED FROM PYTHON SOURCE LINES 44-48
 
 .. code-block:: Python
 
@@ -124,11 +126,11 @@ Pushing changes from Python to Aseba is postponed until
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-48
+.. GENERATED FROM PYTHON SOURCE LINES 49-50
 
 Calling
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-51
+.. GENERATED FROM PYTHON SOURCE LINES 50-53
 
 .. code-block:: Python
 
@@ -142,18 +144,21 @@ Calling
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-55
+.. GENERATED FROM PYTHON SOURCE LINES 54-57
 
 should set ``value`` to
 the square of 3. As ``value`` is not synchronized,
 we need to query it explicitly.
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-58
+.. GENERATED FROM PYTHON SOURCE LINES 57-63
 
 .. code-block:: Python
 
 
-    node.get("value", cached=False)
+    import time
+    time.sleep(1)
+
+    print(node.get("value", cached=False))
 
 
 
@@ -163,12 +168,12 @@ we need to query it explicitly.
 
  .. code-block:: none
 
-
     9
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-60
+
+.. GENERATED FROM PYTHON SOURCE LINES 64-65
 
 .. code-block:: Python
 
@@ -183,7 +188,7 @@ we need to query it explicitly.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.012 seconds)
+   **Total running time of the script:** (0 minutes 2.018 seconds)
 
 
 .. _sphx_glr_download_gallery_client_node_attributes.py:
