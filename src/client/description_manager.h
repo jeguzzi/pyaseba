@@ -58,6 +58,7 @@ struct ClientNode : public Aseba::TargetDescription {
         unsigned i;
         variables = getVariablesMap(i);
         variables_size = compute_variables_size(variables);
+        variables_by_index.clear();
         for (const auto &[name, v] : variables) {
           const auto [index, s] = v;
           variables_by_index[index] = {name, s};
@@ -83,6 +84,11 @@ struct ClientNode : public Aseba::TargetDescription {
   void update(const Aseba::VariablesMap &vm) {
     variables = vm;
     variables_size = compute_variables_size(vm);
+    variables_by_index.clear();
+    for (const auto &[name, v] : variables) {
+      const auto [index, s] = v;
+      variables_by_index[index] = {name, s};
+    }
   }
 
   void update(const std::vector<Aseba::NamedValue> &named_events) {
