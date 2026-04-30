@@ -13,7 +13,7 @@ before interacting with it in a separate Python console by connecting to ``tcp:p
 Client
 ======
 
-We follow similar steps as with the Thymio. First we connect and discover nodes:
+We follow similar steps as with the Thymio. First, we connect and discover nodes:
 
 .. code-block::
 
@@ -38,7 +38,7 @@ running on the local Aseba network. We can use it to get/set variables
    [0]
    >>> client.set_variable(node_id, "value", [32])
 
-Unfortunately, contrary to a robot, the local Aseba node is not doing much except manipulating values. Therefore to check that the interact is working, we just get the value again 
+Unfortunately, contrary to a robot, the local Aseba node is not doing much except manipulating values. Therefore, to check that the interaction is working, we just get the value again 
 
 .. code-block::
 
@@ -70,7 +70,7 @@ Let us inspect the full description of the node
    Functions
    ---------
    - duplicate(input[1], result[1]): duplicates the input
-   - square(input[1]): set value to the square of the input
+   - square(input[1]): sets value to the square of the input
 
 Let us verify that counter is indeed incremented
 
@@ -81,7 +81,7 @@ Let us verify that counter is indeed incremented
    >>> client.get_variable(node_id, 'counter')
    [4827]
 
-We can load an Aseba script that send down ``counter`` each time it is updated, and ask the node to run it
+We can load an Aseba script that sends down ``counter`` each time it is updated, and ask the node to run it
 
 .. code-block::
 
@@ -103,7 +103,7 @@ We can now send an event from Python, which in this case, should make the counte
    >>> client.get_variable(node_id, "counter")
    [16]
 
-The client listen for incoming events. For example, let us wait
+The client listens for incoming events. For example, let us wait
 until the counter is incremented
 
 .. code-block::
@@ -119,8 +119,8 @@ until the counter is incremented
 Node
 ====
 
-The first step is configure the Python interface by listing
-which events we want to receive (and which variables they are modify) and which variables we want to expose as attributes (properties). This requires knowing the specifics of the remote node we want to interact with.
+The first step is to configure the Python interface by listing
+which events we want to receive (and which variables they are modified) and which variables we want to expose as attributes (properties). This requires knowing the specifics of the remote node we want to interact with.
 
 .. code-block::
 
@@ -230,7 +230,7 @@ Let us verify that it works as expected
 .. code-block::
 
    >>> for _ in range(5):
-   ...     _ =  node.wait("event")
+   ...     _ = node.wait("event")
    ...     print(node.counter)
    ...
    1
@@ -238,4 +238,3 @@ Let us verify that it works as expected
    1
    0
    1
-  

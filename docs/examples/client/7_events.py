@@ -2,7 +2,7 @@
 Events
 ======
 
-Shows how a client load an Aseba script to a remote node,
+Shows how a client loads an Aseba script to a remote node,
 and interacts with it using user-defined events.
 """
 

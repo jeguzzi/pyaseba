@@ -3,7 +3,7 @@ Nodes mirroring
 ===============
 
 Showcases how :py:class:`pyaseba.client.Node` mirrors local Aseba events
-and expose local Aseba functions to Python.
+and exposes local Aseba functions to Python.
 """
 
 from pyaseba.client import Node
@@ -18,7 +18,7 @@ import time
 # In particular, they:
 #
 # - Define user events that mirror local events. Each time a
-#   (remote) local event is emitted, the user events is forwarded
+#   (remote) local event is emitted, the user event is forwarded
 #   to the client, together with a list of variables.
 #   This keeps the value of the Aseba variables in sync.
 #   Moreover, local events can be awaited using
@@ -32,7 +32,7 @@ import time
 #
 # In this example, the node mirrors local event (``event``), synchronizing the value
 # of variable ``counter`` (which is incremented by the remote node just before emitting a
-# the event) and exposes the Aseba function ``square``, which set the Aseba variable ``value``
+# the event) and exposes the Aseba function ``square``, which sets the Aseba variable ``value``
 # to the square of the function argument.
 
 
@@ -57,7 +57,7 @@ print(node.script)
 print(node.mirrored_functions)
 
 # %%
-# which we can call using using
+# which we can call using
 
 node.call("square", 3)
 
@@ -75,7 +75,7 @@ print(node.mirrored_events)
 
 # %%
 # which we can wait for.
-# As the node is increasing ``counter`` variable each time, we expect to see it
+# As the node is increasing the ``counter`` variable each time, we expect to see it
 # reflected in the ``counter`` attribute.
 
 for _ in range(5):
@@ -93,7 +93,7 @@ def cb(node: MySimpleNode) -> None:
 node.set_callback("event", cb)
 
 # %%
-# Sleeping for a while should get callback called several times
+# Sleeping for a while should get the callback called several times
 
 time.sleep(1)
 

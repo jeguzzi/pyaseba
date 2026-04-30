@@ -13,14 +13,14 @@ connection = client.connect("tcp", port=33333)
 connection
 
 # %%
-# The client regularly broadcasts a discovery messages. Remote node that
+# The client regularly broadcasts a discovery message. Remote nodes that
 # answer are asked to send their description. The following method
-# waits until the description are received.
+# waits until the descriptions are received.
 
 client.wait_nodes(wait_ms=500)
 
 # %%
-# Discovered node ids are kept in memory
+# Discovered node IDs are kept in memory
 
 client.node_ids
 
