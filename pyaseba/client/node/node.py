@@ -6,7 +6,7 @@ import warnings
 from collections.abc import Callable, Collection, Sequence
 from typing import Any, Protocol, Self, TypeVar
 
-from .._client_impl import Client, Description, Event, complete_target
+from .._client_impl import Client, Description, Event, complete_target, uses_mobsya_aseba
 from ..targets import are_targets_compatible
 from .mirroring import Mirroring, MirroringConfig
 from .utils import int16, matches
@@ -662,7 +662,8 @@ class Node:
 
     def get_all(self,
                 wait_ms: int = 1000,
-                cached: bool | None = None) -> dict[str, list[int]]:
+                cached: bool | None = None,
+                changed: bool = False) -> dict[str, list[int]]:
         """
         Gets all variable.
 
@@ -671,29 +672,74 @@ class Node:
                               If false, it will query the remote object
                               for an updated value.
                               If not set, it will default to :py:attr:`cached`.
+        :param      changed:  Whether to limit the query to changed variables. Only
+                              effective if pyaseba was uses Mobsya-Aseba, see
+                              :py:func:`pyaseba.uses_mobsya_aseba`.
+                              When ``changed=True``, it ignores the value of ``cached``.
+        :returns:             A dictionary of variable values keyed by variable names.
         """
         assert (self._client)
         if cached is None:
             cached = self.cached
+        if changed and uses_mobsya_aseba():
+            ns = self._update_changed(wait_ms)
+            return {n: self._variable_values[n] for n in ns}
         if not cached:
             self.update(wait_ms)
         return self._variable_values
 
-    def update(self, wait_ms: int = 1000) -> None:
+    def _set_changes(self, changes: list[tuple[int, list[int]]]) -> list[str]:
+        vi = self._description.variables_by_index
+        m = self._description.variables_size
+        names: list[str] = []
+        for i, vs in changes:
+            if i > m:
+                break
+            while vs:
+                j = 0
+                while i not in vi and i >= 0:
+                    i -= 1
+                    j += 1
+                assert i in vi
+                name, size = vi[i]
+                l = min(size - j, len(vs))
+                if l:
+                    names.append(name)
+                    self._variable_values[name][j:j+l] = vs[:l]
+                    self._prev_variables_values[name][j:j+l] = vs[:l]
+                    vs = vs[l:]
+                    i += size
+                else:
+                    break
+        return names
+
+    def _update_changed(self, wait_ms: int = 1000) -> list[str]:
+        changes = self._client.get_changed_variables(self.node_id,
+                                                     wait_ms=wait_ms,
+                                                     include={self.connection})
+        return self._set_changes(changes)
+
+    def update(self, wait_ms: int = 1000, changed: bool = False) -> None:
         """
         Refresh the cache with the current (remote) value of all variables.
 
         :param      wait_ms:  The maximal time to wait in milliseconds.
+        :param      changed:  Whether to limit the query to changed variables.
+                              Only effective if pyaseba was uses Mobsya-Aseba, see
+                              :py:func:`pyaseba.uses_mobsya_aseba`.
         """
         assert (self._client)
-        vs = self._client.get_all_variables(self._node_id,
-                                            wait_ms=wait_ms,
-                                            include={self.connection})
-        if vs:
-            self._variable_values = vs
-            self._prev_variables_values = dict(vs)
+        if changed and uses_mobsya_aseba():
+            self._update_changed(wait_ms)
         else:
-            warnings.warn('Could not update variables')
+            vs = self._client.get_all_variables(self._node_id,
+                                                wait_ms=wait_ms,
+                                                include={self.connection})
+            if vs:
+                self._variable_values = vs
+                self._prev_variables_values = dict(vs)
+            else:
+                warnings.warn('Could not update variables')
 
     def get(self,
             name: str,
