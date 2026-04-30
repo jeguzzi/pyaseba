@@ -267,7 +267,7 @@ Args:
       .def(py::init<>())
       .def_readwrite("name", &Aseba::Description::name)
       .def_readwrite("protocol_version", &Aseba::Description::protocolVersion)
-      .def_readonly("variables", &Aseba::Description::namedVariables)
+      .def_readonly("variables", &Aseba::Description::namedVariables) 
       .def_readonly("events", &Aseba::Description::localEvents)
       .def_readonly("functions", &Aseba::Description::nativeFunctions)
       .def("__repr__", [](const Aseba::Description &msg) {
@@ -691,6 +691,9 @@ The version of Aseba used by the node (readonly).
       .def_property("variables", &ClientNode::get_variables, nullptr, R"doc(
 The variables defined by the Aseba node as a dictionary
 of ``(index, size)`` tuples keyed by name (readonly).
+)doc")
+      .def_property("variables_size", &ClientNode::get_variables_size, nullptr, R"doc(
+The total size of variables (number of 16-bit integers) defined by the Aseba node (readonly).
 )doc")
       .def_property("variables_by_index", &ClientNode::get_indexed_variables,
                     nullptr, R"doc(
