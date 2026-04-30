@@ -224,7 +224,6 @@ class Node:
         :param cached:  The default value of ``cached``
            used by :py:meth:`set`, :py:meth:`get`, and :py:meth:`get_all`
         """
-        # TODO: make copy of default
         self.mirroring_config = dc.replace(self.mirroring_config)
         self.mirroring_config.function_include.extend(list(self.functions))
         self.mirroring: Mirroring | None = None
