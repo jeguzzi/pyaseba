@@ -6,7 +6,8 @@ import warnings
 from collections.abc import Callable, Collection, Sequence
 from typing import Any, Protocol, Self, TypeVar
 
-from .._client_impl import Client, Description, Event, complete_target, uses_mobsya_aseba
+from .._client_impl import (Client, Description, Event, complete_target,
+                            uses_mobsya_aseba)
 from ..targets import are_targets_compatible
 from .mirroring import Mirroring, MirroringConfig
 from .utils import int16, matches
@@ -688,8 +689,11 @@ class Node:
         return self._variable_values
 
     def _set_changes(self, changes: list[tuple[int, list[int]]]) -> list[str]:
-        vi = self._description.variables_by_index
-        m = self._description.variables_size
+        desc = self._description
+        if not desc:
+            return []
+        vi = desc.variables_by_index
+        m = desc.variables_size
         names: list[str] = []
         for i, vs in changes:
             if i > m:
@@ -704,8 +708,8 @@ class Node:
                 l = min(size - j, len(vs))
                 if l:
                     names.append(name)
-                    self._variable_values[name][j:j+l] = vs[:l]
-                    self._prev_variables_values[name][j:j+l] = vs[:l]
+                    self._variable_values[name][j:j + l] = vs[:l]
+                    self._prev_variables_values[name][j:j + l] = vs[:l]
                     vs = vs[l:]
                     i += size
                 else:
@@ -713,6 +717,7 @@ class Node:
         return names
 
     def _update_changed(self, wait_ms: int = 1000) -> list[str]:
+        assert self._client
         changes = self._client.get_changed_variables(self.node_id,
                                                      wait_ms=wait_ms,
                                                      include={self.connection})
