@@ -18,7 +18,7 @@ Network examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to setup a simple Aseba network from Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to set up a simple Aseba network from Python.">
 
 .. only:: html
 

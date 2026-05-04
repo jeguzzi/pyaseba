@@ -40,7 +40,7 @@ and query their description manually.
 
 .. GENERATED FROM PYTHON SOURCE LINES 12-13
 
-We setup the client to not discover nodes automatically
+We set up the client to not discover nodes automatically
 
 .. GENERATED FROM PYTHON SOURCE LINES 13-18
 
@@ -90,7 +90,7 @@ With this configuration, waiting for nodes will not discover them
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-25
 
-Instead, we need to first manually scan for node ids
+Instead, we need to first manually scan for node IDs
 
 .. GENERATED FROM PYTHON SOURCE LINES 25-29
 
@@ -143,7 +143,7 @@ and then query them for a description
 .. GENERATED FROM PYTHON SOURCE LINES 38-41
 
 Once we have received them,
-ids and descriptions are accessible like
+IDs and descriptions are accessible like
 for automatically discovered nodes.
 
 .. GENERATED FROM PYTHON SOURCE LINES 41-44
@@ -181,7 +181,7 @@ for automatically discovered nodes.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.035 seconds)
+   **Total running time of the script:** (0 minutes 1.034 seconds)
 
 
 .. _sphx_glr_download_gallery_client_3_manual_node_discovery.py:

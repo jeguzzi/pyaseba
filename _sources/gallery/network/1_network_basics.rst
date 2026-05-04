@@ -21,7 +21,7 @@
 Network
 =======
 
-Illustrative example of how to setup a simple Aseba network
+Illustrative example of how to set up a simple Aseba network
 from Python.
 
 .. GENERATED FROM PYTHON SOURCE LINES 10-12
@@ -54,8 +54,8 @@ from the local network.
 
 .. GENERATED FROM PYTHON SOURCE LINES 19-22
 
-Nodes are specializes the :py:class:pyaseba.network.Node`
-base class, by adding events, variables, functions and (periodic)
+Nodes specialize the :py:class:pyaseba.network.Node`
+base class, by adding events, variables, functions, and (periodic)
 control step callbacks.
 
 .. GENERATED FROM PYTHON SOURCE LINES 22-63
@@ -149,7 +149,7 @@ Nodes need to be added to a network to perform any work
 
 .. GENERATED FROM PYTHON SOURCE LINES 72-73
 
-when the network spins
+When the network spins
 
 .. GENERATED FROM PYTHON SOURCE LINES 73-75
 
@@ -168,7 +168,7 @@ when the network spins
 
 While the network spins, we could connect to the network
 with a client running in a different process.
-The client may load an Aseba script that uses the defined events, variables and
+The client may load an Aseba script that uses the defined events, variables, and
 functions, like ::
 
   onevent event

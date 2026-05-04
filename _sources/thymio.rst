@@ -24,7 +24,7 @@ The first step is to connect the serial port and wait until we discover the robo
    (48069, 1)
 
 A positive ``node_id`` means that we discovered the Aseba node 
-running on the robot. We can use it to get/set variables
+running on the robot. We can use it to get/set variables.
 
 .. code-block::
 
@@ -36,7 +36,7 @@ running on the robot. We can use it to get/set variables
 
 The robot should have turned red.
 
-We can load an Aseba script and ask the robot to run it
+We can load an Aseba script and ask the robot to run it.
 
 .. code-block::
 
@@ -55,20 +55,20 @@ We can load an Aseba script and ask the robot to run it
   
 The robot should turn green when you press the central button.
 
-We can now send an event from Python, which in this case, should make the robot switch off the LED,
+We can now send an event from Python, which in this case, should make the robot switch off the LED;
 
 .. code-block::
 
    >>> client.emit_event(node_id, "reset")
 
-wait until an event is emitted (press the button after executing the code)
+wait until an event is emitted (press the button after executing the code);
 
 .. code-block::
    
    >>> client.get_event(node_id, "pressed", wait_ms=10000)
    Event(source=48069, name='pressed', data=[])
 
-or trigger a callback when this happen
+and trigger a callback when this happens.
 
 .. code-block::
 
@@ -96,7 +96,7 @@ We go through similar steps as with the client: first, connect the robot:
    >>> thymio.connect(start_mirroring=True)
    True
 
-We can get and set variables by name 
+We can get and set variables by name,
 
 .. code-block::
 
@@ -106,7 +106,7 @@ We can get and set variables by name
    284
    >>> thymio.set("leds.top", [32, 0, 0])
 
-or using Python attributes
+or using Python attributes.
 
 .. code-block::
 

@@ -69,7 +69,7 @@ Client examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives Aseba message.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives an Aseba message.">
 
 .. only:: html
 
@@ -120,7 +120,7 @@ Client examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Shows how a client load an Aseba script to a remote node, and interacts with it using user-defined events.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Shows how a client loads an Aseba script to a remote node, and interacts with it using user-defined events.">
 
 .. only:: html
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Network &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Network &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -177,7 +177,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -385,7 +385,7 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="network">
 <span id="sphx-glr-gallery-network-1-network-basics-py"></span><h1>Network<a class="headerlink" href="#network" title="Link to this heading">#</a></h1>
-<p>Illustrative example of how to setup a simple Aseba network
+<p>Illustrative example of how to set up a simple Aseba network
 from Python.</p>
 <p>The network will be reachable at target <a class="reference external" href="tcp:port=10000">tcp:port=10000</a>
 from the local network.</p>
@@ -398,8 +398,8 @@ from the local network.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Network(address=&#39;0.0.0.0&#39;, port=&#39;10000)
 </pre></div>
 </div>
-<p>Nodes are specializes the :py:class:pyaseba.network.Node`
-base class, by adding events, variables, functions and (periodic)
+<p>Nodes specialize the :py:class:pyaseba.network.Node`
+base class, by adding events, variables, functions, and (periodic)
 control step callbacks.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNode</span><span class="p">(</span><a href="../../reference/network/node.html#pyaseba.network.Node" title="pyaseba.network._network_impl.Node" class="sphx-glr-backref-module-pyaseba-network-_network_impl sphx-glr-backref-type-py-class"><span class="n">Node</span></a><span class="p">):</span>
 
@@ -451,13 +451,13 @@ control step callbacks.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Description(name=&#39;SimpleNode&#39;, protocol_version=9, variables={&#39;_productId&#39;: (34, 1), &#39;args&#39;: (2, 32), &#39;counter&#39;: (36, 1), &#39;id&#39;: (0, 1), &#39;source&#39;: (1, 1)}, local_events={&#39;event&#39;: &#39;emitted at each control step after incrementing counter&#39;}, functions={&#39;duplicate&#39;: (&#39;duplicates the input&#39;, [(&#39;input&#39;, 1), (&#39;result&#39;, 1)])})
 </pre></div>
 </div>
-<p>when the network spins</p>
+<p>When the network spins</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/network/network.html#pyaseba.network.Network.spin" title="pyaseba.network.Network.spin" class="sphx-glr-backref-module-pyaseba-network sphx-glr-backref-type-py-method"><span class="n">network</span><span class="o">.</span><span class="n">spin</span></a><span class="p">(</span><span class="n">time_step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>While the network spins, we could connect to the network
 with a client running in a different process.
-The client may load an Aseba script that uses the defined events, variables and
+The client may load an Aseba script that uses the defined events, variables, and
 functions, like</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">onevent</span> <span class="n">event</span>
 <span class="n">emit</span> <span class="n">user_event_1</span> <span class="n">counter</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Manual node discovery &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Manual node discovery &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -177,7 +177,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -390,7 +390,7 @@ and query their description manually.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba.client</span><span class="w"> </span><span class="kn">import</span> <a href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.Client" class="sphx-glr-backref-module-pyaseba sphx-glr-backref-type-py-class"><span class="n">Client</span></a>
 </pre></div>
 </div>
-<p>We setup the client to not discover nodes automatically</p>
+<p>We set up the client to not discover nodes automatically</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.Client" class="sphx-glr-backref-module-pyaseba sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">client</span></a> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.Client" class="sphx-glr-backref-module-pyaseba sphx-glr-backref-type-py-class"><span class="n">Client</span></a><span class="p">(</span><span class="n">automatic_query</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ping_period_ms</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">connection</span> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client.connect" title="pyaseba.client.Client.connect" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">connect</span></a><span class="p">(</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">33333</span><span class="p">)</span>
 <span class="n">connection</span>
@@ -406,7 +406,7 @@ and query their description manually.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{}
 </pre></div>
 </div>
-<p>Instead, we need to first manually scan for node ids</p>
+<p>Instead, we need to first manually scan for node IDs</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">scan</span> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client.scan" title="pyaseba.client.Client.scan" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">scan</span></a><span class="p">(</span><span class="n">wait_ms</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 <span class="n">scan</span>
 </pre></div>
@@ -425,7 +425,7 @@ and query their description manually.</p>
 </pre></div>
 </div>
 <p>Once we have received them,
-ids and descriptions are accessible like
+IDs and descriptions are accessible like
 for automatically discovered nodes.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/client.html#pyaseba.client.Client.descriptions" title="pyaseba.client.Client.descriptions" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-property"><span class="n">client</span><span class="o">.</span><span class="n">descriptions</span></a>
 </pre></div>
@@ -436,7 +436,7 @@ for automatically discovered nodes.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/client.html#pyaseba.client.Client.close" title="pyaseba.client.Client.close" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">close</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.035 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.034 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-client-3-manual-node-discovery-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b9dfb12967469ad3ea4c067117c5f783/3_manual_node_discovery.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">3_manual_node_discovery.ipynb</span></code></a></p>

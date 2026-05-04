@@ -9,7 +9,7 @@ and query their description manually.
 from pyaseba.client import Client
 
 # %%
-# We setup the client to not discover nodes automatically
+# We set up the client to not discover nodes automatically
 
 client = Client(automatic_query=False, ping_period_ms=0)
 connection = client.connect("tcp", port=33333)
@@ -21,7 +21,7 @@ connection
 client.wait_nodes(wait_ms=500)
 
 # %%
-# Instead, we need to first manually scan for node ids
+# Instead, we need to first manually scan for node IDs
 
 scan = client.scan(wait_ms=500)
 scan
@@ -36,7 +36,7 @@ for target, node_ids in scan.items():
 
 # %%
 # Once we have received them,
-# ids and descriptions are accessible like
+# IDs and descriptions are accessible like
 # for automatically discovered nodes.
 
 client.descriptions

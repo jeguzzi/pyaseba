@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Nodes basics &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Nodes basics &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -177,7 +177,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -390,7 +390,7 @@ to download the full example code.</p>
 </pre></div>
 </div>
 <p><a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Node</span></code></a> are stateful objects linked to a
-specific remote Aseba node connected thought a <a class="reference internal" href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>.</p>
+specific remote Aseba node connected through a <a class="reference internal" href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a>.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node</span></a> <span class="o">=</span> <a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">Node</span></a><span class="p">(</span><span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <a href="../../reference/client/node.html#pyaseba.client.Node.connect" title="pyaseba.client.Node.connect" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">connect</span></a><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="s2">&quot;tcp:port=33333&quot;</span><span class="p">)</span>
 <a href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node</span></a>
@@ -400,8 +400,8 @@ specific remote Aseba node connected thought a <a class="reference internal" hre
 </pre></div>
 </div>
 <p>While most <a class="reference internal" href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.client.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Client</span></code></a> methods require selecting a <code class="docutils literal notranslate"><span class="pre">node_id</span></code>,
-<a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Node</span></code></a> methods keep a reference to the node id, connection.
-which can be used to for example to set and get variables.</p>
+<a class="reference internal" href="../../reference/client/node.html#pyaseba.client.Node" title="pyaseba.client.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyaseba.client.Node</span></code></a> methods keep a reference to the node ID and network,
+which can be used to, for example, set and get variables.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.set" title="pyaseba.client.Node.set" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">set</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
 </pre></div>
@@ -419,14 +419,14 @@ which can be used to for example to set and get variables.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.set" title="pyaseba.client.Node.set" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">set</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>When caching, modified values are not sent to the remote node</p>
+<p>When caching, modified values are not sent to the remote node.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>1
 </pre></div>
 </div>
-<p>until calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.sync()</span></code></p>
+<p>Until calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">pyaseba.client.sync()</span></code></p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.sync" title="pyaseba.client.Node.sync" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">sync</span></a><span class="p">()</span>
 <a href="../../reference/client/node.html#pyaseba.client.Node.get" title="pyaseba.client.Node.get" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">get</span></a><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -438,7 +438,7 @@ which can be used to for example to set and get variables.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/node.html#pyaseba.client.Node.close" title="pyaseba.client.Node.close" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">node</span><span class="o">.</span><span class="n">close</span></a><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.012 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.014 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-client-node-1-basics-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/00a6b21b05de16a5afd084ad94c60f01/1_basics.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">1_basics.ipynb</span></code></a></p>

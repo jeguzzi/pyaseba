@@ -50,9 +50,9 @@ and gets their description.
 
 .. GENERATED FROM PYTHON SOURCE LINES 16-19
 
-The client regularly broadcasts a discovery messages. Remote node that
+The client regularly broadcasts a discovery message. Remote nodes that
 answer are asked to send their description. The following method
-waits until the description are received.
+waits until the descriptions are received.
 
 .. GENERATED FROM PYTHON SOURCE LINES 19-22
 
@@ -76,7 +76,7 @@ waits until the description are received.
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-24
 
-Discovered node ids are kept in memory
+Discovered node IDs are kept in memory
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-27
 
@@ -187,7 +187,7 @@ and
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.013 seconds)
+   **Total running time of the script:** (0 minutes 1.050 seconds)
 
 
 .. _sphx_glr_download_gallery_client_2_automatic_node_discovery.py:

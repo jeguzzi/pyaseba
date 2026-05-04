@@ -102,7 +102,7 @@ We get the current value of all variables one by one
 
     _productId = [0]
     args = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    counter = [246]
+    counter = [72]
     id = [0]
     source = [0]
     value = [0]
@@ -112,7 +112,7 @@ We get the current value of all variables one by one
 
 .. GENERATED FROM PYTHON SOURCE LINES 35-36
 
-We reset the value to an uniform 1.
+We reset the value to a uniform 1.
 
 .. GENERATED FROM PYTHON SOURCE LINES 36-39
 
@@ -179,7 +179,7 @@ before checking the current values, getting them all at once.
 
 .. note::
 
-   Not all values are 1 because in the meantime the node as changed some of them.
+   Not all values are 1 because in the meantime the node has changed some of them.
 
 .. GENERATED FROM PYTHON SOURCE LINES 55-56
 
@@ -196,7 +196,7 @@ before checking the current values, getting them all at once.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.014 seconds)
+   **Total running time of the script:** (0 minutes 2.016 seconds)
 
 
 .. _sphx_glr_download_gallery_client_6_variables.py:

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Node &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Node &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -181,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -692,7 +692,7 @@ it returns an integer scalar, else a list of integer.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyaseba.client.Node.get_all">
-<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cached</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaseba.client.Node.get_all" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cached</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyaseba.client.Node.get_all" title="Link to this definition">#</a></dt>
 <dd><p>Gets all variable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -702,7 +702,14 @@ it returns an integer scalar, else a list of integer.</p>
 If false, it will query the remote object
 for an updated value.
 If not set, it will default to <a class="reference internal" href="#pyaseba.client.Node.cached" title="pyaseba.client.Node.cached"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cached</span></code></a>.</p></li>
+<li><p><strong>changed</strong> – Whether to limit the query to changed variables. Only
+effective if pyaseba was uses Mobsya-Aseba, see
+<a class="reference internal" href="../helpers.html#pyaseba.uses_mobsya_aseba" title="pyaseba.uses_mobsya_aseba"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyaseba.uses_mobsya_aseba()</span></code></a>.
+When <code class="docutils literal notranslate"><span class="pre">changed=True</span></code>, it ignores the value of <code class="docutils literal notranslate"><span class="pre">cached</span></code>.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of variable values keyed by variable names.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -931,11 +938,16 @@ and not excluded by <a class="reference internal" href="#pyaseba.client.Node.syn
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyaseba.client.Node.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.update" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.Node.update" title="Link to this definition">#</a></dt>
 <dd><p>Refresh the cache with the current (remote) value of all variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>wait_ms</strong> – The maximal time to wait in milliseconds.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wait_ms</strong> – The maximal time to wait in milliseconds.</p></li>
+<li><p><strong>changed</strong> – Whether to limit the query to changed variables.
+Only effective if pyaseba was uses Mobsya-Aseba, see
+<a class="reference internal" href="../helpers.html#pyaseba.uses_mobsya_aseba" title="pyaseba.uses_mobsya_aseba"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyaseba.uses_mobsya_aseba()</span></code></a>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

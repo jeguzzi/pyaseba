@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Introduction &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="_static/documentation_options.js?v=73504a2b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -181,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -395,15 +395,15 @@
                   
   <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
-<p>Aseba is a light-way communication protocol and scripting language which works from tiny micro-controllers to your fully feature PC, developed at EPFL Lausanne. For the <a class="reference external" href="https://github.com/aseba-community/aseba#aseba">words</a> of its authors</p>
+<p>Aseba is a lightweight communication protocol and scripting language which works from tiny microcontrollers to your fully featured PC, developed at EPFL Lausanne. For the <a class="reference external" href="https://github.com/aseba-community/aseba#aseba">words</a> of its authors:</p>
 <blockquote>
 <div><p>Aseba is a set of tools which allow novices to program robots easily and efficiently. For these reasons, Aseba is well-suited for robotic education and research. Aseba is an open-source software created by Dr. Stéphane Magnenat with contributions from the community.</p>
 </div></blockquote>
 <p>It is known as the scripting language of the educational <a class="reference external" href="https://www.thymio.org">Thymio</a> robot. Programming it is normally done in a GUI client, like Aseba Studio or the Thymio VPL.</p>
 <p>Pyaseba offers an alternative to GUI clients to interact with any robot that runs Aseba (or more generally with any Aseba network). With Pyaseba, you can perform common operations like reading and writing Aseba variables or loading Aseba scripts but also more low-level actions, like sending and receiving Aseba messages directly.</p>
-<p>Pyaseba provides two interfaces: 1) a lower-level client API that let you interact with a collection of Aseba nodes and 2) a higher-level client node API to interact with a single Aseba node, exposing to Python its native variables, events and functions.
+<p>Pyaseba provides two interfaces: 1) a lower-level client API that lets you interact with a collection of Aseba nodes and 2) a higher-level client node API to interact with a single Aseba node, exposing to Python its native variables, events, and functions.
 The clients can connect to multiple Aseba networks at once, each comprising potentially multiple Aseba nodes.</p>
-<p>Moreover, it comes with its own local Aseba network that runs Aseba nodes implemented in Python, i.e., nodes with Python native functions and Python control steps. Its primary motivation is to test the client interfaces but it may be used to extend an Aseba network with custom nodes, for example for teaching.</p>
+<p>Moreover, it comes with its own local Aseba network that runs Aseba nodes implemented in Python, i.e., nodes with Python native functions and Python control steps. Its primary motivation is to test the client interfaces, but it may be used to extend an Aseba network with custom nodes, for example, for teaching.</p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>Install from PyPi</p>

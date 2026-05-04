@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Thymio &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Thymio &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -181,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -380,7 +380,89 @@
             </div>
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio"><code class="docutils literal notranslate"><span class="pre">Thymio</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio"><code class="docutils literal notranslate"><span class="pre">Thymio</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.acc"><code class="docutils literal notranslate"><span class="pre">acc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.acc__tap"><code class="docutils literal notranslate"><span class="pre">acc__tap</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.apply"><code class="docutils literal notranslate"><span class="pre">apply()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_backward"><code class="docutils literal notranslate"><span class="pre">button_backward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_center"><code class="docutils literal notranslate"><span class="pre">button_center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_forward"><code class="docutils literal notranslate"><span class="pre">button_forward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_left"><code class="docutils literal notranslate"><span class="pre">button_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_right"><code class="docutils literal notranslate"><span class="pre">button_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__mean"><code class="docutils literal notranslate"><span class="pre">buttons__mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__noise"><code class="docutils literal notranslate"><span class="pre">buttons__noise</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__raw"><code class="docutils literal notranslate"><span class="pre">buttons__raw</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call__leds_set"><code class="docutils literal notranslate"><span class="pre">call__leds_set()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_left"><code class="docutils literal notranslate"><span class="pre">call_leds_bottom_left()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_right"><code class="docutils literal notranslate"><span class="pre">call_leds_bottom_right()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_buttons"><code class="docutils literal notranslate"><span class="pre">call_leds_buttons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_circle"><code class="docutils literal notranslate"><span class="pre">call_leds_circle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_prox_h"><code class="docutils literal notranslate"><span class="pre">call_leds_prox_h()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_prox_v"><code class="docutils literal notranslate"><span class="pre">call_leds_prox_v()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_rc"><code class="docutils literal notranslate"><span class="pre">call_leds_rc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_sound"><code class="docutils literal notranslate"><span class="pre">call_leds_sound()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_temperature"><code class="docutils literal notranslate"><span class="pre">call_leds_temperature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_top"><code class="docutils literal notranslate"><span class="pre">call_leds_top()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_prox_comm_enable"><code class="docutils literal notranslate"><span class="pre">call_prox_comm_enable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_duration"><code class="docutils literal notranslate"><span class="pre">call_sound_duration()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_freq"><code class="docutils literal notranslate"><span class="pre">call_sound_freq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_play"><code class="docutils literal notranslate"><span class="pre">call_sound_play()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_record"><code class="docutils literal notranslate"><span class="pre">call_sound_record()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_replay"><code class="docutils literal notranslate"><span class="pre">call_sound_replay()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_system"><code class="docutils literal notranslate"><span class="pre">call_sound_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.control_event"><code class="docutils literal notranslate"><span class="pre">control_event</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.default_target"><code class="docutils literal notranslate"><span class="pre">default_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.event_args"><code class="docutils literal notranslate"><span class="pre">event_args</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.event_source"><code class="docutils literal notranslate"><span class="pre">event_source</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_bottom_left"><code class="docutils literal notranslate"><span class="pre">leds_bottom_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_bottom_right"><code class="docutils literal notranslate"><span class="pre">leds_bottom_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_circle"><code class="docutils literal notranslate"><span class="pre">leds_circle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_top"><code class="docutils literal notranslate"><span class="pre">leds_top</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic__mean"><code class="docutils literal notranslate"><span class="pre">mic__mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic_intensity"><code class="docutils literal notranslate"><span class="pre">mic_intensity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic_threshold"><code class="docutils literal notranslate"><span class="pre">mic_threshold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_pwm"><code class="docutils literal notranslate"><span class="pre">motor_left_pwm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_speed"><code class="docutils literal notranslate"><span class="pre">motor_left_speed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_target"><code class="docutils literal notranslate"><span class="pre">motor_left_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_pwm"><code class="docutils literal notranslate"><span class="pre">motor_right_pwm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_speed"><code class="docutils literal notranslate"><span class="pre">motor_right_speed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_target"><code class="docutils literal notranslate"><span class="pre">motor_right_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_acc"><code class="docutils literal notranslate"><span class="pre">on_acc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_backward"><code class="docutils literal notranslate"><span class="pre">on_button_backward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_center"><code class="docutils literal notranslate"><span class="pre">on_button_center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_forward"><code class="docutils literal notranslate"><span class="pre">on_button_forward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_left"><code class="docutils literal notranslate"><span class="pre">on_button_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_right"><code class="docutils literal notranslate"><span class="pre">on_button_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_mic"><code class="docutils literal notranslate"><span class="pre">on_mic</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_motor"><code class="docutils literal notranslate"><span class="pre">on_motor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_prox"><code class="docutils literal notranslate"><span class="pre">on_prox</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_prox_comm"><code class="docutils literal notranslate"><span class="pre">on_prox_comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_rc5"><code class="docutils literal notranslate"><span class="pre">on_rc5</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_tap"><code class="docutils literal notranslate"><span class="pre">on_tap</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_timer0"><code class="docutils literal notranslate"><span class="pre">on_timer0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_timer1"><code class="docutils literal notranslate"><span class="pre">on_timer1</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__align_tol"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__align_tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__intensities"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__intensities</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__lead"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__lead</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__payloads"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__payloads</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__tol"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__trail"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__trail</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_tx"><code class="docutils literal notranslate"><span class="pre">prox_comm_tx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_ambiant"><code class="docutils literal notranslate"><span class="pre">prox_ground_ambiant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_delta"><code class="docutils literal notranslate"><span class="pre">prox_ground_delta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_reflected"><code class="docutils literal notranslate"><span class="pre">prox_ground_reflected</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_horizontal"><code class="docutils literal notranslate"><span class="pre">prox_horizontal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.rc5_address"><code class="docutils literal notranslate"><span class="pre">rc5_address</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.rc5_command"><code class="docutils literal notranslate"><span class="pre">rc5_command</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.sd_present"><code class="docutils literal notranslate"><span class="pre">sd_present</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.set_behavior"><code class="docutils literal notranslate"><span class="pre">set_behavior()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.set_control_period"><code class="docutils literal notranslate"><span class="pre">set_control_period()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.stop"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.temperature"><code class="docutils literal notranslate"><span class="pre">temperature</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.timer_period"><code class="docutils literal notranslate"><span class="pre">timer_period</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.ThymioAsync"><code class="docutils literal notranslate"><span class="pre">ThymioAsync</span></code></a></li>
 </ul>
             </nav>
@@ -418,6 +500,605 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">thymio</span><span class="o">.</span><span class="n">set_controller</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.acc">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">acc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.acc" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable acc</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.acc__tap">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">acc__tap</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.acc__tap" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable acc._tap</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.apply">
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">callback:</span> <span class="pre">Callback[__annotationlib_name_1__],</span> <span class="pre">*args:</span> <span class="pre">~typing.~P,</span> <span class="pre">**kwargs:</span> <span class="pre">~typing.~P</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.apply" title="Link to this definition">#</a></dt>
+<dd><p>Calls a callback and then calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – The callback</p></li>
+<li><p><strong>args</strong> – The callback arguments</p></li>
+<li><p><strong>kwargs</strong> – The callback keywords arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.button_backward">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">button_backward</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.button_backward" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable button.backward</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.button_center">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">button_center</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.button_center" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable button.center</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.button_forward">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">button_forward</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.button_forward" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable button.forward</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.button_left">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">button_left</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.button_left" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable button.left</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.button_right">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">button_right</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.button_right" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable button.right</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.buttons__mean">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">buttons__mean</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.buttons__mean" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable buttons._mean</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.buttons__noise">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">buttons__noise</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.buttons__noise" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable buttons._noise</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.buttons__raw">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">buttons__raw</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.buttons__raw" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable buttons._raw</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call__leds_set">
+<span class="sig-name descname"><span class="pre">call__leds_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call__leds_set" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function _leds.set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_bottom_left">
+<span class="sig-name descname"><span class="pre">call_leds_bottom_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_left" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.bottom.left</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_bottom_right">
+<span class="sig-name descname"><span class="pre">call_leds_bottom_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_right" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.bottom.right</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_buttons">
+<span class="sig-name descname"><span class="pre">call_leds_buttons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_buttons" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.buttons</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_circle">
+<span class="sig-name descname"><span class="pre">call_leds_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_circle" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.circle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_prox_h">
+<span class="sig-name descname"><span class="pre">call_leds_prox_h</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_prox_h" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.prox.h</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_prox_v">
+<span class="sig-name descname"><span class="pre">call_leds_prox_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_prox_v" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.prox.v</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_rc">
+<span class="sig-name descname"><span class="pre">call_leds_rc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_rc" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.rc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_sound">
+<span class="sig-name descname"><span class="pre">call_leds_sound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_sound" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.sound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_temperature">
+<span class="sig-name descname"><span class="pre">call_leds_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_temperature" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.temperature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_leds_top">
+<span class="sig-name descname"><span class="pre">call_leds_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_leds_top" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function leds.top</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_prox_comm_enable">
+<span class="sig-name descname"><span class="pre">call_prox_comm_enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_prox_comm_enable" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function prox.comm.enable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_duration">
+<span class="sig-name descname"><span class="pre">call_sound_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_duration" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.duration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_freq">
+<span class="sig-name descname"><span class="pre">call_sound_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_freq" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.freq</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_play">
+<span class="sig-name descname"><span class="pre">call_sound_play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_play" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.play</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_record">
+<span class="sig-name descname"><span class="pre">call_sound_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_record" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_replay">
+<span class="sig-name descname"><span class="pre">call_sound_replay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_replay" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.replay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.call_sound_system">
+<span class="sig-name descname"><span class="pre">call_sound_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.call_sound_system" title="Link to this definition">#</a></dt>
+<dd><p>Calls native function sound.system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – The argument passed to the function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.control_event">
+<span class="sig-name descname"><span class="pre">control_event</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'timer0'</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.control_event" title="Link to this definition">#</a></dt>
+<dd><p>Which local event to use to trigger the control step</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.default_target">
+<span class="sig-name descname"><span class="pre">default_target</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ser:name=Thymio'</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.default_target" title="Link to this definition">#</a></dt>
+<dd><p>Default Dashel target</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.event_args">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">event_args</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.event_args" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable event.args</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.event_source">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">event_source</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.event_source" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable event.source</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.leds_bottom_left">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">leds_bottom_left</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.leds_bottom_left" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable leds.bottom.left</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.leds_bottom_right">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">leds_bottom_right</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.leds_bottom_right" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable leds.bottom.right</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.leds_circle">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">leds_circle</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.leds_circle" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable leds.circle</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.leds_top">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">leds_top</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.leds_top" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable leds.top</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.mic__mean">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mic__mean</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.mic__mean" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable mic._mean</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.mic_intensity">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mic_intensity</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.mic_intensity" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable mic.intensity</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.mic_threshold">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mic_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.mic_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable mic.threshold</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_left_pwm">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_left_pwm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_left_pwm" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.left.pwm</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_left_speed">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_left_speed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_left_speed" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.left.speed</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_left_target">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_left_target</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_left_target" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.left.target</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_right_pwm">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_right_pwm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_right_pwm" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.right.pwm</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_right_speed">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_right_speed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_right_speed" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.right.speed</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.motor_right_target">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">motor_right_target</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.motor_right_target" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable motor.right.target</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_acc">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_acc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_acc" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event acc</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_button_backward">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_button_backward</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_button_backward" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event button.backward</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_button_center">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_button_center</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_button_center" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event button.center</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_button_forward">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_button_forward</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_button_forward" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event button.forward</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_button_left">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_button_left</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_button_left" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event button.left</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_button_right">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_button_right</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_button_right" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event button.right</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_mic">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_mic</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_mic" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event mic</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_motor">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_motor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_motor" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event motor</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_prox">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_prox</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_prox" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event prox</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_prox_comm">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_prox_comm</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_prox_comm" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event prox.comm</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_rc5">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_rc5</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_rc5" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event rc5</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_tap">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_tap</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_tap" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event tap</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_timer0">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_timer0</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_timer0" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event timer0</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.on_timer1">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">on_timer1</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="node.html#pyaseba.client.Node" title="pyaseba.client.node.node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.on_timer1" title="Link to this definition">#</a></dt>
+<dd><p>Callback for Aseba event timer1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__align_tol">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__align_tol</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__align_tol" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._align_tol</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__intensities">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__intensities</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__intensities" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._intensities</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__lead">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__lead</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__lead" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._lead</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__payloads">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__payloads</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__payloads" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._payloads</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__tol">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__tol</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__tol" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._tol</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_rx__trail">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_rx__trail</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__trail" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.rx._trail</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_comm_tx">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_comm_tx</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_comm_tx" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.comm.tx</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_ground_ambiant">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_ground_ambiant</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_ground_ambiant" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.ground.ambiant</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_ground_delta">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_ground_delta</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_ground_delta" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.ground.delta</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_ground_reflected">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_ground_reflected</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_ground_reflected" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.ground.reflected</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.prox_horizontal">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prox_horizontal</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.prox_horizontal" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable prox.horizontal</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.rc5_address">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rc5_address</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.rc5_address" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable rc5.address</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.rc5_command">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rc5_command</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.rc5_command" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable rc5.command</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.sd_present">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">sd_present</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.sd_present" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable sd.present</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.set_behavior">
+<span class="sig-name descname"><span class="pre">set_behavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">behavior</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Behavior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.set_behavior" title="Link to this definition">#</a></dt>
+<dd><p>Setup a behavior. Same as <code class="xref py py-meth docutils literal notranslate"><span class="pre">set_controller()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>behavior</strong> – The callback called at each control step</p></li>
+<li><p><strong>time_step</strong> – The control time step</p></li>
+<li><p><strong>event</strong> – The event that should trigger a control step</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.set_control_period">
+<span class="sig-name descname"><span class="pre">set_control_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.set_control_period" title="Link to this definition">#</a></dt>
+<dd><p>A virtual method to setup the controller
+The base implementation is empty.
+Override to specialize the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_step</strong> – The time step</p></li>
+<li><p><strong>event</strong> – The name of the local event that
+should trigger a control step.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.stop" title="Link to this definition">#</a></dt>
+<dd><p>Sends a command to stop running the remote node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.temperature">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.temperature" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable temperature</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyaseba.client.thymio.Thymio.timer_period">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">timer_period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#pyaseba.client.thymio.Thymio.timer_period" title="Link to this definition">#</a></dt>
+<dd><p>Aseba variable timer.period</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -476,7 +1157,89 @@ based on <a class="reference internal" href="node_async.html#pyaseba.client.Node
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio"><code class="docutils literal notranslate"><span class="pre">Thymio</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio"><code class="docutils literal notranslate"><span class="pre">Thymio</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.acc"><code class="docutils literal notranslate"><span class="pre">acc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.acc__tap"><code class="docutils literal notranslate"><span class="pre">acc__tap</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.apply"><code class="docutils literal notranslate"><span class="pre">apply()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_backward"><code class="docutils literal notranslate"><span class="pre">button_backward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_center"><code class="docutils literal notranslate"><span class="pre">button_center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_forward"><code class="docutils literal notranslate"><span class="pre">button_forward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_left"><code class="docutils literal notranslate"><span class="pre">button_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.button_right"><code class="docutils literal notranslate"><span class="pre">button_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__mean"><code class="docutils literal notranslate"><span class="pre">buttons__mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__noise"><code class="docutils literal notranslate"><span class="pre">buttons__noise</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.buttons__raw"><code class="docutils literal notranslate"><span class="pre">buttons__raw</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call__leds_set"><code class="docutils literal notranslate"><span class="pre">call__leds_set()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_left"><code class="docutils literal notranslate"><span class="pre">call_leds_bottom_left()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_bottom_right"><code class="docutils literal notranslate"><span class="pre">call_leds_bottom_right()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_buttons"><code class="docutils literal notranslate"><span class="pre">call_leds_buttons()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_circle"><code class="docutils literal notranslate"><span class="pre">call_leds_circle()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_prox_h"><code class="docutils literal notranslate"><span class="pre">call_leds_prox_h()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_prox_v"><code class="docutils literal notranslate"><span class="pre">call_leds_prox_v()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_rc"><code class="docutils literal notranslate"><span class="pre">call_leds_rc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_sound"><code class="docutils literal notranslate"><span class="pre">call_leds_sound()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_temperature"><code class="docutils literal notranslate"><span class="pre">call_leds_temperature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_leds_top"><code class="docutils literal notranslate"><span class="pre">call_leds_top()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_prox_comm_enable"><code class="docutils literal notranslate"><span class="pre">call_prox_comm_enable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_duration"><code class="docutils literal notranslate"><span class="pre">call_sound_duration()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_freq"><code class="docutils literal notranslate"><span class="pre">call_sound_freq()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_play"><code class="docutils literal notranslate"><span class="pre">call_sound_play()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_record"><code class="docutils literal notranslate"><span class="pre">call_sound_record()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_replay"><code class="docutils literal notranslate"><span class="pre">call_sound_replay()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.call_sound_system"><code class="docutils literal notranslate"><span class="pre">call_sound_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.control_event"><code class="docutils literal notranslate"><span class="pre">control_event</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.default_target"><code class="docutils literal notranslate"><span class="pre">default_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.event_args"><code class="docutils literal notranslate"><span class="pre">event_args</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.event_source"><code class="docutils literal notranslate"><span class="pre">event_source</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_bottom_left"><code class="docutils literal notranslate"><span class="pre">leds_bottom_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_bottom_right"><code class="docutils literal notranslate"><span class="pre">leds_bottom_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_circle"><code class="docutils literal notranslate"><span class="pre">leds_circle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.leds_top"><code class="docutils literal notranslate"><span class="pre">leds_top</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic__mean"><code class="docutils literal notranslate"><span class="pre">mic__mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic_intensity"><code class="docutils literal notranslate"><span class="pre">mic_intensity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.mic_threshold"><code class="docutils literal notranslate"><span class="pre">mic_threshold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_pwm"><code class="docutils literal notranslate"><span class="pre">motor_left_pwm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_speed"><code class="docutils literal notranslate"><span class="pre">motor_left_speed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_left_target"><code class="docutils literal notranslate"><span class="pre">motor_left_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_pwm"><code class="docutils literal notranslate"><span class="pre">motor_right_pwm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_speed"><code class="docutils literal notranslate"><span class="pre">motor_right_speed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.motor_right_target"><code class="docutils literal notranslate"><span class="pre">motor_right_target</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_acc"><code class="docutils literal notranslate"><span class="pre">on_acc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_backward"><code class="docutils literal notranslate"><span class="pre">on_button_backward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_center"><code class="docutils literal notranslate"><span class="pre">on_button_center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_forward"><code class="docutils literal notranslate"><span class="pre">on_button_forward</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_left"><code class="docutils literal notranslate"><span class="pre">on_button_left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_button_right"><code class="docutils literal notranslate"><span class="pre">on_button_right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_mic"><code class="docutils literal notranslate"><span class="pre">on_mic</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_motor"><code class="docutils literal notranslate"><span class="pre">on_motor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_prox"><code class="docutils literal notranslate"><span class="pre">on_prox</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_prox_comm"><code class="docutils literal notranslate"><span class="pre">on_prox_comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_rc5"><code class="docutils literal notranslate"><span class="pre">on_rc5</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_tap"><code class="docutils literal notranslate"><span class="pre">on_tap</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_timer0"><code class="docutils literal notranslate"><span class="pre">on_timer0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.on_timer1"><code class="docutils literal notranslate"><span class="pre">on_timer1</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__align_tol"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__align_tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__intensities"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__intensities</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__lead"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__lead</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__payloads"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__payloads</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__tol"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__tol</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_rx__trail"><code class="docutils literal notranslate"><span class="pre">prox_comm_rx__trail</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_comm_tx"><code class="docutils literal notranslate"><span class="pre">prox_comm_tx</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_ambiant"><code class="docutils literal notranslate"><span class="pre">prox_ground_ambiant</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_delta"><code class="docutils literal notranslate"><span class="pre">prox_ground_delta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_ground_reflected"><code class="docutils literal notranslate"><span class="pre">prox_ground_reflected</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.prox_horizontal"><code class="docutils literal notranslate"><span class="pre">prox_horizontal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.rc5_address"><code class="docutils literal notranslate"><span class="pre">rc5_address</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.rc5_command"><code class="docutils literal notranslate"><span class="pre">rc5_command</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.sd_present"><code class="docutils literal notranslate"><span class="pre">sd_present</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.set_behavior"><code class="docutils literal notranslate"><span class="pre">set_behavior()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.set_control_period"><code class="docutils literal notranslate"><span class="pre">set_control_period()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.stop"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.temperature"><code class="docutils literal notranslate"><span class="pre">temperature</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.Thymio.timer_period"><code class="docutils literal notranslate"><span class="pre">timer_period</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyaseba.client.thymio.ThymioAsync"><code class="docutils literal notranslate"><span class="pre">ThymioAsync</span></code></a></li>
 </ul>
   </nav></div>

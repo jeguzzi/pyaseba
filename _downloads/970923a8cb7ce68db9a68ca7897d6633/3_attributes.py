@@ -2,15 +2,15 @@
 Nodes attributes
 ================
 
-Showcases the Python-like :py:class:`pyaseba.client.Node` interface.
-that exposes Aseba variables and functions as Python attributes and methods
+Showcases the Python-like :py:class:`pyaseba.client.Node` interface,
+that exposes Aseba variables and functions as Python attributes and methods.
 """
 
 from pyaseba.client import Node
 from pyaseba.client.node import EventSpec, MirroringConfig
 
 # %%
-# When specialized, py:class:`pyaseba.client.Node` offer a higher-level,
+# When specialized, py:class:`pyaseba.client.Node` offers a higher-level,
 # more Python-affine interface:
 #
 # - Python properties for a selection of Aseba variables.
@@ -34,7 +34,7 @@ node = MySimpleNode(cached=True)
 node.connect(target="tcp:port=33333", start_mirroring=True)
 
 # %%
-# Aseba variables are now accessible as attributes
+# Aseba variables are now accessible as attributes.
 
 node.value = 3  # type: ignore[attr-defined]
 

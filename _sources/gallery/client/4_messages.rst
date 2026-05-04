@@ -21,7 +21,7 @@
 Messages
 ========
 
-Illustrate how a client receives Aseba message.
+Illustrate how a client receives an Aseba message.
 
 .. GENERATED FROM PYTHON SOURCE LINES 7-14
 
@@ -43,7 +43,7 @@ Illustrate how a client receives Aseba message.
 
 .. GENERATED FROM PYTHON SOURCE LINES 15-16
 
-Receiving messages blocks until the next message is received
+Receiving messages blocks until the next message is received.
 
 .. GENERATED FROM PYTHON SOURCE LINES 16-20
 
@@ -68,9 +68,9 @@ Receiving messages blocks until the next message is received
 
 .. GENERATED FROM PYTHON SOURCE LINES 21-24
 
-Sending messages is (almost) instantaneous instead
+Sending messages is (almost) instantaneous instead.
 Let us send a (manual) request for some variables
-and wait until we get a response
+and wait until we get a response.
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-36
 
@@ -108,7 +108,7 @@ and wait until we get a response
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.011 seconds)
+   **Total running time of the script:** (0 minutes 1.010 seconds)
 
 
 .. _sphx_glr_download_gallery_client_4_messages.py:

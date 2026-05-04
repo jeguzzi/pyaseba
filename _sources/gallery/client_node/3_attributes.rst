@@ -21,8 +21,8 @@
 Nodes attributes
 ================
 
-Showcases the Python-like :py:class:`pyaseba.client.Node` interface.
-that exposes Aseba variables and functions as Python attributes and methods
+Showcases the Python-like :py:class:`pyaseba.client.Node` interface,
+that exposes Aseba variables and functions as Python attributes and methods.
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-12
 
@@ -41,7 +41,7 @@ that exposes Aseba variables and functions as Python attributes and methods
 
 .. GENERATED FROM PYTHON SOURCE LINES 13-23
 
-When specialized, py:class:`pyaseba.client.Node` offer a higher-level,
+When specialized, py:class:`pyaseba.client.Node` offers a higher-level,
 more Python-affine interface:
 
 - Python properties for a selection of Aseba variables.
@@ -84,7 +84,7 @@ In this example, the node exposes properties
 
 .. GENERATED FROM PYTHON SOURCE LINES 37-38
 
-Aseba variables are now accessible as attributes
+Aseba variables are now accessible as attributes.
 
 .. GENERATED FROM PYTHON SOURCE LINES 38-41
 
@@ -188,7 +188,7 @@ we need to query it explicitly.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.019 seconds)
+   **Total running time of the script:** (0 minutes 2.016 seconds)
 
 
 .. _sphx_glr_download_gallery_client_node_3_attributes.py:

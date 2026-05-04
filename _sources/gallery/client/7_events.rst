@@ -21,7 +21,7 @@
 Events
 ======
 
-Shows how a client load an Aseba script to a remote node,
+Shows how a client loads an Aseba script to a remote node,
 and interacts with it using user-defined events.
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-15
@@ -249,7 +249,7 @@ and start waiting for ``count`` events.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.015 seconds)
+   **Total running time of the script:** (0 minutes 1.013 seconds)
 
 
 .. _sphx_glr_download_gallery_client_7_events.py:

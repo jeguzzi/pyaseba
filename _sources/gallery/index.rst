@@ -87,7 +87,7 @@ Client examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives Aseba message.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Illustrate how a client receives an Aseba message.">
 
 .. only:: html
 
@@ -138,7 +138,7 @@ Client examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Shows how a client load an Aseba script to a remote node, and interacts with it using user-defined events.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Shows how a client loads an Aseba script to a remote node, and interacts with it using user-defined events.">
 
 .. only:: html
 
@@ -192,7 +192,7 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and exposes local Aseba functions to Python.">
 
 .. only:: html
 
@@ -209,7 +209,7 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface, that exposes Aseba variables and functions as Python attributes and methods.">
 
 .. only:: html
 
@@ -246,7 +246,7 @@ Network examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to setup a simple Aseba network from Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Illustrative example of how to set up a simple Aseba network from Python.">
 
 .. only:: html
 

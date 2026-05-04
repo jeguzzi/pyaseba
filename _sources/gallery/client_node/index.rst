@@ -35,7 +35,7 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and expose local Aseba functions to Python.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases how :pypyaseba.client.Node mirrors local Aseba events and exposes local Aseba functions to Python.">
 
 .. only:: html
 
@@ -52,7 +52,7 @@ Client nodes examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface. that exposes Aseba variables and functions as Python attributes and methods">
+    <div class="sphx-glr-thumbcontainer" tooltip="Showcases the Python-like :pypyaseba.client.Node interface, that exposes Aseba variables and functions as Python attributes and methods.">
 
 .. only:: html
 

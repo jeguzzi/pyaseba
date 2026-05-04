@@ -72,7 +72,7 @@ Showcases the life-cycle of an Aseba client.
 
 .. GENERATED FROM PYTHON SOURCE LINES 24-26
 
-Connections positive integers that index connected
+Connections are positive integers that index connected
 Dashel targets.
 
 .. GENERATED FROM PYTHON SOURCE LINES 26-29
@@ -136,14 +136,14 @@ or close the client directly, which in turn closes all connections.
 .. hint::
 
    The client will automatically shutdown when it is deleted.
-   Therefore cleaning up is not strictly needed unless you want to release
+   Therefore, cleaning up is not strictly needed unless you want to release
    resources before the client is deleted,
-   which would happen latest when the script exits.
+   which would happen the latest when the script exits.
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.027 seconds)
+   **Total running time of the script:** (0 minutes 1.860 seconds)
 
 
 .. _sphx_glr_download_gallery_client_1_connection.py:

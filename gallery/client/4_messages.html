@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Messages &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Messages &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="../../_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="../../_static/documentation_options.js?v=73504a2b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
@@ -177,7 +177,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -385,7 +385,7 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="messages">
 <span id="sphx-glr-gallery-client-4-messages-py"></span><h1>Messages<a class="headerlink" href="#messages" title="Link to this heading">#</a></h1>
-<p>Illustrate how a client receives Aseba message.</p>
+<p>Illustrate how a client receives an Aseba message.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba.client</span><span class="w"> </span><span class="kn">import</span> <a href="../../reference/client/client.html#pyaseba.client.Client" title="pyaseba.Client" class="sphx-glr-backref-module-pyaseba sphx-glr-backref-type-py-class"><span class="n">Client</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyaseba.client.msgs</span><span class="w"> </span><span class="kn">import</span> <a href="../../reference/client/messages.html#pyaseba.client.Message" title="pyaseba.client.Message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">GetVariables</span></a><span class="p">,</span> <a href="../../reference/client/messages.html#pyaseba.client.Message" title="pyaseba.client.Message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">Variables</span></a>
 
@@ -393,7 +393,7 @@ to download the full example code.</p>
 <span class="n">connection</span> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client.connect" title="pyaseba.client.Client.connect" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">connect</span></a><span class="p">(</span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">33333</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Receiving messages blocks until the next message is received</p>
+<p>Receiving messages blocks until the next message is received.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">msg</span><span class="p">,</span> <span class="n">connection</span> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client.get_message" title="pyaseba.client.Client.get_message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">get_message</span></a><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got message </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> from network #</span><span class="si">{</span><span class="n">connection</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
@@ -401,9 +401,9 @@ to download the full example code.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Got message NodePresent(source=0, version=9) from network #1
 </pre></div>
 </div>
-<p>Sending messages is (almost) instantaneous instead
+<p>Sending messages is (almost) instantaneous instead.
 Let us send a (manual) request for some variables
-and wait until we get a response</p>
+and wait until we get a response.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../reference/client/client.html#pyaseba.client.Client.send_message" title="pyaseba.client.Client.send_message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">send_message</span></a><span class="p">(</span><a href="../../reference/client/messages.html#pyaseba.client.Message" title="pyaseba.client.Message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-class"><span class="n">GetVariables</span></a><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
     <span class="n">msg</span><span class="p">,</span> <span class="n">connection</span> <span class="o">=</span> <a href="../../reference/client/client.html#pyaseba.client.Client.get_message" title="pyaseba.client.Client.get_message" class="sphx-glr-backref-module-pyaseba-client sphx-glr-backref-type-py-method"><span class="n">client</span><span class="o">.</span><span class="n">get_message</span></a><span class="p">()</span>
@@ -424,7 +424,7 @@ Ignoring NamedVariableDescription(source=0, name=&#39;args&#39;, size=32)
 Ignoring NamedVariableDescription(source=0, name=&#39;_productId&#39;, size=1)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.011 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.010 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-client-4-messages-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0a65b2669c25e4d61814087cbf30f5fc/4_messages.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">4_messages.ipynb</span></code></a></p>

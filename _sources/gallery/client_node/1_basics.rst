@@ -40,7 +40,7 @@ Showcases the basic :py:class:`pyaseba.client.Node` interface.
 .. GENERATED FROM PYTHON SOURCE LINES 11-14
 
 :py:class:`pyaseba.client.Node` are stateful objects linked to a
-specific remote Aseba node connected thought a :py:class:`pyaseba.client.Client`.
+specific remote Aseba node connected through a :py:class:`pyaseba.client.Client`.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 14-19
@@ -68,8 +68,8 @@ specific remote Aseba node connected thought a :py:class:`pyaseba.client.Client`
 .. GENERATED FROM PYTHON SOURCE LINES 20-23
 
 While most :py:class:`pyaseba.client.Client` methods require selecting a ``node_id``,
-:py:class:`pyaseba.client.Node` methods keep a reference to the node id, connection.
-which can be used to for example to set and get variables.
+:py:class:`pyaseba.client.Node` methods keep a reference to the node ID and network,
+which can be used to, for example, set and get variables.
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-27
 
@@ -131,7 +131,7 @@ Nodes keep an optional cache of Aseba variables values.
 
 .. GENERATED FROM PYTHON SOURCE LINES 36-37
 
-When caching, modified values are not sent to the remote node
+When caching, modified values are not sent to the remote node.
 
 .. GENERATED FROM PYTHON SOURCE LINES 37-40
 
@@ -155,7 +155,7 @@ When caching, modified values are not sent to the remote node
 
 .. GENERATED FROM PYTHON SOURCE LINES 41-42
 
-until calling :py:meth:`pyaseba.client.sync`
+Until calling :py:meth:`pyaseba.client.sync`
 
 .. GENERATED FROM PYTHON SOURCE LINES 42-45
 
@@ -196,7 +196,7 @@ Closing the node will also close the client.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.012 seconds)
+   **Total running time of the script:** (0 minutes 1.014 seconds)
 
 
 .. _sphx_glr_download_gallery_client_node_1_basics.py:

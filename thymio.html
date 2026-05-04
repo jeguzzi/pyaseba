@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Thymio &#8212; pyaseba 0.0.5 documentation</title>
+    <title>Thymio &#8212; pyaseba 0.0.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
-    <script src="_static/documentation_options.js?v=6424ca4d"></script>
+    <script src="_static/documentation_options.js?v=73504a2b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/sg-tags.js?v=d80f6fa4"></script>
@@ -181,7 +181,7 @@
   
   
   
-    <p class="title logo__title">pyaseba 0.0.5 documentation</p>
+    <p class="title logo__title">pyaseba 0.0.6 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -412,7 +412,7 @@
 </pre></div>
 </div>
 <p>A positive <code class="docutils literal notranslate"><span class="pre">node_id</span></code> means that we discovered the Aseba node
-running on the robot. We can use it to get/set variables</p>
+running on the robot. We can use it to get/set variables.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
 <span class="go">[&#39;_fwversion&#39;, &#39;_id&#39;, &#39;_imot&#39;, ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
@@ -421,7 +421,7 @@ running on the robot. We can use it to get/set variables</p>
 </pre></div>
 </div>
 <p>The robot should have turned red.</p>
-<p>We can load an Aseba script and ask the robot to run it</p>
+<p>We can load an Aseba script and ask the robot to run it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">onevent button.center</span>
 <span class="gp">... </span><span class="s2">leds.top = [0, 32, 0]</span>
@@ -437,16 +437,16 @@ running on the robot. We can use it to get/set variables</p>
 </pre></div>
 </div>
 <p>The robot should turn green when you press the central button.</p>
-<p>We can now send an event from Python, which in this case, should make the robot switch off the LED,</p>
+<p>We can now send an event from Python, which in this case, should make the robot switch off the LED;</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">emit_event</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>wait until an event is emitted (press the button after executing the code)</p>
+<p>wait until an event is emitted (press the button after executing the code);</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">get_event</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="s2">&quot;pressed&quot;</span><span class="p">,</span> <span class="n">wait_ms</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
 <span class="go">Event(source=48069, name=&#39;pressed&#39;, data=[])</span>
 </pre></div>
 </div>
-<p>or trigger a callback when this happen</p>
+<p>and trigger a callback when this happens.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">cb</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <span class="gp">...</span>
@@ -467,7 +467,7 @@ running on the robot. We can use it to get/set variables</p>
 True
 </pre></div>
 </div>
-<p>We can get and set variables by name</p>
+<p>We can get and set variables by name,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">thymio</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
 <span class="go">[&#39;_fwversion&#39;, &#39;_id&#39;, &#39;_imot&#39;, ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">thymio</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
@@ -475,7 +475,7 @@ True
 <span class="gp">&gt;&gt;&gt; </span><span class="n">thymio</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;leds.top&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>or using Python attributes</p>
+<p>or using Python attributes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">thymio</span><span class="o">.</span><span class="n">temperature</span>
 <span class="go">284</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">thymio</span><span class="o">.</span><span class="n">leds_top</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>

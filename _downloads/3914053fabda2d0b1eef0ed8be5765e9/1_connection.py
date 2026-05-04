@@ -21,7 +21,7 @@ connection = client.connect("udp:")
 connection
 
 # %%
-# Connections positive integers that index connected
+# Connections are positive integers that index connected
 # Dashel targets.
 
 client.connections
@@ -48,7 +48,6 @@ client.connections
 # .. hint::
 #
 #    The client will automatically shutdown when it is deleted.
-#    Therefore cleaning up is not strictly needed unless you want to release
+#    Therefore, cleaning up is not strictly needed unless you want to release
 #    resources before the client is deleted,
-#    which would happen latest when the script exits.
-
+#    which would happen the latest when the script exits.

@@ -32,7 +32,7 @@ for name in desc.variables:
 
 
 # %%
-# We reset the value to an uniform 1.
+# We reset the value to a uniform 1.
 for name, (index, size) in desc.variables.items():
     client.set_variable(node_id=node_id, name=name, value=[1] * size)
 
@@ -49,7 +49,7 @@ for name, value in client.get_all_variables(node_id=node_id).items():
 # %%
 # .. note::
 #
-#    Not all values are 1 because in the meantime the node as changed some of them.
+#    Not all values are 1 because in the meantime the node has changed some of them.
 
 # %%
 client.close()
