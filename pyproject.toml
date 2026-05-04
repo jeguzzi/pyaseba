@@ -35,7 +35,7 @@ Changelog = "https://github.com/jeguzzi/pyaseba/blob/main/CHANGELOG.md"
 
 all = [
   'rich >= 15.0.0',
-  'thymio-behaviors'
+  'thymio-behaviors >= 0.0.2'
 ]
 
  
