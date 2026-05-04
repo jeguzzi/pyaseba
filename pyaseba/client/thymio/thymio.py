@@ -1,5 +1,13 @@
-from ..node import EventSpec, Node, NodeAsync, MirroringConfig
+from collections.abc import Callable
+from typing import TYPE_CHECKING, ParamSpec, cast
+
 from .._client_impl import Event
+from ..node import EventSpec, MirroringConfig, Node, NodeAsync
+
+if TYPE_CHECKING:
+    from thymio_behaviors import Behavior, Callback, ThymioAsebaProtocol
+
+P = ParamSpec('P')
 
 
 class Thymio(Node):
@@ -160,8 +168,8 @@ class Thymio(Node):
                 counter = event.data[-1]
                 self._update_prox_comm_buffer(counter)
 
-    def _stop(self) -> None:
-        super()._stop()
+    def stop(self) -> None:
+        super().stop()
         self.set("motor.left.target", 0, cached=False)
         self.set("motor.right.target", 0, cached=False)
 
@@ -174,6 +182,25 @@ class Thymio(Node):
             else:
                 periods[1] = steps  # type: ignore[index]
             self.set("timer.period", periods, cached=False)
+
+    def set_behavior(self,
+                     behavior: Behavior,
+                     time_step: float = 0.1,
+                     event: str = "") -> None:
+        """
+        Setup a behavior. Same as :py:meth:`set_controller`.
+
+        :param      behavior:   The callback called at each control step
+        :param      time_step:  The control time step
+        :param      event:      The event that should trigger a control step
+        """
+        self.set_controller(cast('Callable[[Thymio, float], None]', behavior),
+                            time_step, event)
+
+    def apply(self, callback: Callback[P], *args: P.args,
+              **kwargs: P.kwargs) -> None:
+        callback(cast('ThymioAsebaProtocol', self), *args, **kwargs)
+        self.sync()
 
 
 class ThymioAsync(NodeAsync, Thymio):

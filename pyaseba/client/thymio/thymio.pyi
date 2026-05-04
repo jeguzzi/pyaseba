@@ -1,6 +1,11 @@
 from collections.abc import Callable
+from typing import ParamSpec
+
+from thymio_behaviors import Behavior, Callback
 
 from ..node import Node, NodeAsync
+
+P = ParamSpec('P')
 
 
 class Thymio(Node):
@@ -89,5 +94,14 @@ class Thymio(Node):
                  cached: bool = ...,
                  record_prox_comm: bool = ...,
                  enable_prox_comm: bool = ...) -> None: ...
+
+    def set_behavior(self,
+                     behavior: Behavior,
+                     time_step: float = ...,
+                     event: str = ...) -> None: ...
+
+    def apply(self, callback: Callback[P], *args: P.args,
+              **kwargs: P.kwargs) -> None: ...
+
 
 class ThymioAsync(NodeAsync, Thymio): ...
