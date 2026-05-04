@@ -9,7 +9,7 @@
 project = 'pyaseba'
 copyright = '2026, Jerome Guzzi'
 author = 'Jerome Guzzi'
-release = '0.0.5'
+release = '0.0.6'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

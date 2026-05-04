@@ -205,9 +205,6 @@ class Thymio(Node):
         :param      callback:  The callback
         :param      args:      The callback arguments
         :param      kwargs:    The callback keywords arguments
-
-        :returns:   { description_of_the_return_value }
-        :rtype:     None
         """
         callback(cast('ThymioAsebaProtocol', self), *args, **kwargs)
         self.sync()
