@@ -199,6 +199,16 @@ class Thymio(Node):
 
     def apply(self, callback: Callback[P], *args: P.args,
               **kwargs: P.kwargs) -> None:
+        """
+        Calls a callback and then calls :py:meth:`sync`.
+
+        :param      callback:  The callback
+        :param      args:      The callback arguments
+        :param      kwargs:    The callback keywords arguments
+
+        :returns:   { description_of_the_return_value }
+        :rtype:     None
+        """
         callback(cast('ThymioAsebaProtocol', self), *args, **kwargs)
         self.sync()
 
